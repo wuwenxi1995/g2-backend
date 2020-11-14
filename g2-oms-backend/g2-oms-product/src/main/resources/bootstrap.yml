@@ -1,0 +1,95 @@
+server:
+  port: 9010
+  undertow:
+    # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接
+    # 默认值为8，建议设置每个CPU核心一个线程
+    io-threads: ${SERVER_UNDERTOW_IO_THREADS:4}
+    # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程
+    # 默认等于 io-threads*8，它的值设置取决于系统的负载，可适当调大该值
+    worker-threads: ${SERVER_UNDERTOW_WORKER_THREADS:128}
+    # 每块buffer的空间大小，越小空间被利用越充分
+    # 不要设置太大，以免影响其他应用，合适即可
+    buffer-size: ${SERVER_UNDERTOW_BUFFER_SIZE:1024}
+    # 是否分配的直接内存(NIO直接分配的堆外内存)
+    # 默认false
+    direct-buffers: true
+    # HTTP POST请求最大的大小
+    # 默认0，无限制，可设置10M
+    max-http-post-size: 10485760
+
+eureka:
+  instance:
+    prefer-ip-address: ${EUREKA_PREFER_IP_ADDRESS:true}
+    # 客户端向服务器端发送心跳的时间间隔，单位second，默认30s
+    lease-renewal-interval-in-seconds: ${EUREKA_CLIENT_LEASE_RENEWAL_INTERVAL_IN_SECONDS:10}
+    # eureka服务端收到最后一次心跳的时间间隔上限，超过上限即认为不健康状态
+    lease-expiration-duration-in-seconds: ${EUREKA_CLIENT_LEASE_EXPIRATION_DURATION_IN_SECONDS:30}
+  client:
+    # 默认注册中心地址
+    service-url:
+      # 单节点只需配置一个eureka注册中心地址
+      # 集群需要配置全部eureka服务器ip，如eureka实例在192.168.1.13,192.168.1.14和192.168.1.15机器上,配置地址就应该是
+      # defaultZone: ${EUREKA_DEFAULT_ZONE:http://192.168.1.13:8000/eureka/,http://192.168.1.14:8000/eureka/,http://192.168.1.15:8000/eureka/}
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8000/eureka/}
+    # 指示eureka是否可用
+    enabled: ${EUREKA_CLIENT_ENABLE:true}
+    # 指示多少间隔时间从eureka server上抓取服务注册信息，时间seconds，默认30秒
+    registry-fetch-interval-seconds: ${EUREKA_CLIENT_REGISTRY_FETCH_INTERVAL_SECONDS:10}
+    # 指示多少间隔时间将实例改变信息复制到eureka server上，以秒为单位
+    # instance-info-replication-interval-seconds: ${EUREKA_CLIENT_INSTANCE_INFO_REPLICATION_INTERVAL_SECONDS:30}
+    # 指示最初将实例信息复制到eureka服务器的时间（以秒为单位）
+    # initial-instance-info-replication-interval-seconds: ${EUREKA_CLIENT_INITIAL_INSTANCE_INFO_REPLICATION_INTERVAL_SECONDS:40}
+    # 指示eureka客户端是否应禁用获取增量，而应获取完整的注册表信息
+    disable-delta: ${EUREKA_CLIENT_DISABLE_DELTA:true}
+
+management:
+  server:
+    port: 9011
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+# 开启feign熔断机制
+feign:
+  hystrix:
+    enabled: true
+
+# 配置服务降级、服务熔断、服务限流
+hystrix:
+  # 服务限流 最大线程数不能超过1000
+  threadpool:
+    default:
+      # 执行命令线程池的核心线程数，也是命令执行的最大并发量
+      # 默认10
+      coreSize: 1000
+      # 最大执行线程数
+      maximumSize: 1000
+  # 服务降级、熔断
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            # HystrixCommand 执行的超时时间，超时后进入降级处理逻辑。一个接口，理论的最佳响应速度应该在200ms以内，或者慢点的接口就几百毫秒。
+            # 默认 1000 毫秒，最高设置 2000足矣。如果超时，首先看能不能优化接口相关业务、SQL查询等，不要盲目加大超时时间，否则会导致线程堆积过多，hystrix 线程池卡死，最终服务不可用。
+            timeoutInMilliseconds: ${HYSTRIX_COMMAND_TIMEOUT_IN_MILLISECONDS:3000}
+  shareSecurityContext: true
+
+
+# 设置feign客户端超时时间
+ribbon:
+  # 客户端读取时间，两端正常连接时间，需要小于hystrix断路器时间
+  ReadTimeout: ${RIBBON_READ_TIMEOUT:3000}
+  # 客户端连接服务器超时时间
+  ConnectTimeout: ${RIBBOM_CONNECTION_TIMEOUT:3000}
+  # 访问实例失败(超时)，允许自动重试，设置重试次数，失败后会更换实例访问，请一定确保接口的幂等性，否则重试可能导致数据异常。
+  OkToRetryOnAllOperations: true
+  MaxAutoRetries: 1
+  MaxAutoRetriesNextServer: 1
+
+logging:
+  level:
+    org.g2: ${LOG_LEVEL:debug}
+    com.netflix: ${LOG_LEVEL:warn}
+

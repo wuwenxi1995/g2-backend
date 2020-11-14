@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.6.RELEASE</version>
+    </parent>
+
+    <groupId>org.g2</groupId>
+    <artifactId>g2-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+
+        <jdk.version>1.8</jdk.version>
+        <build.encoding>UTF-8</build.encoding>
+        <maven.javadoc.skip>false</maven.javadoc.skip>
+        <maven.springboot.skip>false</maven.springboot.skip>
+
+        <!-- spring cloud version-->
+        <spring.cloud.version>Hoxton.SR3</spring.cloud.version>
+        <spring.cloud.alibaba.version>2.1.0.RELEASE</spring.cloud.alibaba.version>
+
+        <!-- spring boot -->
+        <spring.boot.version>2.2.6.RELEASE</spring.boot.version>
+
+        <!--spring version 与springboot引入spring版本保存一致-->
+        <spring.version>5.2.5.RELEASE</spring.version>
+
+        <!-- security -->
+        <spring.security.jwt.version>1.0.9.RELEASE</spring.security.jwt.version>
+        <spring.security.oauth2.version>2.3.5.RELEASE</spring.security.oauth2.version>
+        <io.jsonwebtoken.jjwt.version>0.9.1</io.jsonwebtoken.jjwt.version>
+
+        <!-- starter version -->
+        <g2.starter.redis.version>0.1.0-SNAPSHOT</g2.starter.redis.version>
+        <g2.starter.redisson.version>0.1.0-SNAPSHOT</g2.starter.redisson.version>
+        <g2.starter.elasticsearch.version>0.1.0-SNAPSHOT</g2.starter.elasticsearch.version>
+        <g2.starter.rabbitmq.version>0.1.0-SNAPSHOT</g2.starter.rabbitmq.version>
+        <g2.starter.kafka.version>0.1.0-SNAPSHOT</g2.starter.kafka.version>
+        <g2.starter.mongo.version>0.1.0-SNAPSHOT</g2.starter.mongo.version>
+        <g2.starter.core.version>0.1.0-SNAPSHOT</g2.starter.core.version>
+        <g2.starter.mq.version>0.1.0-SNAPSHOT</g2.starter.mq.version>
+        <g2.starter.mybatis.mapper.version>0.1.0-SNAPSHOT</g2.starter.mybatis.mapper.version>
+
+        <!-- boot version -->
+        <g2.boot.pipeline.version>0.1.0-SNAPSHOT</g2.boot.pipeline.version>
+        <g2.boot.scheduler.version>0.1.0-SNAPSHOT</g2.boot.scheduler.version>
+        <g2.boot.file.version>0.1.0-SNAPSHOT</g2.boot.file.version>
+        <g2.boot.message.version>0.1.0-SNAPSHOT</g2.boot.message.version>
+        <g2.boot.elasticsearch.version>0.1.0-SNAPSHOT</g2.boot.elasticsearch.version>
+        <g2.boot.core.version>0.1.0-SNAPSHOT</g2.boot.core.version>
+
+        <!-- other -->
+        <mysql.version>8.0.16</mysql.version>
+        <spring.mybatis.version>2.1.2</spring.mybatis.version>
+        <commons.langs.version>3.9</commons.langs.version>
+        <commons.collections.version>4.4</commons.collections.version>
+        <fastjson.version>1.2.68</fastjson.version>
+        <lombok.version>1.18.10</lombok.version>
+        <elasticsearch.client.version>7.6.2</elasticsearch.client.version>
+        <redisson.version>3.11.0</redisson.version>
+        <kafka.version>2.2.6.RELEASE</kafka.version>
+        <kafka.clent.version>2.3.1</kafka.clent.version>
+        <zookeeper.version>3.6.2</zookeeper.version>
+        <quartz.version>2.3.2</quartz.version>
+        <hutool.version>5.4.7</hutool.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!--  cloud  -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring.cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--  spring cloud alibaba-->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring.cloud.alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- spring boot -->
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot</artifactId>
+                <version>${spring.boot.version}</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <!-- aop -->
+            <!-- https://mvnrepository.com/artifact/org.springframework/spring-aspects -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aspects</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <!-- g2 starter -->
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-starter-parent</artifactId>
+                <version>${g2.starter.core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-starter-core</artifactId>
+                <version>${g2.starter.core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-starter-redis</artifactId>
+                <version>${g2.starter.redis.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-starter-elasticsearch</artifactId>
+                <version>${g2.starter.elasticsearch.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-starter-redisson</artifactId>
+                <version>${g2.starter.redisson.version}</version>
+            </dependency>
+
+            <!-- g2 boot -->
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-boot-parent</artifactId>
+                <version>${g2.boot.core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-boot-pipeline</artifactId>
+                <version>${g2.boot.pipeline.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-boot-scheduler</artifactId>
+                <version>${g2.boot.scheduler.version}</version>
+            </dependency>
+
+            <!-- other -->
+
+            <!-- mysql driver -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+
+            <!-- spring mybatis-->
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${spring.mybatis.version}</version>
+            </dependency>
+
+            <!-- elasticsearch -->
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>commons-logging</artifactId>
+                        <groupId>commons-logging</groupId>
+                    </exclusion>
+                </exclusions>
+                <version>${elasticsearch.client.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${elasticsearch.client.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-client</artifactId>
+                <version>${elasticsearch.client.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-client-sniffer</artifactId>
+                <version>${elasticsearch.client.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons.langs.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons.collections.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper -->
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
+                <version>${zookeeper.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.quartz-scheduler/quartz -->
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
+            <!-- https://www.hutool.cn/docs/#/ 工具包文档-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+
+</project>

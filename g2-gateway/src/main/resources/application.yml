@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: g2-gateway
+  cloud:
+    gateway:
+      # 开启动态路由
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        # 基础服务
+        - id: goth
+          # 外部请求通过网关可以负载到服务上
+          uri: lb://g2-oauth
+          predicates:
+            - Path=/oauth/**
+          filters:
+            - PreserveHostHeader
+        - id: giam
+          uri: lb://g2-iam
+          predicates:
+            - Path=/iam/**
+          filters:
+            - StripPrefix=1
+        - id: gcnf
+          uri: lb://g2-config
+          predicates:
+            - Path=/gcnf/**
+          filters:
+            - StripPrefix=1
+        - id: gsdr
+          uri: lb://g2-scheduler
+          predicates:
+            - Path=/gsdr/**
+          filters:
+            # 指示在向下游发送请求之前，要从请求中剥离的路径中的零件数,向下转发实际路由为 lb://g2-scheduler/**
+            - StripPrefix=1
+        - id: gmsg
+          uri: lb://g2-message
+          predicates:
+            - Path=/gmsg/**
+          filters:
+            - StripPrefix=1
+
+
+        # 微服务
+        - id: g2pmi
+          uri: lb://g2-oms-product
+          predicates:
+            - Path=/g2pmi/**
+          filters:
+            - StripPrefix=1
+        - id: g2ot
+          uri: lb://g2-oms-order
+          predicates:
+            - Path=/g2ot/**
+          filters:
+            - StripPrefix=1

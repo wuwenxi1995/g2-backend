@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+eureka:
+  instance:
+    prefer-ip-address: ${EUREKA_PREFER_IP_ADDRESS:true}
+    # 客户端向服务器端发送心跳的时间间隔，单位second，默认30s
+    lease-renewal-interval-in-seconds: ${EUREKA_CLIENT_LEASE_RENEWAL_INTERVAL_IN_SECONDS:10}
+    # eureka服务端收到最后一次心跳的时间间隔上限，超过上限即认为不健康状态
+    lease-expiration-duration-in-seconds: ${EUREKA_CLIENT_LEASE_EXPIRATION_DURATION_IN_SECONDS:30}
+  client:
+    # 默认注册中心地址
+    service-url:
+      # 单节点只需配置一个eureka注册中心地址
+      # 集群需要配置全部eureka服务器ip，如eureka实例在192.168.1.13,192.168.1.14和192.168.1.15机器上,配置地址就应该是
+      # defaultZone: ${EUREKA_DEFAULT_ZONE:http://192.168.1.13:8000/eureka/,http://192.168.1.14:8000/eureka/,http://192.168.1.15:8000/eureka/}
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8000/eureka/}
+    # 指示eureka是否可用
+    enabled: ${EUREKA_CLIENT_ENABLE:true}
+    # 指示多少间隔时间从eureka server上抓取服务注册信息，时间seconds，默认30秒
+    registry-fetch-interval-seconds: ${EUREKA_CLIENT_REGISTRY_FETCH_INTERVAL_SECONDS:10}
+    # 指示多少间隔时间将实例改变信息复制到eureka server上，以秒为单位
+    # instance-info-replication-interval-seconds: ${EUREKA_CLIENT_INSTANCE_INFO_REPLICATION_INTERVAL_SECONDS:30}
+    # 指示最初将实例信息复制到eureka服务器的时间（以秒为单位）
+    # initial-instance-info-replication-interval-seconds: ${EUREKA_CLIENT_INITIAL_INSTANCE_INFO_REPLICATION_INTERVAL_SECONDS:40}
+    # 指示eureka客户端是否应禁用获取增量，而应获取完整的注册表信息
+    disable-delta: ${EUREKA_CLIENT_DISABLE_DELTA:true}
