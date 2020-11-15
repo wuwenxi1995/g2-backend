@@ -271,5 +271,141 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <finalName>app</finalName>
+        <!--  项目资源文件处理  -->
+        <resources>
+            <resource>
+                <!-- 处理src/main/java下文件  -->
+                <directory>src/main/java</directory>
+                <!-- 只处理 XXX.properties 文件-->
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+                <!-- 对主资源目录开启资源过滤 -->
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <!--  处理src/main/resource 下所有文件  -->
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/**</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+            <!--  处理可执行shell脚本  -->
+            <resource>
+                <directory>src</directory>
+                <includes>
+                    <include>**/*.sh</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+            <!--  jenkins for docker build-->
+            <resource>
+                <directory>src/main/docker</directory>
+                <includes>
+                    <!-- Dockerfile 文件-->
+                    <include>**/Dockerfile</include>
+                    <!-- 可执行shell脚本 -->
+                    <include>**/*.sh</include>
+                    <!-- 打包好的jar包 -->
+                    <include>**/*.jar</include>
+                </includes>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}</targetPath>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>xlsx</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>xls</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>ttc</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
+            </plugin>
+            <!-- maven 编译插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <encoding>${build.encoding}</encoding>
+                </configuration>
+            </plugin>
+
+            <!--  生成Java doc文件插件-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <skip>${maven.javadoc.skip}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <additionalOptions>
+                                <additionalOption>
+                                    -Xdoclint:none
+                                </additionalOption>
+                            </additionalOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--  spring 打包插件-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <!--  将外部依赖jar也打包 -->
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope>
+                    <skip>${maven.springboot.skip}</skip>
+                </configuration>
+                <!-- 执行 ：repackage，在Maven的package生命周期阶段，能够将mvn package生成的软件包，再次打包为可执行的软件包-->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Spec.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
