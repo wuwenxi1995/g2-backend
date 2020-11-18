@@ -43,5 +43,5 @@ public @interface Document {
     /**
      * 分页最大返回数
      */
-    long maxResult() default 50000;
+    long maxResult() default 10000;
 }

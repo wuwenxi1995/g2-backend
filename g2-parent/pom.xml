@@ -159,6 +159,12 @@
                 <version>${g2.boot.scheduler.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-boot-elasticsearch</artifactId>
+                <version>${g2.boot.elasticsearch.version}</version>
+            </dependency>
+
             <!-- other -->
 
             <!-- mysql driver -->

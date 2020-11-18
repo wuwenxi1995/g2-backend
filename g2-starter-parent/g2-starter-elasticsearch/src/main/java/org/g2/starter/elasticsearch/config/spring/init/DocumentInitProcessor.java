@@ -1,4 +1,4 @@
-package org.g2.starter.elasticsearch.infra.init;
+package org.g2.starter.elasticsearch.config.spring.init;
 
 import java.util.HashMap;
 import java.util.Map;

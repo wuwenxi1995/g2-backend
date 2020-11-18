@@ -1,9 +1,9 @@
 package org.g2.starter.elasticsearch.config;
 
-import org.g2.starter.elasticsearch.domain.InitRestClientBuilder;
+import org.g2.starter.elasticsearch.config.spring.builder.InitRestClientBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.g2.starter.elasticsearch.infra.init.DocumentInitProcessor;
+import org.g2.starter.elasticsearch.config.spring.init.DocumentInitProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

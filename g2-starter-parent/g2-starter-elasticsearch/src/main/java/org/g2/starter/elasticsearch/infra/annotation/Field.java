@@ -42,7 +42,7 @@ public @interface Field {
     /**
      * 是否fields字段
      */
-    boolean fields();
+    boolean fields() default false;
 
     /**
      * fields名称

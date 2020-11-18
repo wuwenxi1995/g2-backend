@@ -1,4 +1,4 @@
-package org.g2.starter.elasticsearch.domain;
+package org.g2.starter.elasticsearch.config.spring.builder;
 
 import java.io.IOException;
 import java.time.Duration;
