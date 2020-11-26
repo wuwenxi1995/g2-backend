@@ -1,12 +1,75 @@
 package org.g2.core.util;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author wenxi.wu@hand-china.com 2020-11-12
  */
-public class CollectionUtils {
+public final class CollectionUtils {
+
+    private CollectionUtils() {
+    }
+
+    public static <T> boolean isNotEmpty(Collection<T> collection) {
+        return !isEmpty(collection);
+    }
+
+    public static <T> boolean isEmpty(Collection<T> collection) {
+        return null == collection || collection.size() == 0;
+    }
+
+    /**
+     * 平均分成num个数组
+     *
+     * @param sourceList 数组
+     * @param num        分解个数
+     * @param <T>        数据类型
+     * @return 分解结果
+     */
+    public static <T> List<List<T>> averageSplit(List<T> sourceList, int num) {
+        if (isEmpty(sourceList) || num < 1) {
+            return null;
+        }
+        List<List<T>> result = new ArrayList<>();
+        int rest = sourceList.size() % num;
+        int number = sourceList.size() / num;
+        // 偏移量
+        int offset = 0;
+        for (int index = 0; index < num; index++) {
+            List<T> source;
+            if (rest > 0) {
+                source = sourceList.subList(index * number + offset, (index + 1) * number + offset + 1);
+                rest--;
+                offset++;
+            } else {
+                source = sourceList.subList(index * number + offset, (index + 1) * number + offset);
+            }
+            result.add(source);
+        }
+        return result;
+    }
+
+    /**
+     * 分解数组
+     *
+     * @param sourceList 数组
+     * @param size       分解的数组大小
+     * @param <T>        数组类型
+     * @return 分解结果
+     */
+    public static <T> List<List<T>> splitList(List<T> sourceList, int size) {
+        if (isEmpty(sourceList) || size < 1) {
+            return null;
+        }
+
+        List<List<T>> result = new ArrayList<>();
+
+        int num = (sourceList.size() + size - 1) / size;
+        for (int index = 0; index < num; index++) {
+            result.add(sourceList.subList(index * size, Math.min(sourceList.size(), (index + 1) * size)));
+        }
+        return result;
+    }
 
 
     // =================================================================

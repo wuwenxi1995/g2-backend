@@ -30,7 +30,7 @@ public class SchedulerAutoConfiguration {
             return executorStrategyService;
         }
         for (ExecutorStrategy executorStrategy : executorStrategies) {
-            executorStrategyService.register(executorStrategy.strategyId(), executorStrategy);
+            executorStrategyService.register(executorStrategy.strategyCode(), executorStrategy);
         }
         return executorStrategyService;
     }

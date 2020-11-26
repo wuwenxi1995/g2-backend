@@ -2,6 +2,7 @@ package org.g2.scheduler.domain.process.strategy.impl;
 
 import org.g2.scheduler.domain.process.strategy.AbstractExecutorStrategy;
 import org.g2.scheduler.domain.service.IAddressService;
+import org.g2.scheduler.infra.constants.SchedulerConstants;
 import org.g2.starter.redis.client.RedisCacheClient;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +22,12 @@ public class WeightStrategy extends AbstractExecutorStrategy {
     }
 
     @Override
-    public String execute(Long executorId) {
+    public String execute(Long executorId, Long jobId) {
         return null;
     }
 
     @Override
-    public Long strategyId() {
-        return 2L;
+    public String strategyCode() {
+        return SchedulerConstants.ExecutorStrategy.WEIGHT;
     }
 }

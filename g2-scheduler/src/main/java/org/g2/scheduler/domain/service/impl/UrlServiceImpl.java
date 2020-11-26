@@ -24,30 +24,7 @@ public class UrlServiceImpl implements IUrlService {
 
     @Override
     public String getServiceUrl(String executorStrategy, Long executorId, Long jobId) {
-        long strategy;
-        switch (executorStrategy) {
-            case SchedulerConstants.ExecutorStrategy.ROUND:
-                strategy = 0L;
-                break;
-            case SchedulerConstants.ExecutorStrategy.RANDOM:
-                strategy = 1L;
-                break;
-            case SchedulerConstants.ExecutorStrategy.WEIGHT:
-                strategy = 2L;
-                break;
-            case SchedulerConstants.ExecutorStrategy.JOB_WEIGHT:
-                strategy = 3L;
-                break;
-            default:
-                strategy = -1L;
-                break;
-        }
-
-        if (strategy == -1) {
-            return "";
-        }
-
-        ExecutorStrategy run = executorStrategyService.getExecutorStrategy(strategy);
+        ExecutorStrategy run = executorStrategyService.getExecutorStrategy(executorStrategy);
         if (null != run) {
             return run.execute(executorId, jobId);
         }

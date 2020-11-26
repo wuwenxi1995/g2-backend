@@ -10,16 +10,16 @@ public interface ExecutorStrategyService {
     /**
      * 获取执行器策略
      *
-     * @param strategyId 策略id
+     * @param strategyCode 策略id
      * @return 执行器策略
      */
-    ExecutorStrategy getExecutorStrategy(Long strategyId);
+    ExecutorStrategy getExecutorStrategy(String strategyCode);
 
     /**
      * 缓存执行器策略
      *
-     * @param strategyId       策略id
+     * @param strategyCode       策略id
      * @param executorStrategy 执行器策略
      */
-    void register(Long strategyId, ExecutorStrategy executorStrategy);
+    void register(String strategyCode, ExecutorStrategy executorStrategy);
 }

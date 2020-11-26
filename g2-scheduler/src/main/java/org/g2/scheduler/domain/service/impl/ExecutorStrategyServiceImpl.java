@@ -11,15 +11,15 @@ import org.g2.scheduler.domain.service.ExecutorStrategyService;
  */
 public class ExecutorStrategyServiceImpl implements ExecutorStrategyService {
 
-    private Map<Long, ExecutorStrategy> cache = new ConcurrentHashMap<>();
+    private Map<String, ExecutorStrategy> executorStrategyCache = new ConcurrentHashMap<>();
 
     @Override
-    public ExecutorStrategy getExecutorStrategy(Long strategyId) {
-        return cache.get(strategyId);
+    public ExecutorStrategy getExecutorStrategy(String strategyCode) {
+        return executorStrategyCache.get(strategyCode);
     }
 
     @Override
-    public void register(Long strategyId, ExecutorStrategy executorStrategy) {
-        cache.put(strategyId, executorStrategy);
+    public void register(String strategyCode, ExecutorStrategy executorStrategy) {
+        executorStrategyCache.put(strategyCode, executorStrategy);
     }
 }

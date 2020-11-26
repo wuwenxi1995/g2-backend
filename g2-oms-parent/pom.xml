@@ -17,6 +17,8 @@
         <module>g2-oms-core</module>
         <module>g2-oms-product</module>
         <module>g2-oms-order</module>
+        <module>g2-oms-customer</module>
+        <module>g2-oms-extension</module>
     </modules>
 
     <properties>

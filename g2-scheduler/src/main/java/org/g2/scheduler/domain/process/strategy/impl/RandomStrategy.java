@@ -9,6 +9,7 @@ import org.g2.scheduler.domain.entity.Executor;
 import org.g2.scheduler.domain.process.strategy.AbstractExecutorStrategy;
 import org.g2.scheduler.domain.repositoty.ExecutorRepository;
 import org.g2.scheduler.domain.service.IAddressService;
+import org.g2.scheduler.infra.constants.SchedulerConstants;
 import org.g2.scheduler.infra.exception.SchedulerException;
 import org.g2.starter.redis.client.RedisCacheClient;
 import org.springframework.stereotype.Component;
@@ -55,7 +56,7 @@ public class RandomStrategy extends AbstractExecutorStrategy {
     }
 
     @Override
-    public Long strategyId() {
-        return 1L;
+    public String strategyCode() {
+        return SchedulerConstants.ExecutorStrategy.RANDOM;
     }
 }

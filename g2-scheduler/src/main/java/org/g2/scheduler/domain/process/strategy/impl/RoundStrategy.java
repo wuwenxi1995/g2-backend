@@ -49,13 +49,13 @@ public class RoundStrategy extends AbstractExecutorStrategy {
             Integer index = incrementAndGetModulo(executorId, jobId);
             address = addressList.get(index);
             // 判断执行器是否可用
-            if (this.usable(address, executorId, jobId)) {
+            if (usable(address, executorId, jobId)) {
                 break;
             }
         }
 
         if (count >= RETRY) {
-            throw new SchedulerException("No available alive servers after 10 tries from load balancer");
+            throw new SchedulerException("No available alive servers after [%s] tries from load balancer", RETRY);
         }
 
         return address;
@@ -70,7 +70,11 @@ public class RoundStrategy extends AbstractExecutorStrategy {
         int current, next;
         while (true) {
             current = getCache(executorId, jobId);
-            next = (current + 1) % addressList.size();
+            if (current == Integer.MAX_VALUE) {
+                next = 0;
+            } else {
+                next = (current + 1) % addressList.size();
+            }
             if (refreshCache(executorId, jobId, current, next)) {
                 return next;
             }
@@ -88,11 +92,7 @@ public class RoundStrategy extends AbstractExecutorStrategy {
     private Integer getCache(Long executorId, Long jobId) {
         String key = getKey(executorId, jobId);
         String value = redisCacheClient.opsForValue().get(key);
-        int index = StringUtils.isBlank(value) ? -1 : Integer.parseInt(value);
-        if (index == Integer.MAX_VALUE) {
-            index = -1;
-        }
-        return index;
+        return StringUtils.isBlank(value) ? -1 : Integer.parseInt(value);
     }
 
     private String getKey(Long executorId, Long jobId) {
@@ -100,7 +100,7 @@ public class RoundStrategy extends AbstractExecutorStrategy {
     }
 
     @Override
-    public Long strategyId() {
-        return 0L;
+    public String strategyCode() {
+        return SchedulerConstants.ExecutorStrategy.ROUND;
     }
 }

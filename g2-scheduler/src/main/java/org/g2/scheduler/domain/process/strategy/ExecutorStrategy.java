@@ -19,5 +19,5 @@ public interface ExecutorStrategy {
      *
      * @return strategyId
      */
-    Long strategyId();
+    String strategyCode();
 }

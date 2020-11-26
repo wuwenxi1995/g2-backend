@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.elasticsearch.client.indices.CreateIndexRequest;
-import org.g2.starter.elasticsearch.infra.constants.OmsElasticsearchConstants;
 
 /**
  * @author wenxi.wu@hand-china.com 2020-11-18
