@@ -1,5 +1,6 @@
 package org.g2.autoconfigura.scheduler.config;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -16,5 +17,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Configuration
 @EnableAsync
 @EnableScheduling
+@MapperScan(basePackages = {"org.g2.scheduler.infra.mapper"})
 public class EnableSchedulerAutoConfiguration {
 }

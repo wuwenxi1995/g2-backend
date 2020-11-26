@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.g2.scheduler.domain.entity.Executor;
+import org.g2.scheduler.domain.repositoty.ExecutorRepository;
 import org.g2.scheduler.domain.service.IAddressService;
 import org.g2.scheduler.infra.constants.SchedulerConstants;
 import org.springframework.cloud.client.ServiceInstance;
@@ -21,18 +22,28 @@ import org.springframework.util.StringUtils;
 public class AddressServiceImpl implements IAddressService {
 
     private final DiscoveryClient discoveryClient;
+    private final ExecutorRepository executorRepository;
 
-    public AddressServiceImpl(DiscoveryClient discoveryClient) {
+    public AddressServiceImpl(DiscoveryClient discoveryClient, ExecutorRepository executorRepository) {
         this.discoveryClient = discoveryClient;
+        this.executorRepository = executorRepository;
     }
 
     @Override
     public List<String> getServiceAddressList(String serviceName) {
         List<ServiceInstance> instances = discoveryClient.getInstances(serviceName);
         if (CollectionUtils.isEmpty(instances)) {
+            // 更新执行器状态
+            Executor executor = new Executor();
+            executor.setServerName(serviceName);
+            List<Executor> executors = executorRepository.select(executor);
+            for (Executor update : executors) {
+                update.setStatus(SchedulerConstants.ExecutorStatue.OFFLINE);
+            }
+            executorRepository.batchUpdateByPrimaryKey(executors);
             return new ArrayList<>();
         }
-        return instances.stream().map(ServiceInstance::getUri).map(e -> e.getHost().concat(String.valueOf(e.getPort()))).collect(Collectors.toList());
+        return instances.stream().map(ServiceInstance::getUri).map(e -> e.getHost() + ":" + e.getPort()).collect(Collectors.toList());
     }
 
     @Override

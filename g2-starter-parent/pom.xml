@@ -18,6 +18,7 @@
         <module>g2-starter-elasticsearch</module>
         <module>g2-starter-redisson</module>
         <module>g2-starter-core</module>
+        <module>g2-starter-mybatis-helper</module>
     </modules>
 
 
