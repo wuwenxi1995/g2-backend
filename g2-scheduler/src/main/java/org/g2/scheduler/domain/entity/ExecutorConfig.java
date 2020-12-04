@@ -10,7 +10,7 @@ import org.g2.core.helper.FastJsonHelper;
 import org.g2.starter.redis.client.RedisCacheClient;
 
 /**
- * 执行器配置
+ * 执行器配置,表g2_scheduler.gsdr_executor_config
  *
  * @author wenxi.wu@hand-china.com 2020-11-09
  */

@@ -26,11 +26,10 @@ public final class MapUtils {
             return null;
         }
         List<Map<K, V>> result = new ArrayList<>();
-        if (num <= 1) {
+        if (num < 1) {
             result.add(map);
             return result;
         }
-        int total = (map.size() + num - 1) / num;
         Map<K, V> split = new HashMap<>(num);
         int index = 0;
         for (Map.Entry<K, V> entry : map.entrySet()) {

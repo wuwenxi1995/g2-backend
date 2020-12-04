@@ -3,6 +3,8 @@ package org.g2.scheduler.domain.entity;
 import lombok.Data;
 
 /**
+ *  执行器信息,表g2_scheduler.gsdr_executor
+ *
  * @author wenxi.wu@hand-china.com 2020-11-09
  */
 @Data

@@ -19,9 +19,8 @@ public class JobExecutor implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
 
+        long jobId = Long.parseLong(context.getJobDetail().getKey().getName());
         long executorId = jobDataMap.getLongValue("executorId");
-        long jobId = jobDataMap.getLongValue("jobId");
-
         String executorStrategy = jobDataMap.getString("executorStrategy");
 
         String address = urlService.getServiceUrl(executorStrategy, executorId, jobId);

@@ -70,6 +70,7 @@
         <zookeeper.version>3.6.2</zookeeper.version>
         <quartz.version>2.3.2</quartz.version>
         <hutool.version>5.4.7</hutool.version>
+        <okhttp3.version>4.9.0</okhttp3.version>
     </properties>
 
     <dependencyManagement>
@@ -279,6 +280,14 @@
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${okhttp3.version}</version>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>

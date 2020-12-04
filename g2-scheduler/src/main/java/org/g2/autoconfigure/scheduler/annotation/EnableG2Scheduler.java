@@ -1,4 +1,4 @@
-package org.g2.autoconfigura.scheduler.annotation;
+package org.g2.autoconfigure.scheduler.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.g2.autoconfigura.scheduler.config.EnableSchedulerAutoConfiguration;
+import org.g2.autoconfigure.scheduler.config.EnableSchedulerAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 /**
