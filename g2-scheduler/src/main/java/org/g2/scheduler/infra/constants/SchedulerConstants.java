@@ -31,6 +31,15 @@ public interface SchedulerConstants {
         String JOB_WEIGHT = "JOB_WEIGHT";
     }
 
+    interface TriggerState {
+        String NONE = "NONE";
+        String NORMAL = "NORMAL";
+        String PAUSED = "PAUSED";
+        String COMPLETE = "COMPLETE";
+        String ERROR = "ERROR";
+        String BLOCKED = "BLOCKED";
+    }
+
     interface Cache {
         /**
          * redis key

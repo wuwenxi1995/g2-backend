@@ -8,8 +8,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import javax.sql.DataSource;
@@ -35,6 +37,16 @@ public class EnableSchedulerAutoConfiguration {
 
     public EnableSchedulerAutoConfiguration(@Qualifier("dataSource") DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    @Bean
+    public AsyncTaskExecutor asyncTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setMaxPoolSize(30);
+        executor.setCorePoolSize(10);
+        executor.setQueueCapacity(99999);
+        executor.setThreadNamePrefix("scheduler-thread");
+        return executor;
     }
 
     @Bean

@@ -20,6 +20,7 @@ public class JobInfo {
     public static final String FIELD_END_DATE = "endDate";
     public static final String FIELD_CRON = "cron";
     public static final String FIELD_IS_CYCLE = "isCycle";
+    public static final String FIELD_INIT_FLAG = "initFlag";
 
     /**
      * 表主键
@@ -69,6 +70,10 @@ public class JobInfo {
      * 是否周期性进行
      */
     private Integer isCycle;
+    /**
+     * 是否进行初始化，默认是
+     */
+    private Integer initFlag;
 
     public Long getJobId() {
         return jobId;
@@ -164,5 +169,13 @@ public class JobInfo {
 
     public void setFailStrategy(String failStrategy) {
         this.failStrategy = failStrategy;
+    }
+
+    public Integer getInitFlag() {
+        return initFlag;
+    }
+
+    public void setInitFlag(Integer initFlag) {
+        this.initFlag = initFlag;
     }
 }

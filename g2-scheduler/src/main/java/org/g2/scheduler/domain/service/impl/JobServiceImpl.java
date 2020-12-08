@@ -112,6 +112,16 @@ public class JobServiceImpl implements IJobService {
         }
     }
 
+    @Override
+    public String getJobStatus(Long jobId) {
+        try {
+            TriggerKey triggerKey = new TriggerKey(String.valueOf(jobId), DEFAULT);
+            return scheduler.getTriggerState(triggerKey).name();
+        } catch (Exception e) {
+            throw new SchedulerException("查询任务状态发生错误:%s", e, e.getMessage());
+        }
+    }
+
     private Trigger buildTrigger(JobInfo jobInfo) {
         TriggerKey triggerKey = TriggerKey.triggerKey(String.valueOf(jobInfo.getJobId()), DEFAULT);
         Trigger trigger;
@@ -146,9 +156,9 @@ public class JobServiceImpl implements IJobService {
 
     private JobDataMap getJobDataMap(JobInfo jobInfo) {
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put("jobCode",jobInfo.getJobCode());
-        jobDataMap.put("executorId",jobInfo.getJobId());
-        jobDataMap.put("executorStrategy",jobInfo.getExecutorStrategy());
+        jobDataMap.put("jobCode", jobInfo.getJobCode());
+        jobDataMap.put("executorId", jobInfo.getJobId());
+        jobDataMap.put("executorStrategy", jobInfo.getExecutorStrategy());
         jobDataMap.put("jobHandler", jobInfo.getJobHandler());
         jobDataMap.put("param", jobInfo.getJobParam());
         jobDataMap.put("failStrategy", jobInfo.getFailStrategy());

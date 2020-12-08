@@ -49,4 +49,12 @@ public interface IJobService {
      * @param jobId 任务id
      */
     void resumeJob(Long jobId);
+
+    /**
+     * 获取job状态
+     *
+     * @param jobId job编码
+     * @return 状态
+     */
+    String getJobStatus(Long jobId);
 }

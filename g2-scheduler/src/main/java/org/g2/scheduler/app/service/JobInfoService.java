@@ -38,4 +38,9 @@ public interface JobInfoService {
      * @param jobInfo 结束任务
      */
     void stopJob(JobInfo jobInfo);
+
+    /**
+     * 初始化全部任务
+     */
+    void initJob();
 }

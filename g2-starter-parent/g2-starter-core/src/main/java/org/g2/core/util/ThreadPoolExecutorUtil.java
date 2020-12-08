@@ -120,8 +120,7 @@ public final class ThreadPoolExecutorUtil {
             consumer.accept(data);
             return;
         }
-        List<Map<E, T>> mapList = MapUtils.splitMap(data, 1);
-        runTask(mapList, maxThread, executor, consumer);
+        runTask(data, maxThread, 1, executor, consumer);
     }
 
     private static <T> Future<String> taskRunner(T processData, ThreadPoolTaskExecutor executor, int maxThread, AtomicInteger taskCounter, Consumer<T> consumer) {
