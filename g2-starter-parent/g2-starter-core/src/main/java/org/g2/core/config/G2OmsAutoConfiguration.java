@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 /**
  * @author wenxi.wu@hand-china.com 2020-11-05
  */
@@ -32,11 +34,18 @@ public class G2OmsAutoConfiguration {
     @Bean
     public AsyncTaskExecutor asyncTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setMaxPoolSize(20);
-        executor.setCorePoolSize(10);
-        executor.setKeepAliveSeconds(30);
-        executor.setQueueCapacity(100);
+        // 最大线程数
+        executor.setMaxPoolSize(30);
+        // 核心线程数
+        executor.setCorePoolSize(15);
+        // 除核心线程外的线程存活时间
+        executor.setKeepAliveSeconds(300);
+        // 线程阻塞队列，如果传入值大于0，底层队列使用的是LinkedBlockingQueue,否则默认使用SynchronousQueue
+        executor.setQueueCapacity(99999);
+        // 线程名前缀
         executor.setThreadNamePrefix("async-task");
+        // 设置拒绝策略
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         return executor;
     }
 }
