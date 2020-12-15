@@ -40,7 +40,7 @@ public class EnableSchedulerAutoConfiguration {
     }
 
     @Bean
-    public AsyncTaskExecutor asyncTaskExecutor() {
+    public AsyncTaskExecutor schedulerAsyncTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setMaxPoolSize(30);
         executor.setCorePoolSize(10);

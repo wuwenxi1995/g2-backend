@@ -48,9 +48,11 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     @Override
     public void stopJob(JobInfo jobInfo) {
+        jobInfoRepository.updateByPrimaryKey(jobInfo);
+        jobService.removeJob(jobInfo.getJobId(), jobInfo.getExecutorId());
     }
 
-    @Async("asyncTaskExecutor")
+    @Async("schedulerAsyncTaskExecutor")
     @Override
     public void initJob() {
         JobInfo jobInfo = new JobInfo();

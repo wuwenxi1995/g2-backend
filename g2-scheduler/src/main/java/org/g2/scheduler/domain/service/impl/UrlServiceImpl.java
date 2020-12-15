@@ -30,4 +30,16 @@ public class UrlServiceImpl implements IUrlService {
         }
         return "";
     }
+
+    @Override
+    public String getServiceUrl(Long executorId, Long jobId) {
+        // 默认使用轮询算法
+        ExecutorStrategy executorStrategy = executorStrategyService.getExecutorStrategy(SchedulerConstants.ExecutorStrategy.ROUND);
+        return executorStrategy.execute(executorId, jobId);
+    }
+
+    @Override
+    public String getServiceUrl(ExecutorStrategy executorStrategy, Long executorId, Long jobId) {
+        return executorStrategy.execute(executorId, jobId);
+    }
 }
