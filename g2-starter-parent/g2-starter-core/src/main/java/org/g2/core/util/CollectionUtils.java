@@ -84,7 +84,7 @@ public final class CollectionUtils {
      * @param <T> 泛型
      * @return 并集
      */
-    public static <T> Set<T> union(Set<T> a, Set<T> b) {
+    public static <T> Set<T> union(Collection<T> a, Collection<T> b) {
         Set<T> result = new HashSet<>(a);
         result.addAll(b);
         return result;
@@ -98,7 +98,7 @@ public final class CollectionUtils {
      * @param <T> 泛型
      * @return 交集
      */
-    public static <T> Set<T> intersection(Set<T> a, Set<T> b) {
+    public static <T> Set<T> intersection(Collection<T> a, Collection<T> b) {
         Set<T> result = new HashSet<>(a);
         result.retainAll(b);
         return result;
@@ -112,7 +112,7 @@ public final class CollectionUtils {
      * @param <T>      泛型
      * @return 差集
      */
-    public static <T> Set<T> difference(Set<T> superset, Set<T> subset) {
+    public static <T> Set<T> difference(Collection<T> superset, Collection<T> subset) {
         Set<T> result = new HashSet<>(superset);
         result.removeAll(subset);
         return result;
@@ -126,7 +126,7 @@ public final class CollectionUtils {
      * @param <T> 泛型
      * @return 补集
      */
-    public static <T> Set<T> complement(Set<T> a, Set<T> b) {
+    public static <T> Set<T> complement(Collection<T> a, Collection<T> b) {
         return difference(union(a, b), intersection(a, b));
     }
 }
