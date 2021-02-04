@@ -1,20 +1,17 @@
 package org.g2.starter.redis.config.factory;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.g2.starter.redis.client.RedisShardingClient;
-import org.g2.starter.redis.config.properties.RedisCacheProperties;
+import org.g2.starter.redis.config.properties.RedisProperties;
 import org.g2.starter.redis.config.properties.RedisShardingProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.util.StringUtils;
 
 /**
  * @author wenxi.wu@hand-china.com 2020-11-10
@@ -34,9 +31,13 @@ public class EnableShardingConnectionFactory {
         if (instances.isEmpty()) {
             return redisShardingClient;
         }
-        LettuceClientConfiguration lettuceClientConfiguration = redisShardingProperties.buildLettuceClientConfiguration();
         for (Map.Entry<String, RedisShardingProperties.RedisShardingConnection> shardingConnection : instances.entrySet()) {
             RedisShardingProperties.RedisShardingConnection instance = shardingConnection.getValue();
+            LettuceClientConfiguration lettuceClientConfiguration = redisShardingProperties.buildLettuceClientConfiguration(
+                    redisShardingProperties.getPool().getPoolMaxIdle(),
+                    redisShardingProperties.getPool().getPoolMinIdle(),
+                    redisShardingProperties.getPool().getPoolMaxWaitTime(),
+                    instance.getTimeoutMillis());
 
             LettuceConnectionFactory lettuceConnectionFactory;
             // 创建单节点
@@ -57,7 +58,6 @@ public class EnableShardingConnectionFactory {
 
             StringRedisTemplate redisTemplate = new StringRedisTemplate(lettuceConnectionFactory);
             redisShardingClient.addRedisTemplate(shardingConnection.getKey(), redisTemplate);
-
         }
         return redisShardingClient;
     }

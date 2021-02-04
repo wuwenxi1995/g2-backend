@@ -1,8 +1,12 @@
 package org.g2.starter.redis.config.properties;
 
+import java.time.Duration;
 import java.util.Map;
 
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 
 /**
  * @author wenxi.wu@hand-china.com 2020-11-10
@@ -16,6 +20,11 @@ public class RedisShardingProperties extends RedisProperties {
      * 是否开启多实例
      */
     private boolean enable = false;
+
+    /**
+     * 连接池
+     */
+    private Pool pool;
 
     /**
      * 多实例配置
@@ -39,6 +48,14 @@ public class RedisShardingProperties extends RedisProperties {
         this.instances = instances;
     }
 
+    public Pool getPool() {
+        return pool;
+    }
+
+    public void setPool(Pool pool) {
+        this.pool = pool;
+    }
+
     public static class RedisShardingConnection {
 
         /**
@@ -57,6 +74,11 @@ public class RedisShardingProperties extends RedisProperties {
          * 库
          */
         private int dbIndex;
+
+        /**
+         * 连接超时时间
+         */
+        private long timeoutMillis;
 
         public String getHost() {
             return host;
@@ -88,6 +110,54 @@ public class RedisShardingProperties extends RedisProperties {
 
         public void setDbIndex(int dbIndex) {
             this.dbIndex = dbIndex;
+        }
+
+        public long getTimeoutMillis() {
+            return timeoutMillis;
+        }
+
+        public void setTimeoutMillis(long timeoutMillis) {
+            this.timeoutMillis = timeoutMillis;
+        }
+    }
+
+    public static class Pool {
+        /**
+         * 最大连接数
+         */
+        private int poolMaxIdle = 8;
+        /**
+         * 最小连接数
+         */
+        private int poolMinIdle = 4;
+        /**
+         * 最大连接等待时间
+         */
+        private long poolMaxWaitTime = 30000;
+
+
+        public int getPoolMaxIdle() {
+            return poolMaxIdle;
+        }
+
+        public void setPoolMaxIdle(int poolMaxIdle) {
+            this.poolMaxIdle = poolMaxIdle;
+        }
+
+        public int getPoolMinIdle() {
+            return poolMinIdle;
+        }
+
+        public void setPoolMinIdle(int poolMinIdle) {
+            this.poolMinIdle = poolMinIdle;
+        }
+
+        public long getPoolMaxWaitTime() {
+            return poolMaxWaitTime;
+        }
+
+        public void setPoolMaxWaitTime(long poolMaxWaitTime) {
+            this.poolMaxWaitTime = poolMaxWaitTime;
         }
     }
 }

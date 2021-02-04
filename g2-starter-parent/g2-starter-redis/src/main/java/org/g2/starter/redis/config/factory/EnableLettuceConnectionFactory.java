@@ -20,7 +20,10 @@ public class EnableLettuceConnectionFactory {
 
     @Bean
     public LettuceConnectionFactory customizerLettuceConnectionFactory(RedisCacheProperties redisCacheProperties) {
-        LettuceClientConfiguration lettuceClientConfiguration = redisCacheProperties.buildLettuceClientConfiguration();
+        LettuceClientConfiguration lettuceClientConfiguration = redisCacheProperties.buildLettuceClientConfiguration(redisCacheProperties.getPool().getPoolMaxIdle(),
+                redisCacheProperties.getPool().getPoolMinIdle(),
+                redisCacheProperties.getPool().getPoolMaxWaitTime(),
+                redisCacheProperties.getPool().getTimeoutMillis());
         LettuceConnectionFactory lettuceConnectionFactory;
         // 哨兵模式
         if (redisCacheProperties.getSentinel() != null) {

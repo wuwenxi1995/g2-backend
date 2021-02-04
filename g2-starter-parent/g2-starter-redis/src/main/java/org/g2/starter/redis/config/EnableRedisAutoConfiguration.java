@@ -6,6 +6,7 @@ import org.g2.starter.redis.client.RedisCacheClient;
 import org.g2.starter.redis.config.factory.EnableLettuceConnectionFactory;
 import org.g2.starter.redis.config.factory.EnableShardingConnectionFactory;
 import org.g2.starter.redis.config.properties.RedisCacheProperties;
+import org.g2.starter.redis.config.properties.RedisProperties;
 import org.g2.starter.redis.config.properties.RedisShardingProperties;
 import org.g2.starter.redis.infra.hepler.RedisHelper;
 import org.g2.starter.redis.infra.queue.IQueue;
