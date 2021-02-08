@@ -1,6 +1,6 @@
 package org.g2.scheduler;
 
-import org.g2.autoconfigure.scheduler.annotation.EnableG2Scheduler;
+import org.g2.autoconfigure.scheduler.EnableG2Scheduler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;

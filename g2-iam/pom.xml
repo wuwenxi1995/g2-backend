@@ -52,6 +52,22 @@
         </dependency>
 
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.g2</groupId>
+            <artifactId>g2-starter-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.g2</groupId>
+            <artifactId>g2-boot-message</artifactId>
+        </dependency>
+
+
     </dependencies>
 
 

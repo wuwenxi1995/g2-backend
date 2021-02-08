@@ -1,4 +1,4 @@
-package org.g2.autoconfigure.scheduler.config;
+package org.g2.autoconfigure.scheduler;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.quartz.Scheduler;

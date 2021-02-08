@@ -54,6 +54,7 @@
         <g2.boot.file.version>0.1.0-SNAPSHOT</g2.boot.file.version>
         <g2.boot.message.version>0.1.0-SNAPSHOT</g2.boot.message.version>
         <g2.boot.elasticsearch.version>0.1.0-SNAPSHOT</g2.boot.elasticsearch.version>
+        <g2.boot.message.version>0.1.0-SNAPSHOT</g2.boot.message.version>
         <g2.boot.core.version>0.1.0-SNAPSHOT</g2.boot.core.version>
 
         <!-- other -->
@@ -71,6 +72,7 @@
         <quartz.version>2.3.2</quartz.version>
         <hutool.version>5.4.7</hutool.version>
         <okhttp3.version>4.9.0</okhttp3.version>
+        <junit.version>4.12</junit.version>
     </properties>
 
     <dependencyManagement>
@@ -170,6 +172,12 @@
                 <groupId>org.g2</groupId>
                 <artifactId>g2-boot-elasticsearch</artifactId>
                 <version>${g2.boot.elasticsearch.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-boot-message</artifactId>
+                <version>${g2.boot.message.version}</version>
             </dependency>
 
             <!-- other -->
@@ -288,6 +296,11 @@
                 <version>${okhttp3.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
