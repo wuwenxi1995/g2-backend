@@ -4,6 +4,7 @@ import org.g2.boot.message.entity.MessageSender;
 import org.g2.boot.message.feign.fallback.MessageRemoteServiceImpl;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -23,4 +24,13 @@ public interface MessageRemoteService {
      */
     @PostMapping("/message/relevance")
     ResponseEntity sendMessage(@RequestBody MessageSender messageSender);
+
+    /**
+     * 发送短信
+     *
+     * @param messageSender 消息内容
+     * @return 返回内容
+     */
+    @PostMapping({"/messages/sms/template"})
+    ResponseEntity sendSms(@RequestBody MessageSender messageSender);
 }

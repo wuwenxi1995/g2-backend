@@ -19,8 +19,15 @@ public class MessageRemoteServiceImpl implements FallbackFactory<MessageRemoteSe
     @Override
     public MessageRemoteService create(Throwable throwable) {
         return new MessageRemoteService() {
+
             @Override
             public ResponseEntity sendMessage(MessageSender messageSender) {
+                log.error("");
+                return null;
+            }
+
+            @Override
+            public ResponseEntity sendSms(MessageSender messageSender) {
                 log.error("");
                 return null;
             }
