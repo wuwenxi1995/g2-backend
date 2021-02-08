@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.g2.starter.redis.config.EnableRedisAutoConfiguration
+org.g2.starter.redis.config.EnableRedisAutoConfiguration,\
+org.g2.core.captcha.config.CaptchaAutoConfiguration

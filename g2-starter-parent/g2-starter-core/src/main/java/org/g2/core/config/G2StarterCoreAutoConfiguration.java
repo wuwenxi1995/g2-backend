@@ -3,8 +3,11 @@ package org.g2.core.config;
 import org.g2.core.helper.ApplicationContextHelper;
 import org.g2.core.helper.AsyncTaskHelper;
 import org.g2.core.helper.TransactionalHelper;
+import org.g2.core.user.CustomerType;
+import org.g2.core.user.PlatformType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -14,7 +17,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author wenxi.wu@hand-china.com 2020-11-05
  */
 @Configuration
-public class G2OmsAutoConfiguration {
+public class G2StarterCoreAutoConfiguration {
 
     @Bean
     public ApplicationContextHelper applicationContextHelper() {
@@ -38,8 +41,6 @@ public class G2OmsAutoConfiguration {
         executor.setMaxPoolSize(30);
         // 核心线程数
         executor.setCorePoolSize(15);
-        // 除核心线程外的线程存活时间
-        executor.setKeepAliveSeconds(300);
         // 线程阻塞队列，如果传入值大于0，底层队列使用的是LinkedBlockingQueue,否则默认使用SynchronousQueue
         executor.setQueueCapacity(99999);
         // 线程名前缀
@@ -48,4 +49,17 @@ public class G2OmsAutoConfiguration {
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         return executor;
     }
+
+    @Bean
+    @Scope(value = "singleton")
+    public CustomerType customerType() {
+        return new CustomerType();
+    }
+
+    @Bean
+    @Scope(value = "singleton")
+    public PlatformType platformType() {
+        return new PlatformType();
+    }
+
 }
