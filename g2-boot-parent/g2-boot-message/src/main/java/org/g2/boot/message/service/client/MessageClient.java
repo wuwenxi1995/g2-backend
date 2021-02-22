@@ -1,5 +1,6 @@
 package org.g2.boot.message.service.client;
 
+import org.g2.boot.message.config.properties.MessageClientProperties;
 import org.g2.boot.message.entity.Attachment;
 import org.g2.boot.message.entity.MessageSender;
 import org.g2.boot.message.entity.Msg;
@@ -45,9 +46,49 @@ public class MessageClient implements EmailSender, MessageReceiver, SmsSender, W
     @Autowired
     private RedisCacheClient redisCacheClient;
 
+    @Autowired
+    private MessageClientProperties messageClientProperties;
+
     //
     //                      RelSender接口实现
     // ==================================================================
+
+    @Override
+    public void sendMessage(String messageCode, List<Receiver> receiverList, Map<String, String> args, List<String> typeCodeList, Attachment... attachments) {
+        if (attachments == null) {
+            attachments = new Attachment[0];
+        }
+        MessageSender messageSender = new MessageSender()
+                .setMessageCode(messageCode)
+                .setLang(messageClientProperties.getDefaultLang())
+                .setReceiverAddressList(receiverList)
+                .setArgs(args)
+                .setTypeCodeList(typeCodeList);
+        if (attachments.length > 0) {
+            messageSender.setAttachmentList(Arrays.asList(attachments));
+        }
+        if (this.async) {
+            messageAsyncService.sendMessage(messageSender);
+            return;
+        }
+        messageRemoteService.sendMessage(messageSender);
+    }
+
+    @Override
+    public void sendMessage(String messageCode, List<Receiver> receiverList, Map<String, String> args, Attachment... attachments) {
+        if (attachments == null) {
+            attachments = new Attachment[0];
+        }
+        MessageSender messageSender = new MessageSender().setMessageCode(messageCode).setLang(messageClientProperties.getDefaultLang()).setReceiverAddressList(receiverList).setArgs(args).setTypeCodeList(null);
+        if (attachments.length > 0) {
+            messageSender.setAttachmentList(Arrays.asList(attachments));
+        }
+        if (this.async) {
+            messageAsyncService.sendMessage(messageSender);
+            return;
+        }
+        messageRemoteService.sendMessage(messageSender);
+    }
 
     @Override
     public void sendMessage(String messageCode, String lang, List<Receiver> receiverList, Map<String, String> args, List<String> typeCodeList, Attachment... attachments) {
@@ -65,6 +106,21 @@ public class MessageClient implements EmailSender, MessageReceiver, SmsSender, W
         messageRemoteService.sendMessage(messageSender);
     }
 
+    @Override
+    public void sendMessage(String messageCode, String lang, List<Receiver> receiverList, Map<String, String> args, Attachment... attachments) {
+        if (attachments == null) {
+            attachments = new Attachment[0];
+        }
+        MessageSender messageSender = new MessageSender().setMessageCode(messageCode).setLang(lang).setReceiverAddressList(receiverList).setArgs(args).setTypeCodeList(null);
+        if (attachments.length > 0) {
+            messageSender.setAttachmentList(Arrays.asList(attachments));
+        }
+        if (this.async) {
+            messageAsyncService.sendMessage(messageSender);
+            return;
+        }
+        messageRemoteService.sendMessage(messageSender);
+    }
 
     //
     //                        Publisher接口实现

@@ -20,9 +20,17 @@ public interface RelSender {
      * @param typeCodeList 消息类型
      * @param attachments  附件
      */
-    default void sendMessage(String messageCode, List<Receiver> receiverList, Map<String, String> args, List<String> typeCodeList, Attachment... attachments) {
-        this.sendMessage(messageCode, "zh_CN", receiverList, args, typeCodeList, attachments);
-    }
+    void sendMessage(String messageCode, List<Receiver> receiverList, Map<String, String> args, List<String> typeCodeList, Attachment... attachments);
+
+    /**
+     * 发送消息
+     *
+     * @param messageCode  消息模版
+     * @param receiverList 消息接收人
+     * @param args         消息参数
+     * @param attachments  附件
+     */
+    void sendMessage(String messageCode, List<Receiver> receiverList, Map<String, String> args, Attachment... attachments);
 
     /**
      * 发送消息
@@ -35,4 +43,15 @@ public interface RelSender {
      * @param attachments  附件
      */
     void sendMessage(String messageCode, String lang, List<Receiver> receiverList, Map<String, String> args, List<String> typeCodeList, Attachment... attachments);
+
+    /**
+     * 发送消息
+     *
+     * @param messageCode  消息模版
+     * @param lang         语言类型
+     * @param receiverList 消息接收人
+     * @param args         消息参数
+     * @param attachments  附件
+     */
+    void sendMessage(String messageCode, String lang, List<Receiver> receiverList, Map<String, String> args, Attachment... attachments);
 }

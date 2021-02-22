@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.g2.boot.message.config.G2MessageBootAutoConfiguration
+org.g2.boot.message.config.MessageClientConfiguration

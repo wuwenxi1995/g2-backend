@@ -2,10 +2,10 @@ package org.g2.boot.message.service.async;
 
 import org.g2.boot.message.entity.MessageSender;
 import org.g2.boot.message.feign.MessageRemoteService;
+import org.g2.core.helper.AsyncTaskHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 
 /**
  * @author wenxi.wu@hand-chian.com 2021-02-08
@@ -17,9 +17,11 @@ public class MessageAsyncService {
     @Autowired
     private MessageRemoteService messageRemoteService;
 
-    @Async("messageAsyncTask")
+    @Autowired
+    private AsyncTaskHelper asyncTaskHelper;
+
     public void sendMessage(MessageSender messageSender) {
-        messageRemoteService.sendMessage(messageSender);
+        asyncTaskHelper.operation(() -> messageRemoteService.sendMessage(messageSender));
         if (log.isDebugEnabled()) {
             log.debug("send message async");
         }
