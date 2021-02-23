@@ -21,7 +21,6 @@
         <dependency>
             <groupId>org.g2</groupId>
             <artifactId>g2-starter-core</artifactId>
-            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -39,6 +38,11 @@
             <groupId>org.jodd</groupId>
             <artifactId>jodd-bean</artifactId>
             <version>5.0.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
         </dependency>
     </dependencies>
 

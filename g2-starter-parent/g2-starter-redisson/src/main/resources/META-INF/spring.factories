@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.g2.starter.redisson.RedissonAutoConfiguration
+org.g2.starter.redisson.autoconfigure.RedissonAutoConfiguration
