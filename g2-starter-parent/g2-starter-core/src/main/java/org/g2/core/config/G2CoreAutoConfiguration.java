@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author wenxi.wu@hand-china.com 2020-11-05
  */
 @Configuration
-public class G2StarterCoreAutoConfiguration {
+public class G2CoreAutoConfiguration {
 
     @Bean
     public ApplicationContextHelper applicationContextHelper() {
@@ -44,7 +44,7 @@ public class G2StarterCoreAutoConfiguration {
         // 线程阻塞队列，如果传入值大于0，底层队列使用的是LinkedBlockingQueue,否则默认使用SynchronousQueue
         executor.setQueueCapacity(99999);
         // 线程名前缀
-        executor.setThreadNamePrefix("async-task");
+        executor.setThreadNamePrefix("async-task-");
         // 设置拒绝策略
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         return executor;
