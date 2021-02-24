@@ -62,6 +62,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.g2</groupId>
+            <artifactId>g2-starter-mybatis-helper</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
         </dependency>

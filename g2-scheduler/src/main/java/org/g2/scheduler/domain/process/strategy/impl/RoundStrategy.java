@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RoundStrategy extends AbstractExecutorStrategy {
 
-    private List<String> addressList;
+    private ThreadLocal<Integer> threadLocalAddressSize = new ThreadLocal<>();
 
     private final RedisCacheClient redisCacheClient;
     private final ExecutorRepository executorRepository;
@@ -37,21 +37,26 @@ public class RoundStrategy extends AbstractExecutorStrategy {
     @Override
     public String execute(Long executorId, Long jobId) {
         Executor executor = executorRepository.selectByPrimaryKey(executorId);
-        this.addressList = this.usableUrl(executor);
+        List<String> addressList = this.usableUrl(executor);
         if (CollectionUtils.isEmpty(addressList)) {
             return "";
         }
+        threadLocalAddressSize.set(addressList.size());
 
         String address = "";
         int count = 0;
-        while (StringUtils.isBlank(address) && count++ < RETRY) {
-            // 获取执行器列表下标
-            Integer index = incrementAndGetModulo(executorId, jobId);
-            address = addressList.get(index);
-            // 判断执行器是否可用
-            if (usable(address, executorId, jobId)) {
-                break;
+        try {
+            while (StringUtils.isBlank(address) && count++ < RETRY) {
+                // 获取执行器列表下标
+                Integer index = incrementAndGetModulo(executorId, jobId);
+                address = addressList.get(index);
+                // 判断执行器是否可用
+                if (usable(address, executorId, jobId)) {
+                    break;
+                }
             }
+        } finally {
+            threadLocalAddressSize.remove();
         }
 
         if (count >= RETRY) {
@@ -73,7 +78,7 @@ public class RoundStrategy extends AbstractExecutorStrategy {
             if (current == Integer.MAX_VALUE) {
                 next = 0;
             } else {
-                next = (current + 1) % addressList.size();
+                next = (current + 1) % threadLocalAddressSize.get();
             }
             if (refreshCache(executorId, jobId, current, next)) {
                 return next;
