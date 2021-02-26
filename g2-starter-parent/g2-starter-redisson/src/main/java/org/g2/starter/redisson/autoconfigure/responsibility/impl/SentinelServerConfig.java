@@ -1,12 +1,11 @@
 package org.g2.starter.redisson.autoconfigure.responsibility.impl;
 
 import org.g2.core.base.BaseConstants;
-import org.g2.starter.redisson.autoconfigure.RedissonAutoConfiguration;
+import org.g2.core.handler.InvocationHandler;
 import org.g2.starter.redisson.autoconfigure.responsibility.AbstractServerConfig;
 import org.g2.starter.redisson.config.LockConfigureProperties;
 import org.g2.starter.redisson.infra.constants.LockConstants;
 import org.g2.starter.redisson.infra.enums.ServerPattern;
-import org.redisson.config.BaseMasterSlaveServersConfig;
 import org.redisson.config.Config;
 import org.redisson.config.SentinelServersConfig;
 
@@ -25,7 +24,7 @@ public class SentinelServerConfig extends AbstractServerConfig {
     }
 
     @Override
-    public Object invoke(RedissonAutoConfiguration.RedissonClientAutoConfigureHandler handler) throws URISyntaxException {
+    public Object invoke(InvocationHandler handler) throws Exception {
         String pattern = properties.getPattern();
         if (!ServerPattern.SENTINEL.getPattern().equals(pattern)) {
             return handler.proceed();

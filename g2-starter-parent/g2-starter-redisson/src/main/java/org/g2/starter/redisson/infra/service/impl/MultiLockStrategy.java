@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
- * 分布式锁--多重锁
+ * 分布式锁--联锁
  *
  * @author wenxi.wu@hand-chian.com 2021-02-22
  */

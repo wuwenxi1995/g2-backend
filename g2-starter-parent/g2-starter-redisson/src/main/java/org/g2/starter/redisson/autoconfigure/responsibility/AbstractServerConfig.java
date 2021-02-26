@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * @author wenxi.wu@hand-chian.com 2021-02-22
  */
-public abstract class AbstractServerConfig implements ServerConfig {
+public abstract class AbstractServerConfig<T extends BaseMasterSlaveServersConfig, E extends LockConfigureProperties.BaseConfig> implements ServerConfig<T, E> {
 
     public Config config;
     protected LockConfigureProperties properties;
@@ -35,22 +35,22 @@ public abstract class AbstractServerConfig implements ServerConfig {
     }
 
     @Override
-    public void build(BaseMasterSlaveServersConfig config, LockConfigureProperties.BaseConfig baseConfig) {
+    public void build(T config, E baseConfig) {
         ReadMode readMode = readMode(baseConfig.getReadMode());
         Assert.notNull(readMode, "Unknown load balancing mode type for read operations");
         config.setReadMode(readMode);
-        SubscriptionMode subscriptionMode = subscriptionMode(baseConfig.getSubMode());
+        SubscriptionMode subscriptionMode = subscriptionMode(baseConfig.getSubscriptionMode());
         Assert.notNull(subscriptionMode, "The type of load balancing pattern for an unknown subscription operation");
         config.setSubscriptionMode(subscriptionMode);
         LoadBalancer loadBalancer = loadBalancer(baseConfig);
         Assert.notNull(loadBalancer, "Unknown type of load balancing algorithm");
         config.setLoadBalancer(loadBalancer);
-        config.setSubscriptionConnectionMinimumIdleSize(baseConfig.getSubConnMinIdleSize());
-        config.setSubscriptionConnectionPoolSize(baseConfig.getSubConnPoolSize());
-        config.setSlaveConnectionMinimumIdleSize(baseConfig.getSlaveConnMinIdleSize());
-        config.setSlaveConnectionPoolSize(baseConfig.getSlaveConnPoolSize());
-        config.setMasterConnectionMinimumIdleSize(baseConfig.getMasterConnMinIdleSize());
-        config.setMasterConnectionPoolSize(baseConfig.getMasterConnPoolSize());
+        config.setSubscriptionConnectionMinimumIdleSize(baseConfig.getSubscriptionConnectionMinimumIdleSize());
+        config.setSubscriptionConnectionPoolSize(baseConfig.getSubscriptionConnectionPoolSize());
+        config.setSlaveConnectionMinimumIdleSize(baseConfig.getSlaveConnectionMinimumIdleSize());
+        config.setSlaveConnectionPoolSize(baseConfig.getSlaveConnectionPoolSize());
+        config.setMasterConnectionMinimumIdleSize(baseConfig.getMasterConnectionMinimumIdleSize());
+        config.setMasterConnectionPoolSize(baseConfig.getMasterConnectionPoolSize());
         config.setIdleConnectionTimeout((int) baseConfig.getIdleConnectionTimeout());
         config.setConnectTimeout((int) baseConfig.getConnectTimeout());
         config.setTimeout((int) baseConfig.getTimeout());
@@ -59,13 +59,13 @@ public abstract class AbstractServerConfig implements ServerConfig {
         if (StringUtils.isNotBlank(baseConfig.getPassword())) {
             config.setPassword(baseConfig.getPassword());
         }
-        config.setSubscriptionsPerConnection(baseConfig.getSubPerConn());
+        config.setSubscriptionsPerConnection(baseConfig.getSubscriptionsPerConnection());
+        config.setClientName(properties.getClientName());
     }
 
     @Override
-    public void setLockSslConfig(BaseMasterSlaveServersConfig config) throws URISyntaxException {
+    public void setLockSslConfig(T config) throws URISyntaxException {
         if (properties.isSslEnableEndpointIdentification()) {
-            config.setClientName(properties.getClientName());
             config.setSslEnableEndpointIdentification(properties.isSslEnableEndpointIdentification());
             if (properties.getSslKeystore() != null) {
                 config.setSslKeystore(new URI(properties.getSslKeystore()));

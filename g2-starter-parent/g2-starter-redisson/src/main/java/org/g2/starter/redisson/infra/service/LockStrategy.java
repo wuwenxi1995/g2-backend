@@ -5,6 +5,8 @@ import org.g2.starter.redisson.infra.enums.LockType;
 import org.redisson.api.RLock;
 
 /**
+ *  查考redisson文档 https://github.com/redisson/redisson/wiki/8.-distributed-locks-and-synchronizers
+ *
  * @author wenxi.wu@hand-chian.com 2021-02-22
  */
 public abstract class LockStrategy {

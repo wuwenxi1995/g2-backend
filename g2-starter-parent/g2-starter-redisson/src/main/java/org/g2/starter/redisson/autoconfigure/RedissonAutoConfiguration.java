@@ -1,6 +1,7 @@
 package org.g2.starter.redisson.autoconfigure;
 
 import org.g2.core.exception.CommonException;
+import org.g2.core.handler.InvocationHandler;
 import org.g2.starter.redisson.autoconfigure.responsibility.ServerConfig;
 import org.g2.starter.redisson.autoconfigure.responsibility.impl.ClusterServerConfig;
 import org.g2.starter.redisson.autoconfigure.responsibility.impl.MasterSlaveServerConfig;
@@ -8,6 +9,7 @@ import org.g2.starter.redisson.autoconfigure.responsibility.impl.ReplicatedServe
 import org.g2.starter.redisson.autoconfigure.responsibility.impl.SentinelServerConfig;
 import org.g2.starter.redisson.autoconfigure.responsibility.impl.SingleServerConfig;
 import org.g2.starter.redisson.config.LockConfigureProperties;
+import org.g2.starter.redisson.infra.constants.LockConstants;
 import org.g2.starter.redisson.infra.service.impl.FairLockStrategy;
 import org.g2.starter.redisson.infra.service.impl.MultiLockStrategy;
 import org.g2.starter.redisson.infra.service.impl.ReadLockStrategy;
@@ -23,7 +25,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class RedissonAutoConfiguration {
     )
     public RedissonClient redissonClient(LockConfigureProperties properties) throws Exception {
         Config config = new Config();
+        config.setTransportMode(LockConstants.TransportMode.getTransportMode(properties.getTransportMode()));
         config.setThreads(properties.getThreads());
         config.setNettyThreads(properties.getNettyThreads());
         config.setKeepPubSubOrder(properties.isKeepPubSubOrder());
@@ -90,7 +92,7 @@ public class RedissonAutoConfiguration {
     /**
      * 责任链 -- 构建redisson客户端其他配置信息
      */
-    public static class RedissonClientAutoConfigureHandler {
+    public static class RedissonClientAutoConfigureHandler implements InvocationHandler {
         private LockConfigureProperties properties;
         private Config config;
 
@@ -112,7 +114,8 @@ public class RedissonAutoConfiguration {
             serverConfigList.add(new ReplicatedServerConfig(config, properties));
         }
 
-        public Object proceed() throws URISyntaxException {
+        @Override
+        public Object proceed() throws Exception {
             if (currentHandlerIndex == serverConfigList.size() - 1) {
                 throw new CommonException(String.format("redisson pattern [%s] is not found", properties.getPattern()));
             }

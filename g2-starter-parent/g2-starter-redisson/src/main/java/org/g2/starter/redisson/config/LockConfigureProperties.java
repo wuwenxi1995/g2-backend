@@ -4,11 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.g2.starter.redisson.infra.constants.LockConstants;
 import org.g2.starter.redisson.infra.enums.ServerPattern;
+import org.redisson.config.TransportMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 配置参考redisson官方文档 https://github.com/redisson/redisson/wiki/2.-Configuration
+ *
  * @author wenxi.wu@hand-chian.com 2021-02-22
  */
 @ConfigurationProperties(prefix = "g2.lock")
@@ -23,19 +26,62 @@ public class LockConfigureProperties {
      */
     private String pattern;
     private String clientName;
+    /**
+     * 所有redis节点共享线程数量，默认值: 当前处理核数量 * 2
+     */
     private int threads;
+    /**
+     * 一个Redisson实例中创建的共享线程池里保存的线程数量，默认值：当前处理核数量 * 2
+     */
     private int nettyThreads;
+    /**
+     * 默认值：NIO
+     * 可选参数：
+     * NIO,
+     * EPOLL - 需要依赖里有netty-transport-native-epoll包（Linux）
+     * KQUEUE - 需要依赖里有 netty-transport-native-kqueue包（macOS）
+     */
+    private String transportMode;
+    /**
+     * 监控锁的看门狗超时，该参数只适用于分布式锁的加锁请求中未明确使用leaseTimeout参数的情况，单位毫秒
+     */
     private long lockWatchdogTimeout;
+    /**
+     * 默认true，通过该参数来修改是否按订阅发布消息的接收顺序出来消息，如果选否将对消息实行并行处理，该参数只适用于订阅发布消息的情况
+     */
     private boolean keepPubSubOrder;
+    /**
+     * 默认false，是否启用脚本缓存
+     */
     private boolean useScriptCache;
 
+    /**
+     * 开启SSL终端识别能力 默认开启
+     */
     private boolean sslEnableEndpointIdentification;
+    /**
+     * 确定采用哪种方式（JDK或OPENSSL）来实现SSL连接。默认采用JDK
+     */
     private String sslProvider;
+    /**
+     * 指定SSL信任证书库的路径
+     */
     private String sslTruststore;
+    /**
+     * 指定SSL信任证书库的密码
+     */
     private String sslTruststorePassword;
+    /**
+     * 指定SSL钥匙库的路径
+     */
     private String sslKeystore;
+    /**
+     * 指定SSL钥匙库的密码
+     */
     private String sslKeystorePassword;
-
+    /**
+     * 基本时间配置信息
+     */
     private Property property;
     /**
      * 单节点配置
@@ -60,6 +106,7 @@ public class LockConfigureProperties {
 
     public LockConfigureProperties() {
         this.pattern = ServerPattern.SINGLE.getPattern();
+        this.transportMode = LockConstants.TransportMode.NIO;
         this.clientName = LockConstants.LOCK_CLIENT_NAME;
         this.sslEnableEndpointIdentification = true;
         this.sslProvider = LockConstants.JDK;
@@ -76,7 +123,7 @@ public class LockConfigureProperties {
         private long leaseTime = 60L;
         private TimeUnit timeUnit;
 
-        Property() {
+        private Property() {
             timeUnit = TimeUnit.SECONDS;
         }
 
@@ -147,10 +194,13 @@ public class LockConfigureProperties {
         private int subPerConn = 5;
     }
 
+    /**
+     * 集群模式
+     */
     @Getter
     @Setter
     public static class ClusterConfig extends BaseConfig {
-        // 集群节点地址
+        // 集群节点地址，可以通过host:port的格式来添加Redis集群节点的地址
         private String nodeAddresses;
         // 集群扫描间隔时间
         private long scanInterval = 1000;
@@ -186,6 +236,9 @@ public class LockConfigureProperties {
         private int database = 0;
     }
 
+    /**
+     * 云托管模式适用于任何由云计算运营商提供的Redis云服务
+     */
     @Getter
     @Setter
     public static class ReplicatedConfig extends BaseConfig {
@@ -202,10 +255,11 @@ public class LockConfigureProperties {
     @Getter
     @Setter
     public static class BaseConfig {
-        // 读取操作的负载均衡模式
+        // 读取操作的负载均衡模式 默认值： SLAVE（只在从服务节点里读取）
+        // 在从服务节点里读取的数据说明已经至少有两个节点保存了该数据，确保了数据的高可用性
         private String readMode = LockConstants.SubReadMode.SLAVE;
-        // 订阅操作的负载均衡模式
-        private String subMode = LockConstants.SubReadMode.SLAVE;
+        // 订阅操作的负载均衡模式 默认值：SLAVE（只在从服务节点里订阅）
+        private String subscriptionMode = LockConstants.SubReadMode.SLAVE;
         // 负载均衡算法类的选择，默认：轮询调度算法
         private String loadBalancer = LockConstants.LoadBalancer.ROUND_ROBIN_LOAD_BALANCER;
         // 默认权重值，当负载均衡算法是权重轮询调度算法时该属性有效
@@ -213,17 +267,17 @@ public class LockConfigureProperties {
         // 权重值设置，格式为 host1:port1;host2:port2 当负载均衡算法是权重轮询调度算法时该属性有效
         private String weightMaps;
         // 从节点发布和订阅连接的最小空闲连接数
-        private int subConnMinIdleSize = 1;
+        private int subscriptionConnectionMinimumIdleSize = 1;
         // 从节点发布和订阅连接池大小
-        private int subConnPoolSize = 50;
+        private int subscriptionConnectionPoolSize = 50;
         // 从节点最小空闲连接数
-        private int slaveConnMinIdleSize = 32;
+        private int slaveConnectionMinimumIdleSize = 32;
         // 从节点连接池大小
-        private int slaveConnPoolSize = 64;
+        private int slaveConnectionPoolSize = 64;
         // 主节点最小空闲连接数
-        private int masterConnMinIdleSize = 32;
+        private int masterConnectionMinimumIdleSize = 32;
         // 主节点连接池大小
-        private int masterConnPoolSize = 64;
+        private int masterConnectionPoolSize = 64;
         // 连接空闲超时，单位：毫秒
         private long idleConnectionTimeout = 10000;
         // 连接超时，单位：毫秒
@@ -237,6 +291,6 @@ public class LockConfigureProperties {
         // 密码，用于节点身份验证的密码
         private String password;
         // 单个连接最大订阅数量
-        private int subPerConn = 5;
+        private int subscriptionsPerConnection = 5;
     }
 }

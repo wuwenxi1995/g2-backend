@@ -1,5 +1,7 @@
 package org.g2.starter.redisson.infra.constants;
 
+import org.redisson.config.TransportMode;
+
 /**
  * @author wenxi.wu@hand-chian.com 2021-02-22
  */
@@ -19,6 +21,29 @@ public interface LockConstants {
         String RANDOM_LOAD_BALANCER = "RandomLoadBalancer";
         String ROUND_ROBIN_LOAD_BALANCER = "RoundRobinLoadBalancer";
         String WEIGHTED_ROUND_ROBIN_BALANCER = "WeightedRoundRobinBalancer";
+    }
+
+    interface TransportMode {
+        String NIO = "NIO";
+        String EPOLL = "EPOLL";
+        String KQUEUE = "KQUEUE";
+
+        /**
+         * 获取传输模式
+         *
+         * @param mode 传输模式
+         * @return TransportMode
+         */
+        static org.redisson.config.TransportMode getTransportMode(String mode) {
+            switch (mode) {
+                case EPOLL:
+                    return org.redisson.config.TransportMode.EPOLL;
+                case KQUEUE:
+                    return org.redisson.config.TransportMode.KQUEUE;
+                default:
+                    return org.redisson.config.TransportMode.NIO;
+            }
+        }
     }
 
 }

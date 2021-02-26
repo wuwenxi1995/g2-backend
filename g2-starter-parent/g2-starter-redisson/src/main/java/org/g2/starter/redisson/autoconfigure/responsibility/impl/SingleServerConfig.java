@@ -2,7 +2,7 @@ package org.g2.starter.redisson.autoconfigure.responsibility.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.g2.core.base.BaseConstants;
-import org.g2.starter.redisson.autoconfigure.RedissonAutoConfiguration;
+import org.g2.core.handler.InvocationHandler;
 import org.g2.starter.redisson.autoconfigure.responsibility.AbstractServerConfig;
 import org.g2.starter.redisson.config.LockConfigureProperties;
 import org.g2.starter.redisson.infra.constants.LockConstants;
@@ -11,7 +11,6 @@ import org.redisson.config.Config;
 import org.redisson.config.SslProvider;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * @author wenxi.wu@hand-chian.com 2021-02-22
@@ -23,7 +22,7 @@ public class SingleServerConfig extends AbstractServerConfig {
     }
 
     @Override
-    public Object invoke(RedissonAutoConfiguration.RedissonClientAutoConfigureHandler handler) throws URISyntaxException {
+    public Object invoke(InvocationHandler handler) throws Exception {
         String pattern = properties.getPattern();
         if (!ServerPattern.SINGLE.getPattern().equals(pattern)) {
             return handler.proceed();
