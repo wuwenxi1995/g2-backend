@@ -1,6 +1,7 @@
 package org.g2.starter.redisson.autoconfigure;
 
 import org.g2.core.exception.CommonException;
+import org.g2.core.handler.MethodInvocationHandler;
 import org.g2.core.handler.impl.ChainInvocationHandler;
 import org.g2.starter.redisson.autoconfigure.responsibility.ServerConfig;
 import org.g2.starter.redisson.autoconfigure.responsibility.impl.ClusterServerConfig;
@@ -92,14 +93,14 @@ public class RedissonAutoConfiguration {
     /**
      * 责任链 -- 构建redisson客户端其他配置信息
      */
-    private static class RedissonClientAutoConfigureHandler extends ChainInvocationHandler {
+    private static class RedissonClientAutoConfigureHandler extends ChainInvocationHandler<Config> {
 
-        private RedissonClientAutoConfigureHandler(List<ServerConfig> serverConfigs) {
-            super(serverConfigs);
+        private RedissonClientAutoConfigureHandler(List<? extends MethodInvocationHandler> methodInvocationHandlerList) {
+            super(methodInvocationHandlerList);
         }
 
         @Override
-        public Object proceed() {
+        public Config proceed() {
             try {
                 return super.proceed();
             } catch (Exception e) {
@@ -108,18 +109,18 @@ public class RedissonAutoConfiguration {
         }
 
         @Override
-        protected Object invoke() {
+        protected Config invoke() {
             throw new CommonException("No suitable handler found");
         }
     }
 
-    private List<ServerConfig> initChain(Config config, LockConfigureProperties properties) {
-        List<ServerConfig> serverConfigList = new ArrayList<>();
-        serverConfigList.add(new SingleServerConfig(config, properties));
-        serverConfigList.add(new MasterSlaveServerConfig(config, properties));
-        serverConfigList.add(new SentinelServerConfig(config, properties));
-        serverConfigList.add(new ClusterServerConfig(config, properties));
-        serverConfigList.add(new ReplicatedServerConfig(config, properties));
-        return serverConfigList;
+    private List<MethodInvocationHandler> initChain(Config config, LockConfigureProperties properties) {
+        List<MethodInvocationHandler> methodInvocationHandlerList = new ArrayList<>();
+        methodInvocationHandlerList.add(new SingleServerConfig(config, properties));
+        methodInvocationHandlerList.add(new MasterSlaveServerConfig(config, properties));
+        methodInvocationHandlerList.add(new SentinelServerConfig(config, properties));
+        methodInvocationHandlerList.add(new ClusterServerConfig(config, properties));
+        methodInvocationHandlerList.add(new ReplicatedServerConfig(config, properties));
+        return methodInvocationHandlerList;
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author wenxi.wu@hand-chian.com 2021-02-26
  */
-public abstract class ChainInvocationHandler implements InvocationHandler {
+public abstract class ChainInvocationHandler<T> implements InvocationHandler<T> {
 
     private int currentHandlerIndex = -1;
     private List<?> methodInvocationHandlerList;
@@ -17,16 +17,17 @@ public abstract class ChainInvocationHandler implements InvocationHandler {
         this.methodInvocationHandlerList = methodInvocationHandlerList;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Object proceed() throws Exception {
+    public T proceed() throws Exception {
         if (currentHandlerIndex == methodInvocationHandlerList.size() - 1) {
             return this.invoke();
         }
         Object handler = methodInvocationHandlerList.get(++currentHandlerIndex);
-        return ((MethodInvocationHandler) handler).invoke(this);
+        return ((MethodInvocationHandler<T>) handler).invoke(this);
     }
 
-    protected Object invoke(){
+    protected T invoke() {
         return null;
     }
 }

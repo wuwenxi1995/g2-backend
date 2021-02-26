@@ -20,9 +20,9 @@ public class SentinelConfiguration extends RedisConfiguration {
     }
 
     @Override
-    public Object invoke(InvocationHandler invocationHandler) throws Exception {
+    public LettuceConnectionFactory invoke(InvocationHandler invocationHandler) throws Exception {
         if (!RedisServerPattern.SENTINEL.getPattern().equals(redisCacheProperties.getPattern())) {
-            return invocationHandler.proceed();
+            return (LettuceConnectionFactory) invocationHandler.proceed();
         }
         // org.springframework.util.StringUtils 以 ","分割字符串
         Set<String> sentinels = StringUtils.commaDelimitedListToSet(redisCacheProperties.getSentinel().getNodes());

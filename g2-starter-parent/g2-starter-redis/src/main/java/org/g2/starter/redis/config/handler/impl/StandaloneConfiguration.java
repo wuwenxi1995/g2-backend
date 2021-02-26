@@ -17,9 +17,9 @@ public class StandaloneConfiguration extends RedisConfiguration {
     }
 
     @Override
-    public Object invoke(InvocationHandler invocationHandler) throws Exception {
+    public LettuceConnectionFactory invoke(InvocationHandler invocationHandler) throws Exception {
         if (!RedisServerPattern.STANDALONE.getPattern().equals(redisCacheProperties.getPattern())) {
-            return invocationHandler.proceed();
+            return (LettuceConnectionFactory) invocationHandler.proceed();
         }
         // 创建单节点
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
