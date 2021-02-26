@@ -1,13 +1,13 @@
 package org.g2.starter.redisson.autoconfigure.responsibility;
 
-import org.g2.core.handler.InvocationHandler;
+import org.g2.core.handler.MethodInvocationHandler;
 
 import java.net.URISyntaxException;
 
 /**
  * @author wenxi.wu@hand-chian.com 2021-02-23
  */
-public interface ServerConfig<T, E> {
+public interface ServerConfig<T, E> extends MethodInvocationHandler {
 
     /**
      * 构建集群配置
@@ -26,13 +26,4 @@ public interface ServerConfig<T, E> {
      */
     default void setLockSslConfig(T config) throws URISyntaxException {
     }
-
-    /**
-     * 构建redisson客户端其他配置信息
-     *
-     * @param handler handler
-     * @return object
-     * @throws Exception 异常信息
-     */
-    Object invoke(InvocationHandler handler) throws Exception;
 }

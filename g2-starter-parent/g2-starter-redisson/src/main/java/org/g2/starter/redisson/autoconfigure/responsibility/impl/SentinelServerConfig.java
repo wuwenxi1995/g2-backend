@@ -9,7 +9,6 @@ import org.g2.starter.redisson.infra.enums.ServerPattern;
 import org.redisson.config.Config;
 import org.redisson.config.SentinelServersConfig;
 
-import java.net.URISyntaxException;
 import java.util.Arrays;
 
 /**

@@ -2,6 +2,7 @@ package org.g2.starter.redisson.autoconfigure;
 
 import org.g2.core.exception.CommonException;
 import org.g2.core.handler.InvocationHandler;
+import org.g2.core.handler.impl.ChainInvocationHandler;
 import org.g2.starter.redisson.autoconfigure.responsibility.ServerConfig;
 import org.g2.starter.redisson.autoconfigure.responsibility.impl.ClusterServerConfig;
 import org.g2.starter.redisson.autoconfigure.responsibility.impl.MasterSlaveServerConfig;
@@ -25,6 +26,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,11 +94,10 @@ public class RedissonAutoConfiguration {
     /**
      * 责任链 -- 构建redisson客户端其他配置信息
      */
-    public static class RedissonClientAutoConfigureHandler implements InvocationHandler {
+    private static class RedissonClientAutoConfigureHandler extends ChainInvocationHandler {
         private LockConfigureProperties properties;
         private Config config;
 
-        private int currentHandlerIndex = -1;
         private List<ServerConfig> serverConfigList;
 
         private RedissonClientAutoConfigureHandler(Config config, LockConfigureProperties properties) {
@@ -112,15 +113,12 @@ public class RedissonAutoConfiguration {
             serverConfigList.add(new SentinelServerConfig(config, properties));
             serverConfigList.add(new ClusterServerConfig(config, properties));
             serverConfigList.add(new ReplicatedServerConfig(config, properties));
+            setMethodInvocationHandlerList();
         }
 
         @Override
-        public Object proceed() throws Exception {
-            if (currentHandlerIndex == serverConfigList.size() - 1) {
-                throw new CommonException(String.format("redisson pattern [%s] is not found", properties.getPattern()));
-            }
-            ServerConfig serverConfig = serverConfigList.get(++currentHandlerIndex);
-            return serverConfig.invoke(this);
+        protected void setMethodInvocationHandlerList() {
+            this.methodInvocationHandlerList = serverConfigList;
         }
     }
 }

@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * @author wenxi.wu@hand-chian.com 2021-02-22
  */
-public abstract class AbstractServerConfig<T extends BaseMasterSlaveServersConfig, E extends LockConfigureProperties.BaseConfig> implements ServerConfig<T, E> {
+public abstract class AbstractServerConfig implements ServerConfig<BaseMasterSlaveServersConfig, LockConfigureProperties.BaseConfig> {
 
     public Config config;
     protected LockConfigureProperties properties;
@@ -35,7 +35,7 @@ public abstract class AbstractServerConfig<T extends BaseMasterSlaveServersConfi
     }
 
     @Override
-    public void build(T config, E baseConfig) {
+    public void build(BaseMasterSlaveServersConfig config, LockConfigureProperties.BaseConfig baseConfig) {
         ReadMode readMode = readMode(baseConfig.getReadMode());
         Assert.notNull(readMode, "Unknown load balancing mode type for read operations");
         config.setReadMode(readMode);
@@ -64,7 +64,7 @@ public abstract class AbstractServerConfig<T extends BaseMasterSlaveServersConfi
     }
 
     @Override
-    public void setLockSslConfig(T config) throws URISyntaxException {
+    public void setLockSslConfig(BaseMasterSlaveServersConfig config) throws URISyntaxException {
         if (properties.isSslEnableEndpointIdentification()) {
             config.setSslEnableEndpointIdentification(properties.isSslEnableEndpointIdentification());
             if (properties.getSslKeystore() != null) {

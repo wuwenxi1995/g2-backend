@@ -15,7 +15,7 @@ import java.util.Arrays;
  *
  * @author wenxi.wu@hand-chian.com 2021-02-22
  */
-public class ClusterServerConfig extends AbstractServerConfig<ClusterServersConfig, LockConfigureProperties.ClusterConfig> {
+public class ClusterServerConfig extends AbstractServerConfig {
 
     public ClusterServerConfig(Config config, LockConfigureProperties properties) {
         super(config, properties);
