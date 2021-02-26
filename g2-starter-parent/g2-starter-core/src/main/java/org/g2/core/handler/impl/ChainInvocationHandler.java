@@ -21,8 +21,8 @@ public abstract class ChainInvocationHandler implements InvocationHandler {
         this.methodInvocationHandlerList = methodInvocationHandlerList;
     }
 
-    protected void setMethodInvocationHandlerList() {
-        this.methodInvocationHandlerList = null;
+    public void setMethodInvocationHandlerList(List<? extends MethodInvocationHandler> methodInvocationHandlerList) {
+        this.methodInvocationHandlerList = methodInvocationHandlerList;
     }
 
     @Override

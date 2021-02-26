@@ -1,7 +1,5 @@
 package org.g2.starter.redisson.autoconfigure;
 
-import org.g2.core.exception.CommonException;
-import org.g2.core.handler.InvocationHandler;
 import org.g2.core.handler.impl.ChainInvocationHandler;
 import org.g2.starter.redisson.autoconfigure.responsibility.ServerConfig;
 import org.g2.starter.redisson.autoconfigure.responsibility.impl.ClusterServerConfig;
@@ -26,7 +24,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,8 +95,6 @@ public class RedissonAutoConfiguration {
         private LockConfigureProperties properties;
         private Config config;
 
-        private List<ServerConfig> serverConfigList;
-
         private RedissonClientAutoConfigureHandler(Config config, LockConfigureProperties properties) {
             this.properties = properties;
             this.config = config;
@@ -107,17 +102,12 @@ public class RedissonAutoConfiguration {
         }
 
         private void init() {
-            serverConfigList = new ArrayList<>();
+            List<ServerConfig> serverConfigList = new ArrayList<>();
             serverConfigList.add(new SingleServerConfig(config, properties));
             serverConfigList.add(new MasterSlaveServerConfig(config, properties));
             serverConfigList.add(new SentinelServerConfig(config, properties));
             serverConfigList.add(new ClusterServerConfig(config, properties));
             serverConfigList.add(new ReplicatedServerConfig(config, properties));
-            setMethodInvocationHandlerList();
-        }
-
-        @Override
-        protected void setMethodInvocationHandlerList() {
             this.methodInvocationHandlerList = serverConfigList;
         }
     }
