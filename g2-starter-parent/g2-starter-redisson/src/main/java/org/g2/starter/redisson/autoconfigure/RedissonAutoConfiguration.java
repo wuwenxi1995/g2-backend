@@ -1,5 +1,6 @@
 package org.g2.starter.redisson.autoconfigure;
 
+import org.g2.core.exception.CommonException;
 import org.g2.core.handler.impl.ChainInvocationHandler;
 import org.g2.starter.redisson.autoconfigure.responsibility.ServerConfig;
 import org.g2.starter.redisson.autoconfigure.responsibility.impl.ClusterServerConfig;
@@ -48,7 +49,7 @@ public class RedissonAutoConfiguration {
         config.setLockWatchdogTimeout(properties.getLockWatchdogTimeout());
         config.setUseScriptCache(properties.isUseScriptCache());
         // 生成其他配置信息
-        new RedissonClientAutoConfigureHandler(config, properties).proceed();
+        new RedissonClientAutoConfigureHandler(initChain(config, properties)).proceed();
         return Redisson.create(config);
     }
 
@@ -92,23 +93,33 @@ public class RedissonAutoConfiguration {
      * 责任链 -- 构建redisson客户端其他配置信息
      */
     private static class RedissonClientAutoConfigureHandler extends ChainInvocationHandler {
-        private LockConfigureProperties properties;
-        private Config config;
 
-        private RedissonClientAutoConfigureHandler(Config config, LockConfigureProperties properties) {
-            this.properties = properties;
-            this.config = config;
-            init();
+        private RedissonClientAutoConfigureHandler(List<ServerConfig> serverConfigs) {
+            super(serverConfigs);
         }
 
-        private void init() {
-            List<ServerConfig> serverConfigList = new ArrayList<>();
-            serverConfigList.add(new SingleServerConfig(config, properties));
-            serverConfigList.add(new MasterSlaveServerConfig(config, properties));
-            serverConfigList.add(new SentinelServerConfig(config, properties));
-            serverConfigList.add(new ClusterServerConfig(config, properties));
-            serverConfigList.add(new ReplicatedServerConfig(config, properties));
-            this.methodInvocationHandlerList = serverConfigList;
+        @Override
+        public Object proceed() {
+            try {
+                return super.proceed();
+            } catch (Exception e) {
+                throw new CommonException(e);
+            }
         }
+
+        @Override
+        protected Object invoke() {
+            throw new CommonException("No suitable handler found");
+        }
+    }
+
+    private List<ServerConfig> initChain(Config config, LockConfigureProperties properties) {
+        List<ServerConfig> serverConfigList = new ArrayList<>();
+        serverConfigList.add(new SingleServerConfig(config, properties));
+        serverConfigList.add(new MasterSlaveServerConfig(config, properties));
+        serverConfigList.add(new SentinelServerConfig(config, properties));
+        serverConfigList.add(new ClusterServerConfig(config, properties));
+        serverConfigList.add(new ReplicatedServerConfig(config, properties));
+        return serverConfigList;
     }
 }

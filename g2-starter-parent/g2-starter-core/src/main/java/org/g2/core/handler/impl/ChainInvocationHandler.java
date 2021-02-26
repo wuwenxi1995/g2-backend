@@ -1,6 +1,5 @@
 package org.g2.core.handler.impl;
 
-import org.g2.core.exception.CommonException;
 import org.g2.core.handler.InvocationHandler;
 import org.g2.core.handler.MethodInvocationHandler;
 
@@ -12,28 +11,22 @@ import java.util.List;
 public abstract class ChainInvocationHandler implements InvocationHandler {
 
     private int currentHandlerIndex = -1;
-    protected List<?> methodInvocationHandlerList;
-
-    protected ChainInvocationHandler() {
-    }
+    private List<?> methodInvocationHandlerList;
 
     protected ChainInvocationHandler(List<? extends MethodInvocationHandler> methodInvocationHandlerList) {
         this.methodInvocationHandlerList = methodInvocationHandlerList;
     }
 
-    public void setMethodInvocationHandlerList(List<? extends MethodInvocationHandler> methodInvocationHandlerList) {
-        this.methodInvocationHandlerList = methodInvocationHandlerList;
-    }
-
     @Override
     public Object proceed() throws Exception {
-        if (methodInvocationHandlerList == null || methodInvocationHandlerList.size() < 1) {
-            throw new CommonException("MethodInvocationHandler is null");
-        }
         if (currentHandlerIndex == methodInvocationHandlerList.size() - 1) {
-            throw new CommonException("No suitable handler found");
+            return this.invoke();
         }
         Object handler = methodInvocationHandlerList.get(++currentHandlerIndex);
         return ((MethodInvocationHandler) handler).invoke(this);
+    }
+
+    protected Object invoke(){
+        return null;
     }
 }
