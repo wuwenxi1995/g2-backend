@@ -2,7 +2,9 @@ package org.g2.starter.redis.infra.queue.impl;
 
 import java.util.List;
 
+import org.g2.core.exception.CommonException;
 import org.g2.core.helper.FastJsonHelper;
+import org.g2.core.util.CollectionUtils;
 import org.g2.starter.redis.client.RedisCacheClient;
 import org.g2.starter.redis.infra.queue.IQueue;
 
@@ -36,16 +38,37 @@ public class DefaultQueue implements IQueue {
 
     @Override
     public List<String> pullAll(String key) {
-        return redisCacheClient.opsForList().range(key, 0, -1);
+        redisCacheClient.multi();
+        List<String> range = redisCacheClient.opsForList().range(key, 0, -1);
+        if (CollectionUtils.isNotEmpty(range)) {
+            redisCacheClient.opsForList().remove(key, 1, range);
+        }
+        redisCacheClient.exec();
+        return range;
     }
 
     @Override
     public List<String> pullAll(String key, int end) {
-        return redisCacheClient.opsForList().range(key, 0, end);
+        redisCacheClient.multi();
+        List<String> range = redisCacheClient.opsForList().range(key, 0, end);
+        if (CollectionUtils.isNotEmpty(range)) {
+            redisCacheClient.opsForList().remove(key, 0, range);
+        }
+        redisCacheClient.exec();
+        return range;
     }
 
     @Override
     public List<String> pullAll(String key, int start, int end) {
-        return redisCacheClient.opsForList().range(key, start, end);
+        if (start < end) {
+            throw new CommonException("[start] needs to be greater than or equal to [end]");
+        }
+        redisCacheClient.multi();
+        List<String> range = redisCacheClient.opsForList().range(key, start, end);
+        if (CollectionUtils.isNotEmpty(range)) {
+            redisCacheClient.opsForList().remove(key, 0, range);
+        }
+        redisCacheClient.exec();
+        return range;
     }
 }

@@ -1,12 +1,8 @@
 package org.g2.starter.redis.config.properties;
 
-import java.time.Duration;
 import java.util.Map;
 
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 
 /**
  * @author wenxi.wu@hand-china.com 2020-11-10
@@ -14,7 +10,7 @@ import org.springframework.data.redis.connection.lettuce.LettucePoolingClientCon
 @ConfigurationProperties(
         prefix = "g2.redis.shard"
 )
-public class RedisShardingProperties extends RedisProperties {
+public class RedisShardingProperties {
 
     /**
      * 是否开启多实例
