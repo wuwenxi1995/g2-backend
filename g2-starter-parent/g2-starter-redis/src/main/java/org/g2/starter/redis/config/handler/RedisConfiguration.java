@@ -13,7 +13,7 @@ import java.time.Duration;
 /**
  * @author wenxi.wu@hand-chian.com 2021-02-26
  */
-public abstract class RedisConfiguration implements MethodInvocationHandler<LettuceConnectionFactory> {
+public abstract class RedisConfiguration implements MethodInvocationHandler {
 
     protected RedisCacheProperties redisCacheProperties;
 

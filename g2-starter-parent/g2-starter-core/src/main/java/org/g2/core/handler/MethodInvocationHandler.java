@@ -4,7 +4,7 @@ package org.g2.core.handler;
  * @author wenxi.wu@hand-chian.com 2021-02-26
  */
 @FunctionalInterface
-public interface MethodInvocationHandler<T> {
+public interface MethodInvocationHandler {
 
     /**
      * 方法执行器
@@ -13,5 +13,5 @@ public interface MethodInvocationHandler<T> {
      * @return object
      * @throws Exception 异常信息
      */
-    T invoke(InvocationHandler invocationHandler) throws Exception;
+    Object invoke(InvocationHandler invocationHandler) throws Exception;
 }

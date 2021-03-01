@@ -41,7 +41,7 @@ public class RedissonAutoConfiguration {
             name = "lockRedissonClient",
             destroyMethod = "shutdown"
     )
-    public RedissonClient redissonClient(LockConfigureProperties properties) throws Exception {
+    public RedissonClient redissonClient(LockConfigureProperties properties) {
         Config config = new Config();
         config.setTransportMode(LockConstants.TransportMode.getTransportMode(properties.getTransportMode()));
         config.setThreads(properties.getThreads());
@@ -93,14 +93,14 @@ public class RedissonAutoConfiguration {
     /**
      * 责任链 -- 构建redisson客户端其他配置信息
      */
-    private static class RedissonClientAutoConfigureHandler extends ChainInvocationHandler<Config> {
+    private static class RedissonClientAutoConfigureHandler extends ChainInvocationHandler {
 
         private RedissonClientAutoConfigureHandler(List<? extends MethodInvocationHandler> methodInvocationHandlerList) {
             super(methodInvocationHandlerList);
         }
 
         @Override
-        public Config proceed() {
+        public Object proceed() {
             try {
                 return super.proceed();
             } catch (Exception e) {
@@ -109,7 +109,7 @@ public class RedissonAutoConfiguration {
         }
 
         @Override
-        protected Config invoke() {
+        protected Object invoke() {
             throw new CommonException("No suitable handler found");
         }
     }

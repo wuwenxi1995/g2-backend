@@ -41,7 +41,7 @@ public class EnableRedisAutoConfiguration {
     @Bean
     public LettuceConnectionFactory customizerLettuceConnectionFactory(RedisCacheProperties redisCacheProperties) {
         List<RedisConfiguration> redisConfigurationList = init(redisCacheProperties);
-        LettuceConnectionFactory lettuceConnectionFactory = new RedisClientAutoConfigureHandler(redisConfigurationList).proceed();
+        LettuceConnectionFactory lettuceConnectionFactory = (LettuceConnectionFactory) new RedisClientAutoConfigureHandler(redisConfigurationList).proceed();
         lettuceConnectionFactory.afterPropertiesSet();
         return lettuceConnectionFactory;
     }
@@ -68,14 +68,14 @@ public class EnableRedisAutoConfiguration {
         return redisMessageListenerContainer;
     }
 
-    private static class RedisClientAutoConfigureHandler extends ChainInvocationHandler<LettuceConnectionFactory> {
+    private static class RedisClientAutoConfigureHandler extends ChainInvocationHandler {
 
         private RedisClientAutoConfigureHandler(List<? extends MethodInvocationHandler> methodInvocationHandlerList) {
             super(methodInvocationHandlerList);
         }
 
         @Override
-        public LettuceConnectionFactory proceed() {
+        public Object proceed() {
             try {
                 return super.proceed();
             } catch (Exception e) {
@@ -84,7 +84,7 @@ public class EnableRedisAutoConfiguration {
         }
 
         @Override
-        protected LettuceConnectionFactory invoke() {
+        protected Object invoke() {
             throw new CommonException("No suitable handler found");
         }
     }

@@ -20,9 +20,9 @@ public class ClusterConfiguration extends RedisConfiguration {
     }
 
     @Override
-    public LettuceConnectionFactory invoke(InvocationHandler invocationHandler) throws Exception {
+    public Object invoke(InvocationHandler invocationHandler) throws Exception {
         if (!RedisServerPattern.CLUSTER.getPattern().equals(redisCacheProperties.getPattern())) {
-            return (LettuceConnectionFactory) invocationHandler.proceed();
+            return invocationHandler.proceed();
         }
         Set<String> cluster = StringUtils.commaDelimitedListToSet(redisCacheProperties.getCluster().getNodes());
         RedisClusterConfiguration redisClusterConfiguration = new RedisClusterConfiguration(cluster);
