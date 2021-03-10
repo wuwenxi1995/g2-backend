@@ -152,76 +152,41 @@ public class TreeNode<K, V> implements Tree<K, V> {
     @Override
     public Node<K, V> delete(K key) {
         // 找到要删除的节点
-        Node<K, V> replacement = getNode(key);
-        if (replacement == null) {
-            return null;
+        Node<K, V> p = getNode(key);
+        // 找到替换节点
+        Node<K, V> replacement = findReplacementNode(p);
+        // 如果存在这样的替换节点
+        if (replacement != null) {
+            replacement.parent = p.parent;
+            if (p.parent == null) {
+                root = replacement;
+            } else if (p == p.parent.left) {
+                p.parent.left = replacement;
+            } else {
+                p.parent.right = replacement;
+            }
+
+            p.left = p.right = p.parent = null;
+        }
+        // 如果不存在替换节点，并且删除节点的父节点为空，则删除树
+        else if (p.parent == null) {
+            root = null;
+        }
+        // 如果不存在替换节点，并且删除节点的父节点不为空，将父节点左或右子树替换为空
+        else {
+            if (p.parent.left == p) {
+                p.parent.left = null;
+            } else if (p == p.parent.right) {
+                p.parent.right = null;
+            }
+            p.parent = null;
         }
 
-        Node<K, V> parent = replacement.parent;
-        // 如果左右子树均为空，直接删除该节点
-        if (replacement.left == null && replacement.right == null) {
-            // 如果左右节点、父节点均为空，删除根节点
-            if (parent == null) {
-                root = null;
-                return replacement;
-            }
-            if (parent.left == replacement) {
-                parent.left = null;
-            } else {
-                parent.right = null;
-            }
-        }
-        // 如果右子树不为空，找到右子树中最小键，作为替换节点
-        else if (replacement.right != null) {
-            // 找到删除节点右子树中最小节点作为替换节点
-            Node<K, V> newNode = replacement.right.min();
-            // 改变替换节点的关联关系
-            Node<K, V> p = newNode.parent;
-            p.left = null;
-            if (newNode.right != null) {
-                Node<K, V> newLeft = newNode.right;
-                p.left = newLeft;
-                newLeft.parent = p;
-            }
-            // 新节点的关联关系
-            Node<K, V> right = replacement.right;
-            newNode.right = right;
-            right.parent = newNode;
-            if (replacement.left != null) {
-                Node<K, V> left = replacement.left;
-                newNode.left = left;
-                left.parent = newNode;
-            }
-            if (parent == null) {
-                root = newNode;
-            } else {
-                newNode.parent = parent;
-                if (parent.left == replacement) {
-                    parent.left = newNode;
-                } else {
-                    parent.right = newNode;
-                }
-            }
-        }
-        // 如果右子树为空，左子树不为空,直接使用左子树替代
-        else {
-            Node<K, V> newNode = replacement.left;
-            if (parent == null) {
-                root = newNode;
-            } else {
-                newNode.parent = parent;
-                if (parent.left == replacement) {
-                    parent.left = newNode;
-                } else {
-                    parent.right = newNode;
-                }
-            }
-        }
         // 重新平衡二叉树
         fixAfterInsertion(root);
         // 重新计算各个节点数
-        root.resize();
-        return replacement;
+        resize();
+        return p;
     }
 
     @Override
@@ -235,8 +200,8 @@ public class TreeNode<K, V> implements Tree<K, V> {
         } else {
             parent.left = null;
         }
-        parent.num--;
         parent.resize(false);
+        min.left = min.right = min.parent = null;
         return min;
     }
 
@@ -251,8 +216,8 @@ public class TreeNode<K, V> implements Tree<K, V> {
             newRight.parent = parent;
             parent.right = newRight;
         }
-        parent.num--;
         parent.resize(false);
+        max.left = max.right = max.parent = null;
         return max;
     }
 
@@ -310,7 +275,37 @@ public class TreeNode<K, V> implements Tree<K, V> {
         return compare;
     }
 
-    protected void fixAfterInsertion(Node<K, V> node) {
+    void fixAfterInsertion(Node<K, V> node) {
+    }
+
+    void resize() {
+        root.resize();
+    }
+
+    Node<K, V> findReplacementNode(Node<K, V> p) {
+        // 如果删除节点存在左右子树，取右子树最小键
+        Node<K, V> min = null;
+        if (p.left != null && p.right != null) {
+            // 找到替换节点
+            min = p.right.min();
+            Node<K, V> parent = min.parent;
+            parent.left = null;
+            if (min.right != null) {
+                parent.left = min.right;
+                min.right.parent = parent;
+            }
+            // 新的节点
+            min.parent = null;
+            p.left.parent = min;
+            p.right.parent = min;
+            min.left = p.left;
+            min.right = p.right;
+        }
+
+        // 找到替换节点
+        // 1.如果删除节点左右子树不同时存在，直接使用左或右子树作为替换节点
+        // 2.如果删除节点左右子树同时存在，用在找到右子树最小键中找替换节点
+        return min == null ? (p.left != null ? p.left : p.right) : min;
     }
 
     private Node<K, V> createNode(K key, V value, Node<K, V> parent) {
@@ -394,12 +389,11 @@ public class TreeNode<K, V> implements Tree<K, V> {
 
         @Override
         public Node<K, V> min() {
-            for (Node<K, V> p = this, temp; ; ) {
-                if ((temp = p.left) == null) {
-                    return p;
-                }
-                p = temp;
+            Node<K, V> p = this;
+            while (p.left != null) {
+                p = p.left;
             }
+            return p;
         }
 
         @Override

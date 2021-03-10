@@ -101,6 +101,16 @@ public class HashTreeNode<K, V> extends TreeNode<K, V> {
         return new HashNode<>(hash, k, value, parent);
     }
 
+    @Override
+    void resize() {
+
+    }
+
+    @Override
+    Node<K, V> findReplacementNode(Node<K, V> p) {
+        return null;
+    }
+
     /**
      * 2次扰动函数
      */
