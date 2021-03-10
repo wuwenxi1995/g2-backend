@@ -1,11 +1,9 @@
 package org.g2.core.util.tree;
 
-import java.util.LinkedList;
-
 /**
  * @author wenxi.wu@hand-chian.com 2021-03-04
  */
-public class HashTreeNode<K, V> extends TreeNode<K, V> {
+public class HashTree<K, V> extends BinaryTree<K, V> {
 
     private HashNode<K, V> root;
     private int size;

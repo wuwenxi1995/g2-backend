@@ -1,5 +1,7 @@
 package org.g2.core.util.tree;
 
+import java.util.Iterator;
+
 /**
  * @author wenxi.wu@hand-chian.com 2021-03-03
  */
@@ -21,6 +23,14 @@ public interface Tree<K, V> {
      * @return 值
      */
     V get(K key);
+
+    /**
+     * 是否包含键
+     *
+     * @param key 键
+     * @return {@code true}
+     */
+    boolean containsKey(K key);
 
     /**
      * 树节点个数
@@ -128,14 +138,23 @@ public interface Tree<K, V> {
      *
      * @return true/false
      */
-    Tree.Entry<K, V>  deleteMin();
+    Tree.Entry<K, V> deleteMin();
 
     /**
      * 删除最大键
      *
      * @return true/false
      */
-    Tree.Entry<K, V>  deleteMax();
+    Tree.Entry<K, V> deleteMax();
+
+    /**
+     * 返回符合范围内的键
+     *
+     * @param key1 键1
+     * @param key2 键2
+     * @return 数组
+     */
+    Iterable<K> keys(K key1, K key2);
 
     interface Entry<K, V> {
 
@@ -152,5 +171,7 @@ public interface Tree<K, V> {
         Entry<K, V> min();
 
         Entry<K, V> max();
+
+        Iterable<K> traversal();
     }
 }

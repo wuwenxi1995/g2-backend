@@ -1,24 +1,28 @@
 package org.g2.core.util.tree;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * 二叉树
  *
  * @author wenxi.wu@hand-chian.com 2021-03-03
  */
-public class TreeNode<K, V> implements Tree<K, V> {
+public class BinaryTree<K, V> implements Tree<K, V> {
 
     private Node<K, V> root;
 
     private Comparator<? super K> comparator;
 
-    public TreeNode() {
+    public BinaryTree() {
         this.comparator = null;
     }
 
-    public TreeNode(Comparator<? super K> comparator) {
+    public BinaryTree(Comparator<? super K> comparator) {
         this.comparator = comparator;
     }
 
@@ -60,6 +64,11 @@ public class TreeNode<K, V> implements Tree<K, V> {
         }
         Node<K, V> node = getNode(key);
         return node == null ? null : node.value;
+    }
+
+    @Override
+    public boolean containsKey(K key) {
+        return getNode(key) != null;
     }
 
     @Override
@@ -221,6 +230,27 @@ public class TreeNode<K, V> implements Tree<K, V> {
         return max;
     }
 
+    @Override
+    public Iterable<K> keys(K key1, K key2) {
+        if (root == null) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        List<K> traverse = (List<K>) Traversal.IN_ORDER.traverse(root);
+        int index1 = traverse.indexOf(key1);
+        int index2 = traverse.indexOf(key2);
+        if (index1 != -1 && index2 != -1) {
+            return traverse.subList(index1, index2);
+        }
+        List<K> data = new ArrayList<>();
+        if (index1 != -1) {
+            data.add(key1);
+        } else {
+            data.add(key2);
+        }
+        return data;
+    }
+
     private Node<K, V> floor(Node<K, V> node, K key) {
         if (node == null) {
             return null;
@@ -253,10 +283,6 @@ public class TreeNode<K, V> implements Tree<K, V> {
             return t;
         }
         return node;
-    }
-
-    private Node<K, V> findNewNode(Node<K, V> p, Node<K, V> temp, int tempCompare) {
-        return null;
     }
 
     private int compare(Node<K, V> node, K key) {
@@ -370,11 +396,11 @@ public class TreeNode<K, V> implements Tree<K, V> {
                     if (temp == null) {
                         break;
                     }
-                    if (temp.left != null) {
-                        queue.offer(temp.left);
-                    }
                     if (temp.right != null) {
                         queue.offer(temp.right);
+                    }
+                    if (temp.left != null) {
+                        queue.offer(temp.left);
                     }
                 }
                 deep++;
@@ -404,6 +430,12 @@ public class TreeNode<K, V> implements Tree<K, V> {
                 }
                 p = temp;
             }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Iterable<K> traversal() {
+            return (List<K>) Traversal.IN_ORDER.traverse(this);
         }
 
         private void resize(boolean increment) {
@@ -446,5 +478,117 @@ public class TreeNode<K, V> implements Tree<K, V> {
         void resizeBfs() {
 
         }
+    }
+
+    //
+    //      参考博客：https://www.cnblogs.com/zhi-leaf/p/10813048.html
+    // =================================================================
+    @SuppressWarnings("unchecked")
+    enum Traversal {
+        // 先序遍历
+        PRE_ORDER {
+            @Override
+            List traverse(BinaryTree.Node node) {
+                List data = new ArrayList<>();
+                BinaryTree.Node p = node;
+                if (p == null) {
+                    return null;
+                }
+                LinkedList<BinaryTree.Node> stack = new LinkedList<>();
+                while (p != null || !stack.isEmpty()) {
+                    if (p != null) {
+                        data.add(p.key);
+                        stack.addFirst(p);
+                        p = p.left;
+                    } else {
+                        p = stack.removeFirst();
+                        p = p.right;
+                    }
+                }
+                return data;
+            }
+        },
+        // 中序遍历
+        IN_ORDER {
+            @Override
+            List traverse(BinaryTree.Node node) {
+                BinaryTree.Node p;
+                if ((p = node) == null) {
+                    return null;
+                }
+                List data = new ArrayList<>();
+                LinkedList<BinaryTree.Node> stack = new LinkedList<>();
+                //
+                while (p != null || !stack.isEmpty()) {
+                    if (p != null) {
+                        stack.addFirst(p);
+                        p = p.left;
+                    } else {
+                        p = stack.removeFirst();
+                        data.add(p.key);
+                        p = p.right;
+                    }
+                }
+                return data;
+            }
+        },
+        // 后序遍历
+        POST_ORDER {
+            @Override
+            List traverse(BinaryTree.Node node) {
+                // 临时节点，记录当前节点和前一个节点
+                BinaryTree.Node cur, pre = null;
+                if (node == null) {
+                    return null;
+                }
+                List data = new ArrayList<>();
+                LinkedList<BinaryTree.Node> stack = new LinkedList<>();
+                stack.addFirst(node);
+                while (!stack.isEmpty()) {
+                    // 不取出节点
+                    cur = stack.peek();
+                    // 如果当前节点为根节点或当前节点是前一个节点的父节点
+                    if ((cur.left == null && cur.right == null) || (pre != null && (cur.left == pre || cur.right == pre))) {
+                        data.add(node.key);
+                        stack.removeFirst();
+                        pre = cur;
+                    } else {
+                        if (cur.right != null) {
+                            stack.addFirst(cur.right);
+                        }
+                        if (cur.left != null) {
+                            stack.addFirst(cur.left);
+                        }
+                    }
+                }
+                return data;
+            }
+        },
+        // 默认使用层次遍历
+        DEFAULT {
+            @Override
+            List traverse(BinaryTree.Node node) {
+                BinaryTree.Node p;
+                if ((p = node) == null) {
+                    return null;
+                }
+                Queue<BinaryTree.Node> queue = new LinkedList<>();
+                queue.offer(p);
+                List data = new ArrayList<>();
+                while (!queue.isEmpty()) {
+                    p = queue.poll();
+                    data.add(p.key);
+                    if (p.left != null) {
+                        queue.offer(p.left);
+                    }
+                    if (p.right != null) {
+                        queue.offer(p.right);
+                    }
+                }
+                return data;
+            }
+        };
+
+        abstract List traverse(BinaryTree.Node node);
     }
 }
