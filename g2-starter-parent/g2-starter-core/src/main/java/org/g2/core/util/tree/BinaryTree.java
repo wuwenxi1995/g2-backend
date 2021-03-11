@@ -2,9 +2,11 @@ package org.g2.core.util.tree;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 /**
@@ -235,8 +237,7 @@ public class BinaryTree<K, V> implements Tree<K, V> {
         if (root == null) {
             return null;
         }
-        @SuppressWarnings("unchecked")
-        List<K> traverse = (List<K>) Traversal.IN_ORDER.traverse(root);
+        List<K> traverse = traverse(Traversal.IN_ORDER);
         int index1 = traverse.indexOf(key1);
         int index2 = traverse.indexOf(key2);
         if (index1 != -1 && index2 != -1) {
@@ -249,6 +250,21 @@ public class BinaryTree<K, V> implements Tree<K, V> {
             data.add(key2);
         }
         return data;
+    }
+
+    @Override
+    public List<K> traverse(Traversal traversal) {
+        switch (traversal) {
+            case PRE_ORDER:
+                return preOrderTraversal(root);
+            case IN_ORDER:
+                return inOrderTraversal(root);
+            case POST_ORDER:
+                return postOrderTraversal(root);
+            case DEFAULT:
+            default:
+                return traversal(root);
+        }
     }
 
     private Node<K, V> floor(Node<K, V> node, K key) {
@@ -432,12 +448,6 @@ public class BinaryTree<K, V> implements Tree<K, V> {
             }
         }
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public Iterable<K> traversal() {
-            return (List<K>) Traversal.IN_ORDER.traverse(this);
-        }
-
         private void resize(boolean increment) {
             synchronized (this) {
                 for (Node<K, V> p = parent; ; ) {
@@ -483,112 +493,107 @@ public class BinaryTree<K, V> implements Tree<K, V> {
     //
     //      参考博客：https://www.cnblogs.com/zhi-leaf/p/10813048.html
     // =================================================================
-    @SuppressWarnings("unchecked")
-    enum Traversal {
-        // 先序遍历
-        PRE_ORDER {
-            @Override
-            List traverse(BinaryTree.Node node) {
-                List data = new ArrayList<>();
-                BinaryTree.Node p = node;
-                if (p == null) {
-                    return null;
-                }
-                LinkedList<BinaryTree.Node> stack = new LinkedList<>();
-                while (p != null || !stack.isEmpty()) {
-                    if (p != null) {
-                        data.add(p.key);
-                        stack.addFirst(p);
-                        p = p.left;
-                    } else {
-                        p = stack.removeFirst();
-                        p = p.right;
-                    }
-                }
-                return data;
-            }
-        },
-        // 中序遍历
-        IN_ORDER {
-            @Override
-            List traverse(BinaryTree.Node node) {
-                BinaryTree.Node p;
-                if ((p = node) == null) {
-                    return null;
-                }
-                List data = new ArrayList<>();
-                LinkedList<BinaryTree.Node> stack = new LinkedList<>();
-                //
-                while (p != null || !stack.isEmpty()) {
-                    if (p != null) {
-                        stack.addFirst(p);
-                        p = p.left;
-                    } else {
-                        p = stack.removeFirst();
-                        data.add(p.key);
-                        p = p.right;
-                    }
-                }
-                return data;
-            }
-        },
-        // 后序遍历
-        POST_ORDER {
-            @Override
-            List traverse(BinaryTree.Node node) {
-                // 临时节点，记录当前节点和前一个节点
-                BinaryTree.Node cur, pre = null;
-                if (node == null) {
-                    return null;
-                }
-                List data = new ArrayList<>();
-                LinkedList<BinaryTree.Node> stack = new LinkedList<>();
-                stack.addFirst(node);
-                while (!stack.isEmpty()) {
-                    // 不取出节点
-                    cur = stack.peek();
-                    // 如果当前节点为根节点或当前节点是前一个节点的父节点
-                    if ((cur.left == null && cur.right == null) || (pre != null && (cur.left == pre || cur.right == pre))) {
-                        data.add(node.key);
-                        stack.removeFirst();
-                        pre = cur;
-                    } else {
-                        if (cur.right != null) {
-                            stack.addFirst(cur.right);
-                        }
-                        if (cur.left != null) {
-                            stack.addFirst(cur.left);
-                        }
-                    }
-                }
-                return data;
-            }
-        },
-        // 默认使用层次遍历
-        DEFAULT {
-            @Override
-            List traverse(BinaryTree.Node node) {
-                BinaryTree.Node p;
-                if ((p = node) == null) {
-                    return null;
-                }
-                Queue<BinaryTree.Node> queue = new LinkedList<>();
-                queue.offer(p);
-                List data = new ArrayList<>();
-                while (!queue.isEmpty()) {
-                    p = queue.poll();
-                    data.add(p.key);
-                    if (p.left != null) {
-                        queue.offer(p.left);
-                    }
-                    if (p.right != null) {
-                        queue.offer(p.right);
-                    }
-                }
-                return data;
-            }
-        };
 
-        abstract List traverse(BinaryTree.Node node);
+    /**
+     * 先序遍历
+     */
+    private List<K> preOrderTraversal(Node<K, V> node) {
+        List<K> data = new ArrayList<>();
+        BinaryTree.Node<K, V> p = node;
+        if (p == null) {
+            return null;
+        }
+        LinkedList<BinaryTree.Node<K, V>> stack = new LinkedList<>();
+        while (p != null || !stack.isEmpty()) {
+            if (p != null) {
+                data.add(p.key);
+                stack.addFirst(p);
+                p = p.left;
+            } else {
+                p = stack.removeFirst();
+                p = p.right;
+            }
+        }
+        return data;
+    }
+
+    /**
+     * 中序遍历
+     */
+    private List<K> inOrderTraversal(Node<K, V> node) {
+        BinaryTree.Node<K, V> p;
+        if ((p = node) == null) {
+            return null;
+        }
+        List<K> data = new ArrayList<>();
+        LinkedList<BinaryTree.Node<K, V>> stack = new LinkedList<>();
+        //
+        while (p != null || !stack.isEmpty()) {
+            if (p != null) {
+                stack.addFirst(p);
+                p = p.left;
+            } else {
+                p = stack.removeFirst();
+                data.add(p.key);
+                p = p.right;
+            }
+        }
+        return data;
+    }
+
+    /**
+     * 后序遍历
+     */
+    private List<K> postOrderTraversal(Node<K, V> node) {
+        // 临时节点，记录当前节点和前一个节点
+        BinaryTree.Node<K, V> cur, pre = null;
+        if (node == null) {
+            return null;
+        }
+        List<K> data = new ArrayList<>();
+        LinkedList<BinaryTree.Node<K, V>> stack = new LinkedList<>();
+        stack.addFirst(node);
+        while (!stack.isEmpty()) {
+            // 不取出节点
+            cur = stack.peek();
+            // 如果当前节点为根节点或当前节点是前一个节点的父节点
+            if ((cur.left == null && cur.right == null) || (pre != null && (cur.left == pre || cur.right == pre))) {
+                data.add(node.key);
+                stack.removeFirst();
+                pre = cur;
+            } else {
+                if (cur.right != null) {
+                    stack.addFirst(cur.right);
+                }
+                if (cur.left != null) {
+                    stack.addFirst(cur.left);
+                }
+            }
+        }
+        return data;
+    }
+
+    /**
+     * 层次遍历，广度优先
+     */
+    private List<K> traversal(Node<K, V> node) {
+        BinaryTree.Node<K, V> p;
+        if ((p = node) == null) {
+            return null;
+        }
+        Queue<BinaryTree.Node<K, V>> queue = new LinkedList<>();
+        queue.offer(p);
+        List<K> data = new ArrayList<>();
+        while (!queue.isEmpty()) {
+            p = queue.poll();
+            data.add(p.key);
+            if (p.left != null) {
+                queue.offer(p.left);
+            }
+            if (p.right != null) {
+                queue.offer(p.right);
+            }
+        }
+        return data;
     }
 }

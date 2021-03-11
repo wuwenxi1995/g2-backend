@@ -1,6 +1,7 @@
 package org.g2.core.util.tree;
 
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author wenxi.wu@hand-chian.com 2021-03-03
@@ -156,6 +157,15 @@ public interface Tree<K, V> {
      */
     Iterable<K> keys(K key1, K key2);
 
+    /**
+     * 对树进行遍历
+     *
+     * @param traversal 遍历类型
+     * @return 遍历结果
+     */
+    List<K> traverse(Traversal traversal);
+
+
     interface Entry<K, V> {
 
         K getKey();
@@ -171,7 +181,16 @@ public interface Tree<K, V> {
         Entry<K, V> min();
 
         Entry<K, V> max();
+    }
 
-        Iterable<K> traversal();
+    enum Traversal {
+        // 先序遍历
+        PRE_ORDER,
+        // 中序遍历
+        IN_ORDER,
+        // 后序遍历
+        POST_ORDER,
+        // 默认使用层次遍历
+        DEFAULT;
     }
 }
