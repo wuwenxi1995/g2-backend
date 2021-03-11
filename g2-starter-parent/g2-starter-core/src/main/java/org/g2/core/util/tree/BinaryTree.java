@@ -495,7 +495,7 @@ public class BinaryTree<K, V> implements Tree<K, V> {
     // =================================================================
 
     /**
-     * 先序遍历
+     * 先序遍历，先根结点，再左节点，最后右
      */
     private List<K> preOrderTraversal(Node<K, V> node) {
         List<K> data = new ArrayList<>();
@@ -505,11 +505,12 @@ public class BinaryTree<K, V> implements Tree<K, V> {
         }
         LinkedList<BinaryTree.Node<K, V>> stack = new LinkedList<>();
         while (p != null || !stack.isEmpty()) {
-            if (p != null) {
+            while (p != null) {
                 data.add(p.key);
                 stack.addFirst(p);
                 p = p.left;
-            } else {
+            }
+            if (!stack.isEmpty()) {
                 p = stack.removeFirst();
                 p = p.right;
             }
@@ -518,7 +519,7 @@ public class BinaryTree<K, V> implements Tree<K, V> {
     }
 
     /**
-     * 中序遍历
+     * 中序遍历，先左节点，再根节点，最后右节点
      */
     private List<K> inOrderTraversal(Node<K, V> node) {
         BinaryTree.Node<K, V> p;
@@ -527,12 +528,12 @@ public class BinaryTree<K, V> implements Tree<K, V> {
         }
         List<K> data = new ArrayList<>();
         LinkedList<BinaryTree.Node<K, V>> stack = new LinkedList<>();
-        //
         while (p != null || !stack.isEmpty()) {
-            if (p != null) {
+            while (p != null) {
                 stack.addFirst(p);
                 p = p.left;
-            } else {
+            }
+            if (!stack.isEmpty()) {
                 p = stack.removeFirst();
                 data.add(p.key);
                 p = p.right;
@@ -542,7 +543,7 @@ public class BinaryTree<K, V> implements Tree<K, V> {
     }
 
     /**
-     * 后序遍历
+     * 后序遍历，先左节点，再右节点，最后根节点
      */
     private List<K> postOrderTraversal(Node<K, V> node) {
         // 临时节点，记录当前节点和前一个节点
