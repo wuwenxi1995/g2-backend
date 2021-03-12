@@ -13,7 +13,8 @@ import java.util.Queue;
  */
 public class BinaryTree<K, V> implements Tree<K, V> {
 
-    private Node<K, V> root;
+    Node<K, V> root;
+    int size;
 
     private Comparator<? super K> comparator;
 
@@ -31,28 +32,30 @@ public class BinaryTree<K, V> implements Tree<K, V> {
         if (node == null) {
             root = createNode(key, value, null);
             return value;
-        }
-        int compare;
-        Node<K, V> parent;
-        do {
-            parent = node;
-            compare = compare(node, key);
-            if (compare < 0) {
-                node = node.left;
-            } else if (compare > 0) {
-                node = node.right;
-            } else {
-                return node.setValue(value);
-            }
-        } while (node != null);
-        Node<K, V> newNode = createNode(key, value, parent);
-        if (compare > 0) {
-            parent.left = newNode;
         } else {
-            parent.right = newNode;
+            int compare;
+            Node<K, V> parent;
+            do {
+                parent = node;
+                compare = compare(node, key);
+                if (compare < 0) {
+                    node = node.left;
+                } else if (compare > 0) {
+                    node = node.right;
+                } else {
+                    return node.setValue(value);
+                }
+            } while (node != null);
+            Node<K, V> newNode = createNode(key, value, parent);
+            if (compare > 0) {
+                parent.left = newNode;
+            } else {
+                parent.right = newNode;
+            }
+            // 重新平衡二叉树
+            fixAfterInsertion(newNode);
         }
-        // 重新平衡二叉树
-        fixAfterInsertion(newNode);
+        size++;
         return value;
     }
 
@@ -72,7 +75,7 @@ public class BinaryTree<K, V> implements Tree<K, V> {
 
     @Override
     public int size() {
-        return root == null ? 0 : root.num;
+        return size;
     }
 
     @Override
@@ -120,44 +123,6 @@ public class BinaryTree<K, V> implements Tree<K, V> {
     }
 
     @Override
-    public Node<K, V> select(int num) {
-        for (Node<K, V> p = root; ; ) {
-            if (p == null) {
-                return null;
-            }
-            int left = p.left == null ? 0 : p.left.num;
-            if (left > num) {
-                p = p.left;
-            } else if (left < num) {
-                num = num - left - 1;
-                p = p.right;
-            } else {
-                return p;
-            }
-        }
-    }
-
-    @Override
-    public int rank(K key) {
-        int num = 0;
-        for (Node<K, V> p = root; ; ) {
-            if (p == null) {
-                return -1;
-            }
-            int left = p.left == null ? 0 : p.left.num;
-            int compare = compare(p, key);
-            if (compare == 0) {
-                return left + num;
-            } else if (compare < 0) {
-                p = p.left;
-            } else {
-                num = num + left + 1;
-                p = p.right;
-            }
-        }
-    }
-
-    @Override
     public Node<K, V> delete(K key) {
         // 找到要删除的节点
         Node<K, V> p = getNode(key);
@@ -175,6 +140,9 @@ public class BinaryTree<K, V> implements Tree<K, V> {
             }
 
             p.left = p.right = p.parent = null;
+
+            // 重新平衡二叉树
+            fixAfterInsertion(replacement);
         }
         // 如果不存在替换节点，并且删除节点的父节点为空，则删除树
         else if (p.parent == null) {
@@ -189,11 +157,6 @@ public class BinaryTree<K, V> implements Tree<K, V> {
             }
             p.parent = null;
         }
-
-        // 重新平衡二叉树
-        fixAfterInsertion(root);
-        // 重新计算各个节点数
-        resize();
         return p;
     }
 
@@ -208,7 +171,6 @@ public class BinaryTree<K, V> implements Tree<K, V> {
         } else {
             parent.left = null;
         }
-        parent.resize(false);
         min.left = min.right = min.parent = null;
         return min;
     }
@@ -224,7 +186,6 @@ public class BinaryTree<K, V> implements Tree<K, V> {
             newRight.parent = parent;
             parent.right = newRight;
         }
-        parent.resize(false);
         max.left = max.right = max.parent = null;
         return max;
     }
@@ -298,7 +259,7 @@ public class BinaryTree<K, V> implements Tree<K, V> {
         return node;
     }
 
-    private int compare(Node<K, V> node, K key) {
+    int compare(Node<K, V> node, K key) {
         int compare;
         Comparator<? super K> cpr = comparator;
         if (cpr != null) {
@@ -315,10 +276,6 @@ public class BinaryTree<K, V> implements Tree<K, V> {
     }
 
     void fixAfterInsertion(Node<K, V> node) {
-    }
-
-    void resize() {
-        root.resize();
     }
 
     Node<K, V> findReplacementNode(Node<K, V> p) {
@@ -348,21 +305,18 @@ public class BinaryTree<K, V> implements Tree<K, V> {
     }
 
     private Node<K, V> createNode(K key, V value, Node<K, V> parent) {
-        return new Node<>(key, value, 1, parent);
+        return new Node<>(key, value, parent);
     }
 
     static class Node<K, V> implements Tree.Entry<K, V> {
-        private int num;
         K key;
         V value;
         Node<K, V> left, right, parent;
 
-        Node(K key, V value, int num, Node<K, V> parent) {
-            this.num = num;
+        Node(K key, V value, Node<K, V> parent) {
             this.key = key;
             this.value = value;
             this.parent = parent;
-            resize(true);
         }
 
         @Override
@@ -422,11 +376,6 @@ public class BinaryTree<K, V> implements Tree<K, V> {
         }
 
         @Override
-        public int size() {
-            return num;
-        }
-
-        @Override
         public Node<K, V> min() {
             Node<K, V> p = this;
             while (p.left != null) {
@@ -443,47 +392,6 @@ public class BinaryTree<K, V> implements Tree<K, V> {
                 }
                 p = temp;
             }
-        }
-
-        private void resize(boolean increment) {
-            synchronized (this) {
-                for (Node<K, V> p = parent; ; ) {
-                    if (p == null) {
-                        return;
-                    }
-                    if (increment) {
-                        p.num++;
-                    } else {
-                        p.num--;
-                    }
-                    p = p.parent;
-                }
-            }
-        }
-
-        /**
-         * 计算当前树节点
-         */
-        private void resize() {
-            resizeDfs(this);
-        }
-
-        /**
-         * 深度优先遍历（DFS递归实现)
-         */
-        int resizeDfs(Node<K, V> node) {
-            if (node == null) {
-                return 0;
-            }
-            node.num = 1 + resizeDfs(node.left) + resizeDfs(node.right);
-            return node.num;
-        }
-
-        /**
-         * 广度优先遍历（BFS递归实现)
-         */
-        void resizeBfs() {
-
         }
     }
 

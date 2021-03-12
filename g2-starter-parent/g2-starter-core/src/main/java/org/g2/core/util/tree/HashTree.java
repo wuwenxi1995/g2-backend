@@ -13,7 +13,7 @@ public class HashTree<K, V> extends BinaryTree<K, V> {
         int hash;
 
         HashNode(int hash, K key, V value, HashNode<K, V> parent) {
-            super(key, value, 1, parent);
+            super(key, value, parent);
             this.hash = hash;
         }
 
@@ -97,11 +97,6 @@ public class HashTree<K, V> extends BinaryTree<K, V> {
 
     private HashNode<K, V> newNode(int hash, K k, V value, HashNode<K, V> parent) {
         return new HashNode<>(hash, k, value, parent);
-    }
-
-    @Override
-    void resize() {
-
     }
 
     @Override

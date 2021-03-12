@@ -1,6 +1,5 @@
 package org.g2.core.util.tree;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -111,7 +110,9 @@ public interface Tree<K, V> {
      * @param num 排名
      * @return 节点
      */
-    Tree.Entry<K, V> select(int num);
+    default Tree.Entry<K, V> select(int num) {
+        return null;
+    }
 
     /**
      * 假设我们想找到key键的排名
@@ -124,7 +125,9 @@ public interface Tree<K, V> {
      * @param key 键
      * @return 排名
      */
-    int rank(K key);
+    default int rank(K key) {
+        return -1;
+    }
 
     /**
      * 删除指定键
@@ -175,8 +178,6 @@ public interface Tree<K, V> {
         V setValue(V value);
 
         int deep();
-
-        int size();
 
         Entry<K, V> min();
 
