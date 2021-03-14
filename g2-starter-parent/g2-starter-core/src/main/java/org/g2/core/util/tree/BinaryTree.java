@@ -28,10 +28,9 @@ public class BinaryTree<K, V> implements Tree<K, V> {
 
     @Override
     public V put(K key, V value) {
-        Node<K, V> node = root;
+        Node<K, V> node = root, newNode;
         if (node == null) {
-            root = createNode(key, value, null);
-            return value;
+            root = newNode = createNode(key, value, null);
         } else {
             int compare;
             Node<K, V> parent;
@@ -46,15 +45,15 @@ public class BinaryTree<K, V> implements Tree<K, V> {
                     return node.setValue(value);
                 }
             } while (node != null);
-            Node<K, V> newNode = createNode(key, value, parent);
+            newNode = createNode(key, value, parent);
             if (compare > 0) {
                 parent.left = newNode;
             } else {
                 parent.right = newNode;
             }
-            // 重新平衡二叉树
-            fixAfterInsertion(newNode);
         }
+        // 重新平衡二叉树
+        fixAfterInsertion(newNode);
         size++;
         return value;
     }
@@ -126,6 +125,9 @@ public class BinaryTree<K, V> implements Tree<K, V> {
     public Node<K, V> delete(K key) {
         // 找到要删除的节点
         Node<K, V> p = getNode(key);
+        if (p == null) {
+            return null;
+        }
         // 找到替换节点
         Node<K, V> replacement = findReplacementNode(p);
         // 如果存在这样的替换节点
@@ -142,7 +144,9 @@ public class BinaryTree<K, V> implements Tree<K, V> {
             p.left = p.right = p.parent = null;
 
             // 重新平衡二叉树
-            fixAfterInsertion(replacement);
+            if (checkNodeColor(p)) {
+                fixAfterDeletion(replacement);
+            }
         }
         // 如果不存在替换节点，并且删除节点的父节点为空，则删除树
         else if (p.parent == null) {
@@ -259,7 +263,7 @@ public class BinaryTree<K, V> implements Tree<K, V> {
         return node;
     }
 
-    int compare(Node<K, V> node, K key) {
+    private int compare(Node<K, V> node, K key) {
         int compare;
         Comparator<? super K> cpr = comparator;
         if (cpr != null) {
@@ -276,6 +280,16 @@ public class BinaryTree<K, V> implements Tree<K, V> {
     }
 
     void fixAfterInsertion(Node<K, V> node) {
+    }
+
+    void fixAfterDeletion(Node<K, V> node) {
+    }
+
+    /**
+     * 红黑树校验结点颜色
+     */
+    boolean checkNodeColor(Node<K, V> p) {
+        return true;
     }
 
     Node<K, V> findReplacementNode(Node<K, V> p) {
@@ -304,7 +318,7 @@ public class BinaryTree<K, V> implements Tree<K, V> {
         return min == null ? (p.left != null ? p.left : p.right) : min;
     }
 
-    private Node<K, V> createNode(K key, V value, Node<K, V> parent) {
+    Node<K, V> createNode(K key, V value, Node<K, V> parent) {
         return new Node<>(key, value, parent);
     }
 
