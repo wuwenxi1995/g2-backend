@@ -11,10 +11,9 @@ import java.util.Queue;
  *
  * @author wenxi.wu@hand-chian.com 2021-03-03
  */
-public class BinaryTree<K, V> implements Tree<K, V> {
+public class BinaryTree<K, V> extends AbstractTree<K, V> implements Tree<K, V> {
 
-    Node<K, V> root;
-    int size;
+    private Node<K, V> root;
 
     private Comparator<? super K> comparator;
 
@@ -28,9 +27,9 @@ public class BinaryTree<K, V> implements Tree<K, V> {
 
     @Override
     public V put(K key, V value) {
-        Node<K, V> node = root, newNode;
+        Node<K, V> node = (Node<K, V>) entry, newNode;
         if (node == null) {
-            root = newNode = createNode(key, value, null);
+            entry = newNode = createNode(key, value, null);
         } else {
             int compare;
             Node<K, V> parent;
@@ -59,35 +58,11 @@ public class BinaryTree<K, V> implements Tree<K, V> {
     }
 
     @Override
-    public V get(K key) {
-        if (key == null) {
-            return null;
-        }
-        Node<K, V> node = getNode(key);
-        return node == null ? null : node.value;
-    }
-
-    @Override
-    public boolean containsKey(K key) {
-        return getNode(key) != null;
-    }
-
-    @Override
-    public int size() {
-        return size;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return size() == 0;
-    }
-
-    @Override
     public Node<K, V> getNode(K key) {
-        if (root == null) {
+        if (entry == null) {
             return null;
         }
-        Node<K, V> node = root;
+        Node<K, V> node = (Node<K, V>) entry;
         do {
             int compare = compare(node, key);
             if (compare < 0) {
@@ -99,16 +74,6 @@ public class BinaryTree<K, V> implements Tree<K, V> {
             }
         } while (node != null);
         return null;
-    }
-
-    @Override
-    public Node<K, V> min() {
-        return root.min();
-    }
-
-    @Override
-    public Node<K, V> max() {
-        return root.max();
     }
 
     @Override
@@ -144,9 +109,7 @@ public class BinaryTree<K, V> implements Tree<K, V> {
             p.left = p.right = p.parent = null;
 
             // 重新平衡二叉树
-            if (checkNodeColor(p)) {
-                fixAfterDeletion(replacement);
-            }
+            fixAfterDeletion(replacement);
         }
         // 如果不存在替换节点，并且删除节点的父节点为空，则删除树
         else if (p.parent == null) {
@@ -285,13 +248,6 @@ public class BinaryTree<K, V> implements Tree<K, V> {
     void fixAfterDeletion(Node<K, V> node) {
     }
 
-    /**
-     * 红黑树校验结点颜色
-     */
-    boolean checkNodeColor(Node<K, V> p) {
-        return true;
-    }
-
     Node<K, V> findReplacementNode(Node<K, V> p) {
         // 如果删除节点存在左右子树，取右子树最小键
         Node<K, V> min = null;
@@ -318,7 +274,7 @@ public class BinaryTree<K, V> implements Tree<K, V> {
         return min == null ? (p.left != null ? p.left : p.right) : min;
     }
 
-    Node<K, V> createNode(K key, V value, Node<K, V> parent) {
+    private Node<K, V> createNode(K key, V value, Node<K, V> parent) {
         return new Node<>(key, value, parent);
     }
 

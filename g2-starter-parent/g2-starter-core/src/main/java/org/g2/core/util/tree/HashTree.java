@@ -80,21 +80,6 @@ public class HashTree<K, V> extends BinaryTree<K, V> {
         }
     }
 
-    @Override
-    public V get(K key) {
-        return null;
-    }
-
-    @Override
-    public int size() {
-        return size;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
     private HashNode<K, V> newNode(int hash, K k, V value, HashNode<K, V> parent) {
         return new HashNode<>(hash, k, value, parent);
     }

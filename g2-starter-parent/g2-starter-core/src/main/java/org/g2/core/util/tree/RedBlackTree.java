@@ -12,13 +12,33 @@ import java.util.Comparator;
  *
  * @author wenxi.wu@hand-chian.com 2021-03-11
  */
-public class RedBlackTree<K, V> extends BinaryTree<K, V> {
+public class RedBlackTree<K, V>
+        extends AbstractTree<K, V>
+        implements Tree<K, V> {
 
     private static final boolean RED = true;
     private static final boolean BLACK = false;
 
+    private TreeNode<K, V> root;
+    private Comparator<? super K> comparator;
+
+    public RedBlackTree() {
+        this.comparator = null;
+    }
+
     public RedBlackTree(Comparator<? super K> comparator) {
-        super(comparator);
+        this.comparator = comparator;
+    }
+
+    @Override
+    public V put(K key, V value) {
+        ++size;
+        return null;
+    }
+
+    @Override
+    public TreeNode<K, V> getNode(K key) {
+        return null;
     }
 
     /**
@@ -26,9 +46,8 @@ public class RedBlackTree<K, V> extends BinaryTree<K, V> {
      * 新插入的结点显然不会违背1.2.5个特性，
      * 第5个特性可能违背
      */
-    @Override
-    void fixAfterInsertion(Node<K, V> node) {
-        TreeNode<K, V> p = (TreeNode<K, V>) node;
+    void fixAfterInsertion(TreeNode<K, V> node) {
+        TreeNode<K, V> p = node;
         // 当前结点不为空且父亲结点为红色
         while (p != null && isRed(parentOf(p))) {
             // 如果父亲结点是祖父结点的左结点
@@ -87,24 +106,17 @@ public class RedBlackTree<K, V> extends BinaryTree<K, V> {
                 }
             }
         }
-        ((TreeNode<K, V>) root).color = BLACK;
-    }
-
-    @Override
-    boolean checkNodeColor(Node<K, V> p) {
-        return ((TreeNode<K, V>) p).color == BLACK;
+        root.color = BLACK;
     }
 
     /**
      * 红黑树删除后，进行平衡操作
      */
-    @Override
-    void fixAfterDeletion(Node<K, V> node) {
+    void fixAfterDeletion(TreeNode<K, V> node) {
 
     }
 
-    @Override
-    TreeNode<K, V> createNode(K key, V value, Node<K, V> parent) {
+    private TreeNode<K, V> createNode(K key, V value, TreeNode<K, V> parent) {
         return new TreeNode<>(key, value, RED, (TreeNode<K, V>) parent);
     }
 
@@ -118,15 +130,15 @@ public class RedBlackTree<K, V> extends BinaryTree<K, V> {
         }
     }
 
-    private TreeNode<K, V> parentOf(Node<K, V> node) {
+    private TreeNode<K, V> parentOf(TreeNode<K, V> node) {
         return node == null ? null : (TreeNode<K, V>) node.parent;
     }
 
-    private TreeNode<K, V> leftOf(Node<K, V> node) {
+    private TreeNode<K, V> leftOf(TreeNode<K, V> node) {
         return node == null ? null : (TreeNode<K, V>) node.left;
     }
 
-    private TreeNode<K, V> rightOf(Node<K, V> node) {
+    private TreeNode<K, V> rightOf(TreeNode<K, V> node) {
         return node == null ? null : (TreeNode<K, V>) node.right;
     }
 
@@ -148,7 +160,7 @@ public class RedBlackTree<K, V> extends BinaryTree<K, V> {
      * 2. 右结点p的左子树作为旋转结点h的最新的右结点
      * 3. 旋转结点h作为右结点p的左结点
      */
-    private void rotateLeft(Node<K, V> h) {
+    private void rotateLeft(TreeNode<K, V> h) {
         if (h != null) {
             // 结点交换
             TreeNode<K, V> p = (TreeNode<K, V>) h.right;
@@ -179,7 +191,7 @@ public class RedBlackTree<K, V> extends BinaryTree<K, V> {
      * 2. 左结点p的右子树作为旋转结点h的最新的左结点
      * 3. 旋转结点h作为左结点p的右结点
      */
-    private void rotateRight(Node<K, V> h) {
+    private void rotateRight(TreeNode<K, V> h) {
         if (h != null) {
             // 交换结点
             TreeNode<K, V> p = (TreeNode<K, V>) h.left;
