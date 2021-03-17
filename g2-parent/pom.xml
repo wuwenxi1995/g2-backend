@@ -55,6 +55,7 @@
         <g2.boot.message.version>0.1.0-SNAPSHOT</g2.boot.message.version>
         <g2.boot.elasticsearch.version>0.1.0-SNAPSHOT</g2.boot.elasticsearch.version>
         <g2.boot.message.version>0.1.0-SNAPSHOT</g2.boot.message.version>
+        <g2.boot.interface.version>0.1.0-SNAPSHOT</g2.boot.interface.version>
         <g2.boot.core.version>0.1.0-SNAPSHOT</g2.boot.core.version>
 
         <!-- other -->
@@ -109,6 +110,12 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-aspects</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
                 <version>${spring.version}</version>
             </dependency>
 
@@ -178,6 +185,12 @@
                 <groupId>org.g2</groupId>
                 <artifactId>g2-boot-message</artifactId>
                 <version>${g2.boot.message.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-boot-interface</artifactId>
+                <version>${g2.boot.interface.version}</version>
             </dependency>
 
             <!-- other -->

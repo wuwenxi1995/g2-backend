@@ -18,6 +18,7 @@
         <module>g2-boot-scheduler</module>
         <module>g2-boot-elasticsearch</module>
         <module>g2-boot-message</module>
+        <module>g2-boot-interface</module>
     </modules>
 
 </project>
