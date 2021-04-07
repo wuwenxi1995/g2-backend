@@ -1,7 +1,9 @@
 package org.g2.starter.redisson.infra.service.impl;
 
+import org.g2.starter.redisson.domain.LockInfo;
 import org.g2.starter.redisson.infra.enums.LockType;
 import org.g2.starter.redisson.infra.service.LockStrategy;
+import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,8 +21,9 @@ public class ReentrantLockStrategy extends LockStrategy {
 
     @Override
     public boolean lock() {
+        LockInfo lockInfo = lockInfoThreadLocal.get();
         try {
-            rLock = redissonClient.getLock(lockInfo.getName());
+            RLock rLock = redissonClient.getLock(lockInfo.getName());
             return rLock.tryLock(lockInfo.getWaitTime(), lockInfo.getLeaseTime(), lockInfo.getTimeUnit());
         } catch (Exception e) {
             return false;
@@ -29,9 +32,12 @@ public class ReentrantLockStrategy extends LockStrategy {
 
     @Override
     public void unLock() {
+        LockInfo lockInfo = lockInfoThreadLocal.get();
+        RLock rLock = redissonClient.getLock(lockInfo.getName());
         if (rLock.isHeldByCurrentThread()) {
             rLock.unlockAsync();
         }
+        lockInfoThreadLocal.remove();
     }
 
     @Override

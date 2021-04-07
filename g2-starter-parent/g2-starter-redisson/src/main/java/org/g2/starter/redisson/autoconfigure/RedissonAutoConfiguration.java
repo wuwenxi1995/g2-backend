@@ -3,7 +3,6 @@ package org.g2.starter.redisson.autoconfigure;
 import org.g2.core.exception.CommonException;
 import org.g2.core.handler.MethodInvocationHandler;
 import org.g2.core.handler.impl.ChainInvocationHandler;
-import org.g2.starter.redisson.autoconfigure.responsibility.ServerConfig;
 import org.g2.starter.redisson.autoconfigure.responsibility.impl.ClusterServerConfig;
 import org.g2.starter.redisson.autoconfigure.responsibility.impl.MasterSlaveServerConfig;
 import org.g2.starter.redisson.autoconfigure.responsibility.impl.ReplicatedServerConfig;

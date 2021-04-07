@@ -1,6 +1,7 @@
 package org.g2.starter.redisson.domain;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -13,7 +14,7 @@ public class LockInfo {
     private long leaseTime;
     private TimeUnit timeUnit;
     /**
-     * 多个锁
+     * 锁
      */
     private List<String> keyList;
 
@@ -71,5 +72,26 @@ public class LockInfo {
 
     public void setKeyList(List<String> keyList) {
         this.keyList = keyList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LockInfo lockInfo = (LockInfo) o;
+        return waitTime == lockInfo.waitTime &&
+                leaseTime == lockInfo.leaseTime &&
+                name.equals(lockInfo.name) &&
+                timeUnit == lockInfo.timeUnit &&
+                Objects.equals(keyList, lockInfo.keyList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, waitTime, leaseTime, timeUnit, keyList);
     }
 }

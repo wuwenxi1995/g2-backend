@@ -1,5 +1,6 @@
 package org.g2.starter.redisson.infra.service.impl;
 
+import org.g2.starter.redisson.domain.LockInfo;
 import org.g2.starter.redisson.infra.enums.LockType;
 import org.g2.starter.redisson.infra.service.LockStrategy;
 import org.redisson.RedissonRedLock;
@@ -21,13 +22,14 @@ public class RedLockStrategy extends LockStrategy {
 
     @Override
     public boolean lock() {
+        LockInfo lockInfo = lockInfoThreadLocal.get();
         RLock[] rLocks = new RLock[lockInfo.getKeyList().size()];
         for (int i = 0; i < rLocks.length; i++) {
             rLocks[i] = redissonClient.getLock(lockInfo.getKeyList().get(i));
         }
 
         try {
-            rLock = new RedissonRedLock(rLocks);
+            RLock rLock = new RedissonRedLock(rLocks);
             return rLock.tryLock(lockInfo.getWaitTime(), lockInfo.getLeaseTime(), lockInfo.getTimeUnit());
         } catch (Exception e) {
             return false;
@@ -36,7 +38,14 @@ public class RedLockStrategy extends LockStrategy {
 
     @Override
     public void unLock() {
+        LockInfo lockInfo = lockInfoThreadLocal.get();
+        RLock[] rLocks = new RLock[lockInfo.getKeyList().size()];
+        for (int i = 0; i < rLocks.length; i++) {
+            rLocks[i] = redissonClient.getLock(lockInfo.getKeyList().get(i));
+        }
+        RLock rLock = new RedissonRedLock(rLocks);
         rLock.unlock();
+        lockInfoThreadLocal.remove();
     }
 
     @Override
