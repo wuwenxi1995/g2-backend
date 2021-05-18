@@ -1,6 +1,7 @@
 package org.g2.starter.mq.spring.register;
 
 import org.apache.commons.lang3.StringUtils;
+import org.g2.core.util.CollectionUtils;
 import org.g2.starter.mq.EnableMq;
 import org.g2.starter.mq.listener.config.ListenerProcessor;
 import org.g2.starter.mq.spring.processor.MqBeanDefinitionRegisterProcessor;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.ClassUtils;
 
 import java.util.HashSet;
 
@@ -35,6 +37,10 @@ public class MqProcessorRegister implements ImportBeanDefinitionRegistrar {
                 }
             }
 
+            if (this.basePackages.isEmpty()) {
+                this.basePackages.add(getDefaultBasePackage(annotationMetadata));
+            }
+
             RootBeanDefinition definition = new RootBeanDefinition();
             definition.setBeanClass(MqBeanDefinitionRegisterProcessor.class);
             definition.getPropertyValues().add("basePackages", this.basePackages.toArray(new String[0]));
@@ -48,5 +54,9 @@ public class MqProcessorRegister implements ImportBeanDefinitionRegistrar {
             listenerProcessor.setBeanClass(SubjectProcessor.class);
             registry.registerBeanDefinition(LISTENER_PROCESSOR, subjectProcessor);
         }
+    }
+
+    private String getDefaultBasePackage(AnnotationMetadata annotationMetadata) {
+        return ClassUtils.getPackageName(annotationMetadata.getClassName());
     }
 }
