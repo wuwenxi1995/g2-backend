@@ -7,6 +7,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.Topic;
@@ -28,7 +29,7 @@ public class MqProcessorCreator implements BeanPostProcessor, ApplicationContext
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean, String beanName) throws BeansException {
         Annotation annotation;
-        if ((annotation = findAnnotation(bean)) != null) {
+        if (bean instanceof MessageListener && (annotation = findAnnotation(bean)) != null) {
             // 获取messageListerAdapter
             String messageListerBeanName = MqUtil.getBeanName(MqConstants.MESSAGE_LISTENER_ADAPTER, beanName);
             MessageListenerAdapter messageListenerAdapter = applicationContext.getBean(messageListerBeanName, MessageListenerAdapter.class);
@@ -37,7 +38,7 @@ public class MqProcessorCreator implements BeanPostProcessor, ApplicationContext
             String containerBeanName = MqUtil.getBeanName(MqConstants.REDIS_MESSAGE_LISTENER_CONTAINER, beanName);
             RedisMessageListenerContainer container = applicationContext.getBean(containerBeanName, RedisMessageListenerContainer.class);
             Collection<? extends Topic> topic = getTopic(annotation);
-            Assert.notEmpty(topic,"at least one topic required");
+            Assert.notEmpty(topic, "at least one topic required");
             container.addMessageListener(messageListenerAdapter, topic);
             container.setConnectionFactory(redisConnectionFactory);
         }
