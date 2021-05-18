@@ -1,10 +1,9 @@
-package org.g2.starter.mq.spring.register;
+package org.g2.starter.mq.config.spring.register;
 
 import org.apache.commons.lang3.StringUtils;
-import org.g2.core.util.CollectionUtils;
 import org.g2.starter.mq.EnableMq;
 import org.g2.starter.mq.listener.config.ListenerProcessor;
-import org.g2.starter.mq.spring.processor.MqBeanDefinitionRegisterProcessor;
+import org.g2.starter.mq.config.spring.processor.MqBeanDefinitionRegisterProcessor;
 import org.g2.starter.mq.subject.config.SubjectProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;

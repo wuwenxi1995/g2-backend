@@ -46,7 +46,7 @@ public class EnableRedisAutoConfiguration {
         return lettuceConnectionFactory;
     }
 
-    @Bean
+    @Bean(value = RedisCacheClient.BEAN_NAME)
     public RedisCacheClient redisCacheClient(LettuceConnectionFactory customizerLettuceConnectionFactory) {
         return new RedisCacheClient(customizerLettuceConnectionFactory);
     }

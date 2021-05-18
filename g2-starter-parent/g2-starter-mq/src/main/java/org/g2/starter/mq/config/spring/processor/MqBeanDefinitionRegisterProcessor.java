@@ -1,7 +1,7 @@
-package org.g2.starter.mq.spring.processor;
+package org.g2.starter.mq.config.spring.processor;
 
 import org.g2.starter.mq.listener.annotation.Listener;
-import org.g2.starter.mq.spring.scan.ClassPathMqScanner;
+import org.g2.starter.mq.config.spring.scan.ClassPathMqScanner;
 import org.g2.starter.mq.subject.annotation.Subject;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;

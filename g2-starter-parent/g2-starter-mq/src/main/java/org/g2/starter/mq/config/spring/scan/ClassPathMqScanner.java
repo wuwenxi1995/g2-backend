@@ -1,9 +1,9 @@
-package org.g2.starter.mq.spring.scan;
+package org.g2.starter.mq.config.spring.scan;
 
-import org.g2.starter.mq.constants.MqConstants;
+import org.g2.starter.mq.infra.constants.MqConstants;
 import org.g2.starter.mq.listener.annotation.Listener;
 import org.g2.starter.mq.subject.annotation.Subject;
-import org.g2.starter.mq.util.MqUtil;
+import org.g2.starter.mq.infra.util.MqUtil;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;

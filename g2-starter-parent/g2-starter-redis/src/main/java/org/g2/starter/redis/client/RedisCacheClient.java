@@ -25,6 +25,8 @@ public class RedisCacheClient extends RedisTemplate<String, String> implements
         CustomizerRedisListCommand<String, String>,
         CustomizerRedisStreamCommand<String, String> {
 
+    public static final String BEAN_NAME = "redisCacheClient";
+
     private RedisConnection redisConnection;
 
     private RedisCacheClient() {

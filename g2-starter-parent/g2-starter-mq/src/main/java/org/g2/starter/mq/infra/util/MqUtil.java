@@ -1,4 +1,4 @@
-package org.g2.starter.mq.util;
+package org.g2.starter.mq.infra.util;
 
 import org.g2.core.base.BaseConstants;
 
