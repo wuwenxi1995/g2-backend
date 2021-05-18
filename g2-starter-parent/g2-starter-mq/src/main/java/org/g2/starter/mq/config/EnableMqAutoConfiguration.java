@@ -1,6 +1,6 @@
 package org.g2.starter.mq.config;
 
-import org.g2.starter.mq.listener.publish.Publisher;
+import org.g2.starter.mq.subject.publish.Publisher;
 import org.g2.starter.redis.client.RedisCacheClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;

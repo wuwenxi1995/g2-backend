@@ -7,6 +7,7 @@ import org.g2.starter.mq.config.spring.register.MqProcessorRegister;
 import org.g2.starter.mq.config.spring.scan.ClassPathMqScanner;
 import org.g2.starter.mq.subject.annotation.Subject;
 import org.g2.starter.mq.subject.config.SubjectProcessor;
+import org.g2.starter.mq.subject.publish.Publisher;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -26,6 +27,7 @@ import java.lang.annotation.Target;
  * @see ClassPathMqScanner
  * @see ListenerProcessor
  * @see SubjectProcessor
+ * @see Publisher
  */
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
