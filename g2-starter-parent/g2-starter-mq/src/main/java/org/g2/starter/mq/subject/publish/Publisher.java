@@ -10,8 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class Publisher {
 
-    @Autowired
-    private RedisCacheClient redisCacheClient;
+    private final RedisCacheClient redisCacheClient;
+
+    public Publisher(RedisCacheClient redisCacheClient) {
+        this.redisCacheClient = redisCacheClient;
+    }
 
     public void publish(String channel, Object object) {
         redisCacheClient.convertAndSend(channel, object);

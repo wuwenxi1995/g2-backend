@@ -2,7 +2,6 @@ package org.g2.starter.mq.config;
 
 import org.g2.starter.mq.subject.publish.Publisher;
 import org.g2.starter.redis.client.RedisCacheClient;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,8 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class EnableMqAutoConfiguration {
 
     @Bean
-    @ConditionalOnBean(RedisCacheClient.class)
-    public Publisher publisher() {
-        return new Publisher();
+    public Publisher publisher(RedisCacheClient redisCacheClient) {
+        return new Publisher(redisCacheClient);
     }
 }
