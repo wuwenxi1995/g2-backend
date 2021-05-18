@@ -20,8 +20,9 @@ import java.util.HashSet;
 public class MqProcessorRegister implements ImportBeanDefinitionRegistrar {
 
     private static final String VALUE = "basePackages";
-    private static final String INIT_MQ_PROCESSOR = "initMqProcessor";
+    private static final String MQ_REGISTER_PROCESSOR = "mqRegisterProcessor";
     private static final String LISTENER_PROCESSOR = "listenerProcessor";
+    private static final String SUBJECT_PROCESSOR = "subjectProcessor";
 
     private HashSet<String> basePackages = new HashSet<>(16);
 
@@ -43,15 +44,15 @@ public class MqProcessorRegister implements ImportBeanDefinitionRegistrar {
             RootBeanDefinition definition = new RootBeanDefinition();
             definition.setBeanClass(MqBeanDefinitionRegisterProcessor.class);
             definition.getPropertyValues().add("basePackages", this.basePackages.toArray(new String[0]));
-            registry.registerBeanDefinition(INIT_MQ_PROCESSOR, definition);
+            registry.registerBeanDefinition(MQ_REGISTER_PROCESSOR, definition);
 
             RootBeanDefinition listenerProcessor = new RootBeanDefinition();
             listenerProcessor.setBeanClass(ListenerProcessor.class);
             registry.registerBeanDefinition(LISTENER_PROCESSOR, listenerProcessor);
 
             RootBeanDefinition subjectProcessor = new RootBeanDefinition();
-            listenerProcessor.setBeanClass(SubjectProcessor.class);
-            registry.registerBeanDefinition(LISTENER_PROCESSOR, subjectProcessor);
+            subjectProcessor.setBeanClass(SubjectProcessor.class);
+            registry.registerBeanDefinition(SUBJECT_PROCESSOR, subjectProcessor);
         }
     }
 
