@@ -19,7 +19,8 @@ public class ListenerProcessor extends MqProcessorCreator {
     @Override
     protected Collection<? extends Topic> getTopic(Object bean) {
         Listener listener = AnnotationUtils.findAnnotation(bean.getClass(), Listener.class);
-        return Collections.singletonList(new PatternTopic(String.format(MqConstants.KEY_EXPIRATION_EVENT, listener.db())));
+        String db = listener.db() == -1 ? "*" : "" + listener.db();
+        return Collections.singletonList(new PatternTopic(String.format(MqConstants.KEY_EXPIRATION_EVENT, db)));
     }
 
     @Override
