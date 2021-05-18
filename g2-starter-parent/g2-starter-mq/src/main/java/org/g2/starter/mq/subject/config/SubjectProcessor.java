@@ -3,7 +3,6 @@ package org.g2.starter.mq.subject.config;
 import org.g2.starter.mq.MqProcessorCreator;
 import org.g2.starter.mq.subject.annotation.Subject;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.Topic;
 import org.springframework.util.Assert;
@@ -20,25 +19,19 @@ public class SubjectProcessor extends MqProcessorCreator {
 
     @Override
     protected Collection<? extends Topic> getTopic(Annotation annotation) {
-        if (annotation instanceof Subject) {
-            Subject subject = (Subject) annotation;
-            String[] values = subject.values();
-            Assert.notEmpty(values, "at least one values required in @Subject");
-            List<PatternTopic> patternTopics = new ArrayList<>();
-            for (String value : values) {
-                PatternTopic patternTopic = new PatternTopic(value);
-                patternTopics.add(patternTopic);
-            }
-            return patternTopics;
+        Subject subject = (Subject) annotation;
+        String[] values = subject.values();
+        Assert.notEmpty(values, "at least one values required in @Subject");
+        List<PatternTopic> patternTopics = new ArrayList<>();
+        for (String value : values) {
+            PatternTopic patternTopic = new PatternTopic(value);
+            patternTopics.add(patternTopic);
         }
-        return null;
+        return patternTopics;
     }
 
     @Override
     protected Annotation findAnnotation(Object bean) {
-        if (bean instanceof MessageListener) {
-            return AnnotationUtils.findAnnotation(bean.getClass(), Subject.class);
-        }
-        return null;
+        return AnnotationUtils.findAnnotation(bean.getClass(), Subject.class);
     }
 }
