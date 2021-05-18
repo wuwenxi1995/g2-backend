@@ -2,7 +2,6 @@ package org.g2.starter.redis.config;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.g2.core.exception.CommonException;
 import org.g2.core.handler.MethodInvocationHandler;
@@ -25,7 +24,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 
 /**
  * redis 配置自动装配
@@ -38,17 +36,12 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 @Import({EnableShardingConnectionFactory.class})
 public class EnableRedisAutoConfiguration {
 
-    @Bean
-    public LettuceConnectionFactory customizerLettuceConnectionFactory(RedisCacheProperties redisCacheProperties) {
+    @Bean(value = RedisCacheClient.BEAN_NAME)
+    public RedisCacheClient redisCacheClient(RedisCacheProperties redisCacheProperties) {
         List<RedisConfiguration> redisConfigurationList = init(redisCacheProperties);
         LettuceConnectionFactory lettuceConnectionFactory = (LettuceConnectionFactory) new RedisClientAutoConfigureHandler(redisConfigurationList).proceed();
         lettuceConnectionFactory.afterPropertiesSet();
-        return lettuceConnectionFactory;
-    }
-
-    @Bean(value = RedisCacheClient.BEAN_NAME)
-    public RedisCacheClient redisCacheClient(LettuceConnectionFactory customizerLettuceConnectionFactory) {
-        return new RedisCacheClient(customizerLettuceConnectionFactory);
+        return new RedisCacheClient(lettuceConnectionFactory);
     }
 
     @Bean
@@ -59,13 +52,6 @@ public class EnableRedisAutoConfiguration {
     @Bean
     public RedisHelper redisHelper() {
         return new RedisHelper();
-    }
-
-    @Bean
-    public RedisMessageListenerContainer redisMessageListenerContainer(RedisCacheClient redisCacheClient) {
-        RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
-        redisMessageListenerContainer.setConnectionFactory(Objects.requireNonNull(redisCacheClient.getConnectionFactory()));
-        return redisMessageListenerContainer;
     }
 
     private static class RedisClientAutoConfigureHandler extends ChainInvocationHandler {
