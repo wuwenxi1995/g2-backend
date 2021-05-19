@@ -1,13 +1,8 @@
 package org.g2.starter.mq;
 
 import org.g2.starter.mq.listener.annotation.Listener;
-import org.g2.starter.mq.listener.config.ListenerProcessor;
-import org.g2.starter.mq.config.spring.processor.MqBeanDefinitionRegisterProcessor;
 import org.g2.starter.mq.config.spring.register.MqProcessorRegister;
-import org.g2.starter.mq.config.spring.scan.ClassPathMqScanner;
 import org.g2.starter.mq.subject.annotation.Subject;
-import org.g2.starter.mq.subject.config.SubjectProcessor;
-import org.g2.starter.mq.subject.publish.Publisher;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -22,12 +17,12 @@ import java.lang.annotation.Target;
  *
  * @author wenxi.wu@hand-chian.com 2021-05-17
  * </p>
- * @see MqProcessorRegister
- * @see MqBeanDefinitionRegisterProcessor
- * @see ClassPathMqScanner
- * @see ListenerProcessor
- * @see SubjectProcessor
- * @see Publisher
+ * @see org.g2.starter.mq.config.spring.register.MqProcessorRegister
+ * @see org.g2.starter.mq.config.spring.processor.MqBeanDefinitionRegisterProcessor
+ * @see org.g2.starter.mq.config.spring.scan.ClassPathMqScanner
+ * @see org.g2.starter.mq.listener.config.ListenerProcessor
+ * @see org.g2.starter.mq.subject.config.SubjectProcessor
+ * @see org.g2.starter.mq.subject.publish.Publisher
  */
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
