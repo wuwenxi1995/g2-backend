@@ -42,7 +42,7 @@ public class InfClientProxyCreator implements InstantiationAwareBeanPostProcesso
     public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
         if (shouldSkip(beanClass)) {
             if (!beanClass.isInterface()) {
-                log.warn("Skip creating a proxy , {} has @InfClient but it's not an interface", beanName);
+                log.warn("Skip creating a proxy , {} has @InfClient but it's not an interface", beanClass.getSimpleName());
                 return null;
             }
             // 创建代理对象
