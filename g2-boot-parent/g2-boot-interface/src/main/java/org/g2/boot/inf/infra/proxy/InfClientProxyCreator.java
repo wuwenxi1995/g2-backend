@@ -12,6 +12,8 @@ import org.g2.boot.inf.infra.metadata.MethodMetadata;
 import org.g2.boot.inf.infra.resolver.InfClientClassResolver;
 import org.g2.core.base.BaseConstants;
 import org.g2.starter.redis.client.RedisCacheClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
@@ -28,31 +30,29 @@ import java.lang.reflect.Method;
  */
 public class InfClientProxyCreator implements InstantiationAwareBeanPostProcessor {
 
-    private ApplicationContext applicationContext;
+    private static final Logger log = LoggerFactory.getLogger(InfClientProxyCreator.class);
 
-    private RedisCacheClient redisCacheClient;
-    private InfClientClassResolver infClientClassResolver;
-    private InfClientExecutor infClientExecutor;
+    private ApplicationContext applicationContext;
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-        init();
     }
 
     @Override
     public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
         if (shouldSkip(beanClass)) {
-            return null;
+            if (!beanClass.isInterface()) {
+                log.warn("Skip creating a proxy instance , {} has @InfClient but it's not an interface", beanClass);
+                return null;
+            }
+            // 创建代理对象
+            Enhancer enhancer = new Enhancer();
+            enhancer.setSuperclass(beanClass);
+            InfClientProxy infClientProxy = new InfClientProxy(beanClass, applicationContext);
+            enhancer.setCallback(infClientProxy);
+            return enhancer.create();
         }
-        // 创建代理对象
-        Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(beanClass);
-        InfClientProxy infClientProxy = new InfClientProxy(beanClass)
-                .setRedisCacheClient(redisCacheClient)
-                .setInfClientClassResolver(infClientClassResolver)
-                .setInfClientExecutor(infClientExecutor);
-        enhancer.setCallback(infClientProxy);
-        return enhancer.create();
+        return null;
     }
 
     @Override
@@ -72,39 +72,21 @@ public class InfClientProxyCreator implements InstantiationAwareBeanPostProcesso
 
     private boolean shouldSkip(Class<?> beanClass) {
         InfClient infClient = AnnotationUtils.findAnnotation(beanClass, InfClient.class);
-        return infClient == null || !infClient.createProxy();
-    }
-
-    private void init() {
-        this.infClientClassResolver = applicationContext.getBean("infClientClassResolver", InfClientClassResolver.class);
-        this.redisCacheClient = applicationContext.getBean("redisCacheClient", RedisCacheClient.class);
-        this.infClientExecutor = applicationContext.getBean("infClientExecutor", InfClientExecutor.class);
+        return infClient != null && infClient.createProxy();
     }
 
     private static class InfClientProxy implements InvocationHandler {
 
         private Class<?> beanClass;
-        private RedisCacheClient redisCacheClient;
-        private InfClientClassResolver infClientClassResolver;
-        private InfClientExecutor infClientExecutor;
+        private ApplicationContext applicationContext;
+        private volatile InfClientExecutor infClientExecutor;
+        private volatile InfClientClassResolver infClientClassResolver;
+        private volatile RedisCacheClient redisCacheClient;
 
-        InfClientProxy(Class<?> beanClass) {
+
+        InfClientProxy(Class<?> beanClass, ApplicationContext applicationContext) {
             this.beanClass = beanClass;
-        }
-
-        InfClientProxy setRedisCacheClient(RedisCacheClient redisCacheClient) {
-            this.redisCacheClient = redisCacheClient;
-            return this;
-        }
-
-        InfClientProxy setInfClientClassResolver(InfClientClassResolver infClientClassResolver) {
-            this.infClientClassResolver = infClientClassResolver;
-            return this;
-        }
-
-        InfClientProxy setInfClientExecutor(InfClientExecutor infClientExecutor) {
-            this.infClientExecutor = infClientExecutor;
-            return this;
+            this.applicationContext = applicationContext;
         }
 
         @Override
@@ -113,7 +95,13 @@ public class InfClientProxyCreator implements InstantiationAwareBeanPostProcesso
             if (null == call) {
                 return method.invoke(proxy, args);
             }
+            if (infClientClassResolver == null) {
+                infClientClassResolver = applicationContext.getBean(InfClientClassResolver.class);
+            }
             MethodMetadata methodMetadata = infClientClassResolver.resolveMethod(beanClass, method);
+            if (redisCacheClient == null) {
+                redisCacheClient = applicationContext.getBean(RedisCacheClient.class);
+            }
             String infResConfStr = redisCacheClient.<String, String>boundHashOps(InfResConf.cacheKey(methodMetadata.getCode())).get("data");
             if (StringUtils.isBlank(infResConfStr)) {
                 throw new InfClientException(String.format("[%s] interface client config not found", methodMetadata.getCode()));
@@ -127,6 +115,9 @@ public class InfClientProxyCreator implements InstantiationAwareBeanPostProcesso
                 throw new InfClientException(String.format("[%s] interface client config not found", methodMetadata.getCode()));
             }
             InfSysConf infSysConf = InfSysConf.valueOf(infSysConfStr);
+            if (infClientExecutor == null) {
+                infClientExecutor = applicationContext.getBean(InfClientExecutor.class);
+            }
             return infClientExecutor.execute(infSysConf, infResConf, methodMetadata, args);
         }
     }
