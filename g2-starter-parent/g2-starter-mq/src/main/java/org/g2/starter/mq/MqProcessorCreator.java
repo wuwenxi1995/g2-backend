@@ -8,7 +8,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.redis.connection.MessageListener;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.Topic;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
@@ -24,7 +23,7 @@ import java.util.Collection;
 public class MqProcessorCreator implements BeanPostProcessor, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
-    private RedisConnectionFactory redisConnectionFactory;
+    private volatile RedisCacheClient redisCacheClient;
 
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean, String beanName) throws BeansException {
@@ -40,7 +39,10 @@ public class MqProcessorCreator implements BeanPostProcessor, ApplicationContext
             Collection<? extends Topic> topic = getTopic(annotation);
             Assert.notEmpty(topic, "at least one topic required");
             container.addMessageListener(messageListenerAdapter, topic);
-            container.setConnectionFactory(redisConnectionFactory);
+            if (redisCacheClient == null) {
+                redisCacheClient = applicationContext.getBean(RedisCacheClient.class);
+            }
+            container.setConnectionFactory(redisCacheClient.getRequiredConnectionFactory());
         }
         return bean;
     }
@@ -48,7 +50,6 @@ public class MqProcessorCreator implements BeanPostProcessor, ApplicationContext
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-        this.redisConnectionFactory = applicationContext.getBean(RedisCacheClient.BEAN_NAME, RedisCacheClient.class).getRequiredConnectionFactory();
     }
 
     /**
