@@ -32,7 +32,6 @@ public class ClusterConfiguration extends RedisConfiguration {
         if (redisCacheProperties.getCluster().getMaxRedirect() != null) {
             redisClusterConfiguration.setMaxRedirects(redisCacheProperties.getCluster().getMaxRedirect());
         }
-        redisClusterConfiguration.setPassword(redisCacheProperties.getPassword());
         return new LettuceConnectionFactory(redisClusterConfiguration, buildLettuceClientConfiguration());
     }
 }

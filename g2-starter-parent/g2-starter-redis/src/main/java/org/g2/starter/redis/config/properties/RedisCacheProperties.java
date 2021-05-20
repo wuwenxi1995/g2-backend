@@ -1,7 +1,5 @@
 package org.g2.starter.redis.config.properties;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.g2.starter.redis.infra.enums.RedisServerPattern;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -11,8 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(
         prefix = "g2.redis.cache"
 )
-@Setter
-@Getter
 public class RedisCacheProperties{
 
     /**
@@ -56,8 +52,70 @@ public class RedisCacheProperties{
         this.pool = new Pool();
     }
 
-    @Setter
-    @Getter
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getDbIndex() {
+        return dbIndex;
+    }
+
+    public void setDbIndex(int dbIndex) {
+        this.dbIndex = dbIndex;
+    }
+
+    public Sentinel getSentinel() {
+        return sentinel;
+    }
+
+    public void setSentinel(Sentinel sentinel) {
+        this.sentinel = sentinel;
+    }
+
+    public Cluster getCluster() {
+        return cluster;
+    }
+
+    public void setCluster(Cluster cluster) {
+        this.cluster = cluster;
+    }
+
+    public Pool getPool() {
+        return pool;
+    }
+
+    public void setPool(Pool pool) {
+        this.pool = pool;
+    }
+
     public static class Pool {
         /**
          * 最大连接数
@@ -76,12 +134,39 @@ public class RedisCacheProperties{
          */
         private long timeoutMillis = 3000;
 
-        private Pool() {
+        public int getPoolMaxIdle() {
+            return poolMaxIdle;
+        }
+
+        public void setPoolMaxIdle(int poolMaxIdle) {
+            this.poolMaxIdle = poolMaxIdle;
+        }
+
+        public int getPoolMinIdle() {
+            return poolMinIdle;
+        }
+
+        public void setPoolMinIdle(int poolMinIdle) {
+            this.poolMinIdle = poolMinIdle;
+        }
+
+        public long getPoolMaxWaitTime() {
+            return poolMaxWaitTime;
+        }
+
+        public void setPoolMaxWaitTime(long poolMaxWaitTime) {
+            this.poolMaxWaitTime = poolMaxWaitTime;
+        }
+
+        public long getTimeoutMillis() {
+            return timeoutMillis;
+        }
+
+        public void setTimeoutMillis(long timeoutMillis) {
+            this.timeoutMillis = timeoutMillis;
         }
     }
 
-    @Setter
-    @Getter
     public static class Sentinel {
 
         /**
@@ -93,10 +178,24 @@ public class RedisCacheProperties{
          * 集群节点，以"host:port"加","进行分割
          */
         private String nodes;
+
+        public String getMaster() {
+            return master;
+        }
+
+        public void setMaster(String master) {
+            this.master = master;
+        }
+
+        public String getNodes() {
+            return nodes;
+        }
+
+        public void setNodes(String nodes) {
+            this.nodes = nodes;
+        }
     }
 
-    @Setter
-    @Getter
     public static class Cluster {
         /**
          * 集群节点，以"host:port"加","进行分割
@@ -107,5 +206,21 @@ public class RedisCacheProperties{
          * 最大重定向数
          */
         private Integer maxRedirect;
+
+        public String getNodes() {
+            return nodes;
+        }
+
+        public void setNodes(String nodes) {
+            this.nodes = nodes;
+        }
+
+        public Integer getMaxRedirect() {
+            return maxRedirect;
+        }
+
+        public void setMaxRedirect(Integer maxRedirect) {
+            this.maxRedirect = maxRedirect;
+        }
     }
 }
