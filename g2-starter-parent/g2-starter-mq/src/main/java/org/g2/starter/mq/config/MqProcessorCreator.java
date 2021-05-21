@@ -1,4 +1,4 @@
-package org.g2.starter.mq;
+package org.g2.starter.mq.config;
 
 import org.g2.starter.mq.infra.constants.MqConstants;
 import org.g2.starter.mq.infra.util.MqUtil;

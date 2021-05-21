@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.g2.starter.mq.EnableMq;
 import org.g2.starter.mq.listener.config.ListenerProcessor;
 import org.g2.starter.mq.config.spring.processor.MqBeanDefinitionRegisterProcessor;
+import org.g2.starter.mq.publisher.config.PublisherProxyCreator;
 import org.g2.starter.mq.subject.config.SubjectProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -23,6 +24,7 @@ public class MqProcessorRegister implements ImportBeanDefinitionRegistrar {
     private static final String MQ_REGISTER_PROCESSOR = "mqRegisterProcessor";
     private static final String LISTENER_PROCESSOR = "listenerProcessor";
     private static final String SUBJECT_PROCESSOR = "subjectProcessor";
+    private static final String PUBLISHER_PROXY_CREATOR = "publisherProxyCreator";
 
     private HashSet<String> basePackages = new HashSet<>(16);
 
@@ -53,6 +55,10 @@ public class MqProcessorRegister implements ImportBeanDefinitionRegistrar {
             RootBeanDefinition subjectProcessor = new RootBeanDefinition();
             subjectProcessor.setBeanClass(SubjectProcessor.class);
             registry.registerBeanDefinition(SUBJECT_PROCESSOR, subjectProcessor);
+
+            RootBeanDefinition publisherProxyCreator = new RootBeanDefinition();
+            publisherProxyCreator.setBeanClass(PublisherProxyCreator.class);
+            registry.registerBeanDefinition(PUBLISHER_PROXY_CREATOR, publisherProxyCreator);
         }
     }
 

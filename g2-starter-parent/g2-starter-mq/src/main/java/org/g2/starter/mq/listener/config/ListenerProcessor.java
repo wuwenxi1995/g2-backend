@@ -1,6 +1,6 @@
 package org.g2.starter.mq.listener.config;
 
-import org.g2.starter.mq.MqProcessorCreator;
+import org.g2.starter.mq.config.MqProcessorCreator;
 import org.g2.starter.mq.infra.constants.MqConstants;
 import org.g2.starter.mq.listener.annotation.Listener;
 import org.springframework.core.annotation.AnnotationUtils;

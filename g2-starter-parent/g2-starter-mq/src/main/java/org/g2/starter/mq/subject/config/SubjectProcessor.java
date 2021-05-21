@@ -1,6 +1,6 @@
 package org.g2.starter.mq.subject.config;
 
-import org.g2.starter.mq.MqProcessorCreator;
+import org.g2.starter.mq.config.MqProcessorCreator;
 import org.g2.starter.mq.subject.annotation.Subject;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.redis.listener.PatternTopic;
