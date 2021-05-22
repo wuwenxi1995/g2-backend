@@ -20,8 +20,10 @@ import java.lang.reflect.Method;
 /**
  * @author wuwenxi 2021-05-21
  */
-public class PublisherProxyCreator implements InstantiationAwareBeanPostProcessor {
+public class PublisherProxyCreator implements InstantiationAwareBeanPostProcessor, InvocationHandler {
     private static final Logger log = LoggerFactory.getLogger(PublisherProxyCreator.class);
+
+    private static volatile RedisCacheClient redisCacheClient;
 
     @Override
     public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
@@ -33,32 +35,27 @@ public class PublisherProxyCreator implements InstantiationAwareBeanPostProcesso
             // 创建代理对象
             Enhancer enhancer = new Enhancer();
             enhancer.setSuperclass(beanClass);
-            enhancer.setCallback(new PublisherProxy());
+            enhancer.setCallback(this);
             return enhancer.create();
         }
         return null;
     }
 
-    private static class PublisherProxy implements InvocationHandler {
-
-        private static volatile RedisCacheClient redisCacheClient;
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            Topic topic;
-            if ((topic = AnnotationUtils.findAnnotation(method, Topic.class)) == null) {
-                return method.invoke(proxy, args);
-            }
-            if (args.length != 1) {
-                throw new IllegalArgumentException(String.format("method %s need one args", method.getName()));
-            }
-            String channel = topic.topic();
-            if (redisCacheClient == null) {
-                redisCacheClient = ApplicationContextHelper.getApplicationContext().getBean(RedisCacheClient.class);
-            }
-            Object message = args[0];
-            redisCacheClient.convertAndSend(channel, message);
-            return message;
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        Topic topic;
+        if ((topic = AnnotationUtils.findAnnotation(method, Topic.class)) == null) {
+            return method.invoke(proxy, args);
         }
+        if (args.length != 1) {
+            throw new IllegalArgumentException(String.format("method %s need one args", method.getName()));
+        }
+        String channel = topic.topic();
+        if (redisCacheClient == null) {
+            redisCacheClient = ApplicationContextHelper.getApplicationContext().getBean(RedisCacheClient.class);
+        }
+        Object message = args[0];
+        redisCacheClient.convertAndSend(channel, message);
+        return message;
     }
 }
