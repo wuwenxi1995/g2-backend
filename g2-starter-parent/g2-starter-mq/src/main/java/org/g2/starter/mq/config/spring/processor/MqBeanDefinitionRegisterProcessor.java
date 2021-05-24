@@ -10,6 +10,8 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.core.type.filter.AssignableTypeFilter;
+import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.lang.NonNull;
 
 /**
@@ -32,6 +34,7 @@ public class MqBeanDefinitionRegisterProcessor implements BeanDefinitionRegistry
         scanner.resetFilters(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(Listener.class));
         scanner.addIncludeFilter(new AnnotationTypeFilter(Subject.class));
+        scanner.addIncludeFilter(new AssignableTypeFilter(MessageListener.class));
         scanner.scan(this.basePackages);
     }
 
