@@ -43,7 +43,7 @@ public interface BulkRepository<T extends BaseEntity> {
      * @return BulkResponse
      * @throws IOException 异常信息
      */
-    BulkResponse invokeBulk(BulkRequest bulkRequest) throws IOException;
+    BulkResponse bulk(BulkRequest bulkRequest) throws IOException;
 
     /**
      * 初始化BulkProcessor

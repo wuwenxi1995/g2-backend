@@ -2,6 +2,7 @@ package org.g2.boot.elasticsearch.infra.repository.impl;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,8 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -33,16 +36,22 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.g2.boot.elasticsearch.domain.entity.Page;
 import org.g2.boot.elasticsearch.domain.repository.BaseRepository;
+import org.g2.boot.elasticsearch.infra.uitl.ElasticsearchPageUtil;
 import org.g2.core.helper.FastJsonHelper;
 import org.g2.core.util.Reflections;
+import org.g2.core.util.StringUtil;
+import org.g2.starter.elasticsearch.config.spring.builder.RestClientBuildFactory;
 import org.g2.starter.elasticsearch.domain.entity.BaseEntity;
 import org.g2.starter.elasticsearch.infra.annotation.Document;
 import org.g2.starter.elasticsearch.infra.constants.OmsElasticsearchConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author wenxi.wu@hand-china.com 2020-11-18
@@ -51,11 +60,8 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
 
     private static final Logger log = LoggerFactory.getLogger(BaseRepositoryImpl.class);
 
-    private final RestHighLevelClient restHighLevelClient;
-
-    public BaseRepositoryImpl(RestHighLevelClient restHighLevelClient) {
-        this.restHighLevelClient = restHighLevelClient;
-    }
+    @Autowired
+    private RestClientBuildFactory restClientBuildFactory;
 
     private String indexName;
     private Class<T> tClass;
@@ -79,7 +85,7 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
     @Override
     public void createIndex(CreateIndexRequest createIndexRequest) throws IOException {
         try {
-            restHighLevelClient.indices().create(createIndexRequest, RequestOptions.DEFAULT);
+            restClientBuildFactory.restHighLevelClient().indices().create(createIndexRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
             log.error("elasticsearch create index error : {}", e.getMessage());
             throw e;
@@ -100,7 +106,7 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
     public boolean existsIndex(String indexName) throws IOException {
         GetIndexRequest getIndexRequest = new GetIndexRequest(indexName);
         try {
-            return restHighLevelClient.indices().exists(getIndexRequest, RequestOptions.DEFAULT);
+            return restClientBuildFactory.restHighLevelClient().indices().exists(getIndexRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
             log.error("elasticsearch exists index error : {}", e.getMessage());
             throw e;
@@ -111,7 +117,7 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
     public boolean deleteIndex(String indexName) throws IOException {
         DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(indexName);
         try {
-            AcknowledgedResponse response = restHighLevelClient.indices().delete(deleteIndexRequest, RequestOptions.DEFAULT);
+            AcknowledgedResponse response = restClientBuildFactory.restHighLevelClient().indices().delete(deleteIndexRequest, RequestOptions.DEFAULT);
             return response.isAcknowledged();
         } catch (IOException e) {
             log.error("elasticsearch delete index error : {}", e.getMessage());
@@ -149,7 +155,7 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
         putMappingRequest.source(mapping);
 
         try {
-            AcknowledgedResponse response = restHighLevelClient.indices().putMapping(putMappingRequest, RequestOptions.DEFAULT);
+            AcknowledgedResponse response = restClientBuildFactory.restHighLevelClient().indices().putMapping(putMappingRequest, RequestOptions.DEFAULT);
             return response.isAcknowledged();
         } catch (IOException e) {
             log.error("elasticsearch put mapping error : {}", e.getMessage());
@@ -162,7 +168,7 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
         GetMappingsRequest getMappingsRequest = new GetMappingsRequest();
         getMappingsRequest.indices(indexName);
         try {
-            GetMappingsResponse mapping = restHighLevelClient.indices().getMapping(getMappingsRequest, RequestOptions.DEFAULT);
+            GetMappingsResponse mapping = restClientBuildFactory.restHighLevelClient().indices().getMapping(getMappingsRequest, RequestOptions.DEFAULT);
             Map<String, MappingMetaData> mappings = mapping.mappings();
             if (log.isDebugEnabled()) {
                 log.debug("index [{}] mapping data :{}", indexName, FastJsonHelper.objectConvertString(mapping));
@@ -181,7 +187,7 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
         request.indices(indexName);
         request.fields(filed);
         try {
-            GetFieldMappingsResponse response = restHighLevelClient.indices().getFieldMapping(request, RequestOptions.DEFAULT);
+            GetFieldMappingsResponse response = restClientBuildFactory.restHighLevelClient().indices().getFieldMapping(request, RequestOptions.DEFAULT);
             Map<String, Map<String, GetFieldMappingsResponse.FieldMappingMetaData>> mappings = response.mappings();
             return mappings.get(indexName).get(filed).sourceAsMap();
         } catch (IOException e) {
@@ -197,7 +203,7 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
         }
         AnalyzeRequest request = AnalyzeRequest.withIndexAnalyzer(indexName, analyzer, text);
         try {
-            AnalyzeResponse response = restHighLevelClient.indices().analyze(request, RequestOptions.DEFAULT);
+            AnalyzeResponse response = restClientBuildFactory.restHighLevelClient().indices().analyze(request, RequestOptions.DEFAULT);
             List<AnalyzeResponse.AnalyzeToken> tokens = response.getTokens();
             return tokens.stream().map(AnalyzeResponse.AnalyzeToken::getTerm).collect(Collectors.toList());
         } catch (IOException e) {
@@ -261,9 +267,9 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
     }
 
     @Override
-    public BulkResponse invokeBulk(BulkRequest bulkRequest) throws IOException {
+    public BulkResponse bulk(BulkRequest bulkRequest) throws IOException {
         try {
-            return restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+            return restClientBuildFactory.restHighLevelClient().bulk(bulkRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
             log.error("elasticsearch invoke bulk error : ", e);
             throw e;
@@ -275,7 +281,7 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
         listener = listener == null ? new CustomBulkProcessorListener() : listener;
         return BulkProcessor.builder(
                 (request, bulkListener) ->
-                        restHighLevelClient.bulkAsync(request, RequestOptions.DEFAULT, bulkListener),
+                        restClientBuildFactory.restHighLevelClient().bulkAsync(request, RequestOptions.DEFAULT, bulkListener),
                 listener)
                 // 根据当前添加的操作数设置何时刷新新的批量请求（默认为1000，使用-1禁用它）
                 // 1000请求刷新一次bulk
@@ -335,7 +341,7 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
     public T search(String id) {
         GetRequest getRequest = new GetRequest(indexName, id);
         try {
-            GetResponse response = restHighLevelClient.get(getRequest, RequestOptions.DEFAULT);
+            GetResponse response = restClientBuildFactory.restHighLevelClient().get(getRequest, RequestOptions.DEFAULT);
             if (response.isExists()) {
                 if (log.isDebugEnabled()) {
                     log.debug("elasticsearch search response : {}", FastJsonHelper.objectConvertString(response));
@@ -351,6 +357,34 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
 
     @Override
     public Page<T> search(SearchSourceBuilder searchSourceBuilder, int page, int size) {
-        return null;
+        Page<T> result = new Page<>(page, size);
+        ElasticsearchPageUtil.page(searchSourceBuilder, result);
+
+        SearchResponse searchResponse;
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.indices(indexName);
+        searchRequest.source(searchSourceBuilder);
+        try {
+            searchResponse = restClientBuildFactory.restHighLevelClient().search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("elasticsearch search error : {}", StringUtil.exceptionString(e));
+            return result;
+        }
+        SearchHits hits = searchResponse.getHits();
+        result.setAggregations(searchResponse.getAggregations());
+        long total = hits.getTotalHits().value;
+        result.setTotal(total);
+        if (total == 0) {
+            return result;
+        }
+        List<T> tList = new ArrayList<>();
+        for (SearchHit searchHit : hits) {
+            String source = searchHit.getSourceAsString();
+            T entity = FastJsonHelper.stringConvertObject(source, tClass);
+            entity.setId(searchHit.getId());
+            tList.add(entity);
+        }
+        result.setData(tList);
+        return result;
     }
 }
