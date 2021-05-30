@@ -44,4 +44,9 @@ public @interface Document {
      * 分页最大返回数
      */
     long maxResult() default 10000;
+
+    /**
+     * 是否进行索引重建
+     */
+    boolean reIndex() default false;
 }

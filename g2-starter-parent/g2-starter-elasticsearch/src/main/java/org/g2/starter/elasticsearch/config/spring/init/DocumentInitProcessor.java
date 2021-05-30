@@ -7,20 +7,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.reindex.UpdateByQueryRequest;
+import org.elasticsearch.script.Script;
 import org.g2.core.helper.FastJsonHelper;
+import org.g2.starter.elasticsearch.config.spring.builder.RestClientBuildFactory;
 import org.g2.starter.elasticsearch.infra.annotation.Document;
 import org.g2.starter.elasticsearch.infra.annotation.Field;
 import org.g2.starter.elasticsearch.infra.constants.OmsElasticsearchConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.lang.NonNull;
@@ -32,11 +32,18 @@ import org.springframework.util.CollectionUtils;
  *
  * @author wenxi.wu@hand-china.com 2020-09-23
  */
-public class DocumentInitProcessor implements BeanPostProcessor, BeanFactoryAware {
+public class DocumentInitProcessor implements BeanPostProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(DocumentInitProcessor.class);
 
-    private RestHighLevelClient restHighLevelClient;
+    private static final String SCRIPT = "def name = ctx._source.skuName;ctx._source.skuName = name;";
+    private static final Map<String, Object> param = new HashMap<>(16);
+
+    private RestClientBuildFactory restClientBuildFactory;
+
+    public DocumentInitProcessor(RestClientBuildFactory restClientBuildFactory) {
+        this.restClientBuildFactory = restClientBuildFactory;
+    }
 
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean, String beanName) throws BeansException {
@@ -47,7 +54,7 @@ public class DocumentInitProcessor implements BeanPostProcessor, BeanFactoryAwar
 
             GetIndexRequest getIndexRequest = new GetIndexRequest(indexName);
             try {
-                boolean exists = restHighLevelClient.indices().exists(getIndexRequest, RequestOptions.DEFAULT);
+                boolean exists = restClientBuildFactory.restHighLevelClient().indices().exists(getIndexRequest, RequestOptions.DEFAULT);
                 if (!exists) {
                     CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName);
                     // 设置分片与副本数量
@@ -58,16 +65,25 @@ public class DocumentInitProcessor implements BeanPostProcessor, BeanFactoryAwar
                     Map<String, Object> mapping = createMapping(jdkFields, indexName);
                     createIndexRequest.mapping(mapping);
                     // 异步创建索引
-                    restHighLevelClient.indices().createAsync(createIndexRequest, RequestOptions.DEFAULT, new ActionListener<CreateIndexResponse>() {
+                    restClientBuildFactory.restHighLevelClient().indices().createAsync(createIndexRequest, RequestOptions.DEFAULT, new ActionListener<CreateIndexResponse>() {
 
                         @Override
-                        public void onResponse(CreateIndexResponse createIndexResponse) {}
+                        public void onResponse(CreateIndexResponse createIndexResponse) {
+                        }
 
                         @Override
                         public void onFailure(Exception e) {
                             log.error("create index={} fail in Elasticsearch", indexName);
                         }
                     });
+                }
+                // 否则执行重建索引
+                if (document.reIndex()) {
+                    UpdateByQueryRequest updateByQueryRequest = new UpdateByQueryRequest();
+                    updateByQueryRequest.indices(indexName);
+                    Script script = new Script(Script.DEFAULT_SCRIPT_TYPE, Script.DEFAULT_SCRIPT_LANG, SCRIPT, param);
+                    updateByQueryRequest.setScript(script);
+                    restClientBuildFactory.restHighLevelClient().updateByQuery(updateByQueryRequest, RequestOptions.DEFAULT);
                 }
             } catch (Exception e) {
                 log.error("Elasticsearch init document error : ", e);
@@ -140,10 +156,5 @@ public class DocumentInitProcessor implements BeanPostProcessor, BeanFactoryAwar
             properties.put("search_analyzer", field.searchAnalyzer());
         }
 
-    }
-
-    @Override
-    public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
-        this.restHighLevelClient = beanFactory.getBean("restHighLevelClient", RestHighLevelClient.class);
     }
 }
