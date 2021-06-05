@@ -125,7 +125,6 @@ public final class ThreadPoolExecutorUtil {
 
     private static <T> Future<String> taskRunner(T processData, ThreadPoolTaskExecutor executor, int maxThread, AtomicInteger taskCounter, Consumer<T> consumer) {
         Callable<String> taskRunner = () -> {
-            taskCounter.incrementAndGet();
             try {
                 consumer.accept(processData);
             } catch (Exception e) {
@@ -137,7 +136,11 @@ public final class ThreadPoolExecutorUtil {
         };
         while (true) {
             if (taskCounter.get() < maxThread) {
-                return executor.submit(taskRunner);
+                int expect = taskCounter.get();
+                int update = expect + 1;
+                if (taskCounter.compareAndSet(expect, update)) {
+                    return executor.submit(taskRunner);
+                }
             }
         }
     }
