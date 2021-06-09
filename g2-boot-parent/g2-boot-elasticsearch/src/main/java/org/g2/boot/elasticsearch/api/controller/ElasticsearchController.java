@@ -1,5 +1,9 @@
 package org.g2.boot.elasticsearch.api.controller;
 
+import org.g2.boot.elasticsearch.app.service.ElasticsearchService;
+import org.g2.core.util.Results;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -9,6 +13,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1")
 public class ElasticsearchController {
+
+    private final ElasticsearchService elasticsearchService;
+
+    public ElasticsearchController(ElasticsearchService elasticsearchService) {
+        this.elasticsearchService = elasticsearchService;
+    }
+
+    /**
+     * 重建索引
+     */
+    @PostMapping("/reIndex")
+    public ResponseEntity<?> reIndex(String indexName) {
+        elasticsearchService.reIndex(indexName);
+        return Results.success();
+    }
 
 }
 

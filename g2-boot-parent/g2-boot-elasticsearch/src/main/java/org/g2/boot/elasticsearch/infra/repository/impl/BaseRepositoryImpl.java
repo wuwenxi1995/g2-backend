@@ -2,12 +2,14 @@ package org.g2.boot.elasticsearch.infra.repository.impl;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BackoffPolicy;
@@ -16,9 +18,11 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.AnalyzeRequest;
@@ -36,6 +40,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -46,12 +51,16 @@ import org.g2.core.helper.FastJsonHelper;
 import org.g2.core.util.Reflections;
 import org.g2.core.util.StringUtil;
 import org.g2.starter.elasticsearch.config.spring.builder.RestClientBuildFactory;
+import org.g2.starter.elasticsearch.config.spring.init.DocumentInitProcessor;
 import org.g2.starter.elasticsearch.domain.entity.BaseEntity;
 import org.g2.starter.elasticsearch.infra.annotation.Document;
 import org.g2.starter.elasticsearch.infra.constants.OmsElasticsearchConstants;
+import org.g2.starter.elasticsearch.infra.enums.Analyzer;
+import org.g2.starter.elasticsearch.infra.enums.FieldType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 /**
  * @author wenxi.wu@hand-china.com 2020-11-18
@@ -62,6 +71,9 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
 
     @Autowired
     private RestClientBuildFactory restClientBuildFactory;
+
+    @Autowired
+    private DocumentInitProcessor documentInitProcessor;
 
     private String indexName;
     private Class<T> tClass;
@@ -126,30 +138,11 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
     }
 
     @Override
-    public boolean createMapping(String indexName, Map<String, String> mappings) throws IOException {
-        Map<String, Object> mapping = new HashMap<>(16);
-        Map<String, Object> properties = new HashMap<>(16);
-        mappings.forEach((key, value) -> {
-            // 字段
-            Map<String, Object> fieldMap = new HashMap<>(4);
-            // 字段属性
-            fieldMap.put("type", value);
-            fieldMap.put("index", true);
-            if (OmsElasticsearchConstants.FiledType.TEXT.equals(value)) {
-                fieldMap.put("analyzer", OmsElasticsearchConstants.Analyzer.IK_MAX_WORD);
-                fieldMap.put("search_analyzer", OmsElasticsearchConstants.Analyzer.IK_SMART);
-            }
-            if (OmsElasticsearchConstants.FiledType.DATE.equals(value)) {
-                fieldMap.put("format", "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis");
-                // 格式错误的数字将引发异常并拒绝整个文档
-                fieldMap.put("ignore_malformed", false);
-                // 默认为null，这意味着该字段被视为丢失
-                fieldMap.put("null_value", null);
-            }
-            properties.put(key, fieldMap);
-        });
-        mapping.put("properties", properties);
-
+    public boolean createMapping(String indexName) throws IOException {
+        Object document = documentInitProcessor.getDocument(indexName);
+        Assert.notNull(document, String.format("not found index : %s", indexName));
+        Field[] fields = document.getClass().getDeclaredFields();
+        Map<String, Object> mapping = documentInitProcessor.createMapping(fields, indexName);
         // 创建映射
         PutMappingRequest putMappingRequest = new PutMappingRequest(indexName);
         putMappingRequest.source(mapping);
@@ -199,7 +192,7 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
     @Override
     public List<String> analyze(String indexName, String analyzer, String... text) throws IOException {
         if (StringUtils.isBlank(analyzer)) {
-            analyzer = OmsElasticsearchConstants.Analyzer.IK_MAX_WORD;
+            analyzer = Analyzer.IK_MAX_WORD.getAnalyzer();
         }
         AnalyzeRequest request = AnalyzeRequest.withIndexAnalyzer(indexName, analyzer, text);
         try {
@@ -253,12 +246,33 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
 
     @Override
     public void batchIndexDocument(List<T> documents) {
-
+        BulkRequest bulkRequest = new BulkRequest();
+        for (T document : documents) {
+            IndexRequest indexRequest = new IndexRequest(indexName);
+            indexRequest.id(document.getId());
+            indexRequest.source(JSON.toJSON(document), XContentType.JSON);
+            bulkRequest.add(indexRequest);
+        }
+        try {
+            restClientBuildFactory.restHighLevelClient().bulk(bulkRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("elasticsearch execute bulk error :", e);
+        }
     }
 
     @Override
     public void batchUpdateDocument(List<T> documents) {
-
+        BulkRequest bulkRequest = new BulkRequest();
+        for (T document : documents) {
+            UpdateRequest updateRequest = new UpdateRequest(indexName, document.getId());
+            updateRequest.doc(JSON.toJSON(document), XContentType.JSON);
+            bulkRequest.add(updateRequest);
+        }
+        try {
+            restClientBuildFactory.restHighLevelClient().bulk(bulkRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("elasticsearch execute bulk error :", e);
+        }
     }
 
     @Override

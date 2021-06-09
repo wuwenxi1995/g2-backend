@@ -11,13 +11,12 @@ import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.reindex.UpdateByQueryRequest;
-import org.elasticsearch.script.Script;
 import org.g2.core.helper.FastJsonHelper;
 import org.g2.starter.elasticsearch.config.spring.builder.RestClientBuildFactory;
 import org.g2.starter.elasticsearch.infra.annotation.Document;
 import org.g2.starter.elasticsearch.infra.annotation.Field;
-import org.g2.starter.elasticsearch.infra.constants.OmsElasticsearchConstants;
+import org.g2.starter.elasticsearch.infra.enums.Analyzer;
+import org.g2.starter.elasticsearch.infra.enums.FieldType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -36,10 +35,8 @@ public class DocumentInitProcessor implements BeanPostProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(DocumentInitProcessor.class);
 
-    private static final String SCRIPT = "def name = ctx._source.skuName;ctx._source.skuName = name;";
-    private static final Map<String, Object> param = new HashMap<>(16);
-
-    private RestClientBuildFactory restClientBuildFactory;
+    private final RestClientBuildFactory restClientBuildFactory;
+    private Map<String, Object> documentMap = new HashMap<>(16);
 
     public DocumentInitProcessor(RestClientBuildFactory restClientBuildFactory) {
         this.restClientBuildFactory = restClientBuildFactory;
@@ -51,7 +48,7 @@ public class DocumentInitProcessor implements BeanPostProcessor {
         java.lang.reflect.Field[] jdkFields = bean.getClass().getDeclaredFields();
         if (document != null && jdkFields.length > 0) {
             String indexName = document.indexName();
-
+            documentMap.put(indexName, bean);
             GetIndexRequest getIndexRequest = new GetIndexRequest(indexName);
             try {
                 boolean exists = restClientBuildFactory.restHighLevelClient().indices().exists(getIndexRequest, RequestOptions.DEFAULT);
@@ -77,14 +74,6 @@ public class DocumentInitProcessor implements BeanPostProcessor {
                         }
                     });
                 }
-                // 否则执行重建索引
-                if (document.reIndex()) {
-                    UpdateByQueryRequest updateByQueryRequest = new UpdateByQueryRequest();
-                    updateByQueryRequest.indices(indexName);
-                    Script script = new Script(Script.DEFAULT_SCRIPT_TYPE, Script.DEFAULT_SCRIPT_LANG, SCRIPT, param);
-                    updateByQueryRequest.setScript(script);
-                    restClientBuildFactory.restHighLevelClient().updateByQuery(updateByQueryRequest, RequestOptions.DEFAULT);
-                }
             } catch (Exception e) {
                 log.error("Elasticsearch init document error : ", e);
             }
@@ -92,12 +81,16 @@ public class DocumentInitProcessor implements BeanPostProcessor {
         return bean;
     }
 
-    private Map<String, Object> createMapping(java.lang.reflect.Field[] jdkFields, String indexName) {
+    public Object getDocument(String indexName) {
+        return documentMap.get(indexName);
+    }
+
+    public Map<String, Object> createMapping(java.lang.reflect.Field[] jdkFields, String indexName) {
         Map<String, Object> mapping = new HashMap<>(16);
         Map<String, Object> properties = new HashMap<>(16);
         // 解析字段
         for (java.lang.reflect.Field jdkField : jdkFields) {
-            Map<String, Object> fieldMap = new HashMap<>(4);
+            Map<String, Object> fieldMap = new HashMap<>(16);
             Field[] fields = jdkField.getAnnotationsByType(Field.class);
             if (null == fields) {
                 log.warn("current es index ({}), the field ({}) has no @Field Tag", indexName, FastJsonHelper.objectConvertString(jdkField));
@@ -106,7 +99,7 @@ public class DocumentInitProcessor implements BeanPostProcessor {
 
             boolean hasField = false;
             // 判断是否含有fields字段
-            Map<String, Object> fieldsMap = new HashMap<>(4);
+            Map<String, Object> fieldsMap = new HashMap<>(16);
             for (int i = 0; i < fields.length; i++) {
                 Field index = fields[i];
                 if (!index.fields()) {
@@ -118,9 +111,9 @@ public class DocumentInitProcessor implements BeanPostProcessor {
                     hasField = true;
                     continue;
                 }
-                String fieldsName = StringUtils.isBlank(index.fieldsName()) ? index.type() + i : index.fieldsName();
+                String fieldsName = StringUtils.isBlank(index.fieldsName()) ? index.type().getType() + i : index.fieldsName();
 
-                Map<String, Object> fieldsProperties = new HashMap<>(4);
+                Map<String, Object> fieldsProperties = new HashMap<>(16);
                 createProperties(index, fieldsProperties);
                 fieldsMap.put(fieldsName, fieldsProperties);
             }
@@ -138,8 +131,8 @@ public class DocumentInitProcessor implements BeanPostProcessor {
     }
 
     private void createProperties(Field field, Map<String, Object> properties) {
-        properties.put("type", field.type());
-        if (OmsElasticsearchConstants.FiledType.DATE.equals(field.type())) {
+        properties.put("type", field.type().getType());
+        if (FieldType.DATE.equals(field.type())) {
             properties.put("format", "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis");
             // 格式错误的数字将引发异常并拒绝整个文档
             properties.put("ignore_malformed", false);
@@ -149,12 +142,12 @@ public class DocumentInitProcessor implements BeanPostProcessor {
         if (!field.index()) {
             properties.put("index", field.index());
         }
-        if (StringUtils.isNotBlank(field.analyzer())) {
-            properties.put("analyzer", field.analyzer());
+        if (FieldType.TEXT.equals(field.type())) {
+            Analyzer analyzer = Analyzer.DEFAULT.equals(field.analyzer()) ? Analyzer.IK_MAX_WORD : field.analyzer();
+            properties.put("analyzer", analyzer.getAnalyzer());
+            if (StringUtils.isNotBlank(field.searchAnalyzer().getAnalyzer())) {
+                properties.put("search_analyzer", field.searchAnalyzer().getAnalyzer());
+            }
         }
-        if (StringUtils.isNotBlank(field.searchAnalyzer())) {
-            properties.put("search_analyzer", field.searchAnalyzer());
-        }
-
     }
 }

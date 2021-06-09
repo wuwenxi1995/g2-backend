@@ -26,11 +26,6 @@ public @interface Document {
     String indexName();
 
     /**
-     * 类型
-     */
-    String type() default OmsElasticsearchConstants.IndexType.DEFAULT;
-
-    /**
      * 分片数
      */
     int shards() default 1;
@@ -44,9 +39,4 @@ public @interface Document {
      * 分页最大返回数
      */
     long maxResult() default 10000;
-
-    /**
-     * 是否进行索引重建
-     */
-    boolean reIndex() default false;
 }

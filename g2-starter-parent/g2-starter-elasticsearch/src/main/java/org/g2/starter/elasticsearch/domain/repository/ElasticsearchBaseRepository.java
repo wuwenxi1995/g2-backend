@@ -48,10 +48,9 @@ public interface ElasticsearchBaseRepository {
      * 创建索引
      *
      * @param indexName 索引名
-     * @param mappings  映射关系
      * @throws IOException 异常信息
      */
-    boolean createMapping(String indexName, Map<String, String> mappings) throws IOException;
+    boolean createMapping(String indexName) throws IOException;
 
     /**
      * 查询映射
