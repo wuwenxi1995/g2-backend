@@ -58,6 +58,26 @@
             <artifactId>g2-oms-product-core</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.g2</groupId>
+            <artifactId>g2-boot-interface</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.g2</groupId>
+            <artifactId>g2-starter-mq</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.g2</groupId>
+            <artifactId>g2-boot-elasticsearch</artifactId>
+        </dependency>
+
     </dependencies>
 
 

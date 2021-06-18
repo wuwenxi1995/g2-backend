@@ -6,4 +6,8 @@ package org.g2.oms.order.app.service;
 public interface OrderService {
 
     String test();
+
+    String test01();
+
+    void test02(Long size);
 }

@@ -1,5 +1,7 @@
 package org.g2.oms.product;
 
+import org.g2.boot.inf.annotation.EnableInfClient;
+import org.g2.starter.mq.EnableMq;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
@@ -13,6 +15,8 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {"org.g2.oms"})
 @SpringBootApplication
 @EnableEurekaClient
+@EnableMq(basePackages = {"org.g2.oms.product"})
+@EnableInfClient
 public class G2OmsProductApplication {
 
     public static void main(String[] args) {

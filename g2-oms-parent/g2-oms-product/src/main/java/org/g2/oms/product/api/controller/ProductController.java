@@ -24,4 +24,16 @@ public class ProductController {
     public ResponseEntity<?> test() {
         return Results.success(productService.get());
     }
+
+    @GetMapping("/publish")
+    public ResponseEntity<?> publish() {
+        productService.publish();
+        return Results.success();
+    }
+
+    @GetMapping("/listener")
+    public ResponseEntity<?> listener(){
+        productService.listener();
+        return Results.success();
+    }
 }

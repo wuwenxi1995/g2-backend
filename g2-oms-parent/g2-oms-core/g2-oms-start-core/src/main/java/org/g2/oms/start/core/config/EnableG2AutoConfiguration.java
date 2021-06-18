@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * @author wenxi.wu@hand-chian.com 2020-12-03
  */
 @Configuration
-@EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
+@EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = false)
 @EnableAsync
 @EnableConfigurationProperties
 public class EnableG2AutoConfiguration {

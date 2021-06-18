@@ -6,4 +6,8 @@ package org.g2.oms.product.app.service;
 public interface ProductService {
 
     String get();
+
+    void publish();
+
+    void listener();
 }
