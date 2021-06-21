@@ -39,7 +39,7 @@
 
         <!-- starter version -->
         <g2.starter.redis.version>0.1.0-SNAPSHOT</g2.starter.redis.version>
-        <g2.starter.redisson.version>0.1.0-SNAPSHOT</g2.starter.redisson.version>
+        <g2.starter.lock.version>0.1.0-SNAPSHOT</g2.starter.lock.version>
         <g2.starter.elasticsearch.version>0.1.0-SNAPSHOT</g2.starter.elasticsearch.version>
         <g2.starter.rabbitmq.version>0.1.0-SNAPSHOT</g2.starter.rabbitmq.version>
         <g2.starter.kafka.version>0.1.0-SNAPSHOT</g2.starter.kafka.version>
@@ -146,8 +146,8 @@
 
             <dependency>
                 <groupId>org.g2</groupId>
-                <artifactId>g2-starter-redisson</artifactId>
-                <version>${g2.starter.redisson.version}</version>
+                <artifactId>g2-starter-lock</artifactId>
+                <version>${g2.starter.lock.version}</version>
             </dependency>
 
             <dependency>
@@ -281,6 +281,19 @@
                 <version>${zookeeper.version}</version>
             </dependency>
 
+            <!-- 对zookeeper的底层api的一些封装 -->
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-framework</artifactId>
+                <version>2.12.0</version>
+            </dependency>
+            <!-- 封装了一些高级特性，如：Cache事件监听、选举、分布式锁、分布式Barrier -->
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-recipes</artifactId>
+                <version>2.12.0</version>
+            </dependency>
+
             <!-- https://mvnrepository.com/artifact/org.quartz-scheduler/quartz -->
             <dependency>
                 <groupId>org.quartz-scheduler</groupId>
@@ -292,6 +305,12 @@
             <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jodd</groupId>
+                        <artifactId>jodd-bean</artifactId>
+                    </exclusion>
+                </exclusions>
                 <version>${redisson.version}</version>
             </dependency>
 
