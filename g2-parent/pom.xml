@@ -156,6 +156,12 @@
                 <version>${g2.starter.mybatis.helper.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-starter-mq</artifactId>
+                <version>${g2.starter.mq.version}</version>
+            </dependency>
+
             <!-- g2 boot -->
             <dependency>
                 <groupId>org.g2</groupId>
