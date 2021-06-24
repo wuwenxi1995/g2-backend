@@ -8,6 +8,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
+import org.springframework.lang.NonNull;
 
 import java.util.Set;
 
@@ -23,6 +24,7 @@ public class ClassPathMqScanner extends ClassPathBeanDefinitionScanner {
         this.registry = registry;
     }
 
+    @NonNull
     @Override
     protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
         Set<BeanDefinitionHolder> holders = super.doScan(basePackages);

@@ -15,8 +15,6 @@ import org.g2.starter.redis.config.handler.impl.StandaloneConfiguration;
 import org.g2.starter.redis.config.properties.RedisCacheProperties;
 import org.g2.starter.redis.config.properties.RedisShardingProperties;
 import org.g2.starter.redis.infra.hepler.RedisHelper;
-import org.g2.starter.redis.infra.queue.IQueue;
-import org.g2.starter.redis.infra.queue.impl.DefaultQueue;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -42,11 +40,6 @@ public class EnableRedisAutoConfiguration {
         LettuceConnectionFactory lettuceConnectionFactory = (LettuceConnectionFactory) new RedisClientAutoConfigureHandler(redisConfigurationList).proceed();
         lettuceConnectionFactory.afterPropertiesSet();
         return new RedisCacheClient(lettuceConnectionFactory);
-    }
-
-    @Bean
-    public IQueue defaultQueue(RedisCacheClient redisCacheClient) {
-        return new DefaultQueue(redisCacheClient);
     }
 
     @Bean
