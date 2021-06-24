@@ -1,6 +1,6 @@
 package org.g2.boot.inf.annotation;
 
-import org.g2.boot.inf.config.spring.InfClientBeanProcessor;
+import org.g2.boot.inf.config.spring.register.InfClientBeanRegister;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -15,6 +15,8 @@ import java.lang.annotation.Target;
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
-@Import({InfClientBeanProcessor.class})
+@Import({InfClientBeanRegister.class})
 public @interface EnableInfClient {
+
+    String[] basePackage();
 }
