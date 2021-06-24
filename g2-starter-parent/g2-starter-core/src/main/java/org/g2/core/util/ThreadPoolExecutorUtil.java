@@ -135,8 +135,8 @@ public final class ThreadPoolExecutorUtil {
             return "success";
         };
         while (true) {
-            if (taskCounter.get() < maxThread) {
-                int expect = taskCounter.get();
+            int expect;
+            if ((expect = taskCounter.get()) < maxThread) {
                 int update = expect + 1;
                 if (taskCounter.compareAndSet(expect, update)) {
                     return executor.submit(taskRunner);
