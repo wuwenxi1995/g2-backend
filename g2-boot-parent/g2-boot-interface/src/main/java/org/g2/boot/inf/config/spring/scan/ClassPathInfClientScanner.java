@@ -2,9 +2,9 @@ package org.g2.boot.inf.config.spring.scan;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.g2.boot.inf.config.spring.bean.InfClientFactoryBean;
+import org.g2.boot.inf.infra.proxy.InfClientProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -14,6 +14,7 @@ import org.springframework.lang.NonNull;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author wuwenxi 2021-06-24
@@ -24,6 +25,7 @@ public class ClassPathInfClientScanner extends ClassPathBeanDefinitionScanner {
 
     private static final String APPLICATION_CONTEXT = "applicationContext";
     private static final String BEAN_CLASS = "beanClass";
+    private static final String PROXY_MAP = "proxyMap";
 
     private final ApplicationContext applicationContext;
 
@@ -39,11 +41,13 @@ public class ClassPathInfClientScanner extends ClassPathBeanDefinitionScanner {
         if (CollectionUtils.isEmpty(holders)) {
             log.warn("No InfClient was found in {}", Arrays.toString(basePackages));
         } else {
+            ConcurrentHashMap<Class<?>, InfClientProxy> proxyMap = new ConcurrentHashMap<>(holders.size() << 1);
             for (BeanDefinitionHolder holder : holders) {
                 GenericBeanDefinition beanDefinition = (GenericBeanDefinition) holder.getBeanDefinition();
                 beanDefinition.setBeanClass(InfClientFactoryBean.class);
                 beanDefinition.getPropertyValues().add(BEAN_CLASS, beanDefinition.getBeanClassName());
                 beanDefinition.getPropertyValues().add(APPLICATION_CONTEXT, applicationContext);
+                beanDefinition.getPropertyValues().add(PROXY_MAP, proxyMap);
             }
         }
         return holders;
