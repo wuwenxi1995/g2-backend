@@ -1,20 +1,22 @@
-package org.g2.starter.lock.autoconfigure.responsibility.impl;
+package org.g2.starter.lock.infra.responsibility.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.g2.core.base.BaseConstants;
 import org.g2.core.handler.InvocationHandler;
-import org.g2.starter.lock.autoconfigure.responsibility.AbstractServerConfig;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.constants.LockConstants;
 import org.g2.starter.lock.infra.enums.ServerPattern;
+import org.g2.starter.lock.infra.responsibility.AbstractServerConfig;
 import org.redisson.config.Config;
 import org.redisson.config.SslProvider;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 
 /**
  * @author wenxi.wu@hand-chian.com 2021-02-22
  */
+@Component
 public class SingleServerConfig extends AbstractServerConfig {
 
     public SingleServerConfig(Config config, RedissonConfigureProperties properties) {
@@ -57,5 +59,10 @@ public class SingleServerConfig extends AbstractServerConfig {
 
         singleServerConfig.setSslProvider("JDK".equalsIgnoreCase(properties.getSslProvider()) ? SslProvider.JDK : SslProvider.OPENSSL);
         return config;
+    }
+
+    @Override
+    public int getOrder() {
+        return 0;
     }
 }

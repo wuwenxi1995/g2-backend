@@ -1,4 +1,4 @@
-package org.g2.starter.lock.autoconfigure.responsibility;
+package org.g2.starter.lock.infra.responsibility;
 
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.redisson.config.BaseMasterSlaveServersConfig;

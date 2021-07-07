@@ -1,13 +1,14 @@
-package org.g2.starter.lock.autoconfigure.responsibility.impl;
+package org.g2.starter.lock.infra.responsibility.impl;
 
 import org.g2.core.base.BaseConstants;
 import org.g2.core.handler.InvocationHandler;
-import org.g2.starter.lock.autoconfigure.responsibility.AbstractServerConfig;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.constants.LockConstants;
 import org.g2.starter.lock.infra.enums.ServerPattern;
+import org.g2.starter.lock.infra.responsibility.AbstractServerConfig;
 import org.redisson.config.Config;
 import org.redisson.config.SentinelServersConfig;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
@@ -16,6 +17,7 @@ import java.util.Arrays;
  *
  * @author wenxi.wu@hand-chian.com 2021-02-22
  */
+@Component
 public class SentinelServerConfig extends AbstractServerConfig {
 
     public SentinelServerConfig(Config config, RedissonConfigureProperties properties) {
@@ -38,5 +40,10 @@ public class SentinelServerConfig extends AbstractServerConfig {
         String[] addressArr = sentinelConfig.getSentinelAddresses().split(BaseConstants.Symbol.COMMA);
         Arrays.asList(addressArr).forEach(address -> sentinelServersConfig.addSentinelAddress(String.format("%s%s", LockConstants.REDIS_URL_PREFIX, address)));
         return config;
+    }
+
+    @Override
+    public int getOrder() {
+        return 2;
     }
 }

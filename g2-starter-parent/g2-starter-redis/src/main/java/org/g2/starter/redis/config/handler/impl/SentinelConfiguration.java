@@ -6,6 +6,7 @@ import org.g2.starter.redis.config.properties.RedisCacheProperties;
 import org.g2.starter.redis.infra.enums.RedisServerPattern;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.Set;
@@ -13,6 +14,7 @@ import java.util.Set;
 /**
  * @author wenxi.wu@hand-chian.com 2021-02-26
  */
+@Component
 public class SentinelConfiguration extends RedisConfiguration {
 
     public SentinelConfiguration(RedisCacheProperties redisCacheProperties) {
@@ -32,5 +34,10 @@ public class SentinelConfiguration extends RedisConfiguration {
         }
         redisSentinelConfiguration.setDatabase(redisCacheProperties.getDbIndex());
         return new LettuceConnectionFactory(redisSentinelConfiguration, buildLettuceClientConfiguration());
+    }
+
+    @Override
+    public int getOrder() {
+        return 1;
     }
 }

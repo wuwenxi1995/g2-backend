@@ -1,12 +1,13 @@
-package org.g2.starter.lock.autoconfigure.responsibility.impl;
+package org.g2.starter.lock.infra.responsibility.impl;
 
 import org.g2.core.base.BaseConstants;
 import org.g2.core.handler.InvocationHandler;
-import org.g2.starter.lock.autoconfigure.responsibility.AbstractServerConfig;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.enums.ServerPattern;
+import org.g2.starter.lock.infra.responsibility.AbstractServerConfig;
 import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.Config;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
@@ -15,6 +16,7 @@ import java.util.Arrays;
  *
  * @author wenxi.wu@hand-chian.com 2021-02-22
  */
+@Component
 public class ClusterServerConfig extends AbstractServerConfig {
 
     public ClusterServerConfig(Config config, RedissonConfigureProperties properties) {
@@ -35,5 +37,10 @@ public class ClusterServerConfig extends AbstractServerConfig {
         clusterServerConfig.setScanInterval((int) clusterConfig.getScanInterval());
         setLockSslConfig(clusterServerConfig);
         return config;
+    }
+
+    @Override
+    public int getOrder() {
+        return 3;
     }
 }

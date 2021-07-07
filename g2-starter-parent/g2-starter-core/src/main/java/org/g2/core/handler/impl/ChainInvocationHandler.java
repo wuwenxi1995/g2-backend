@@ -2,7 +2,12 @@ package org.g2.core.handler.impl;
 
 import org.g2.core.handler.InvocationHandler;
 import org.g2.core.handler.MethodInvocationHandler;
+import org.g2.core.helper.ApplicationContextHelper;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -11,10 +16,14 @@ import java.util.List;
 public abstract class ChainInvocationHandler implements InvocationHandler {
 
     private int currentHandlerIndex = -1;
-    private List<?> methodInvocationHandlerList;
+    private final List<? extends MethodInvocationHandler> methodInvocationHandlerList;
 
-    protected ChainInvocationHandler(List<? extends MethodInvocationHandler> methodInvocationHandlerList) {
-        this.methodInvocationHandlerList = methodInvocationHandlerList;
+    protected ChainInvocationHandler() {
+        // 初始化调用链
+        Collection<? extends MethodInvocationHandler> values = ApplicationContextHelper.getApplicationContext().getBeansOfType(beanType()).values();
+        methodInvocationHandlerList = new ArrayList<>(values);
+        // 调用链排序
+        methodInvocationHandlerList.sort(Comparator.comparing(MethodInvocationHandler::getOrder));
     }
 
     @Override
@@ -22,11 +31,18 @@ public abstract class ChainInvocationHandler implements InvocationHandler {
         if (currentHandlerIndex == methodInvocationHandlerList.size() - 1) {
             return this.invoke();
         }
-        Object handler = methodInvocationHandlerList.get(++currentHandlerIndex);
-        return ((MethodInvocationHandler) handler).invoke(this);
+        MethodInvocationHandler handler = methodInvocationHandlerList.get(++currentHandlerIndex);
+        return handler.invoke(this);
     }
 
     protected Object invoke() {
         return null;
     }
+
+    /**
+     * 返回调用链类型
+     *
+     * @return class
+     */
+    protected abstract Class<? extends MethodInvocationHandler> beanType();
 }

@@ -6,10 +6,12 @@ import org.g2.starter.redis.config.properties.RedisCacheProperties;
 import org.g2.starter.redis.infra.enums.RedisServerPattern;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * @author wenxi.wu@hand-chian.com 2021-02-26
  */
+@Component
 public class StandaloneConfiguration extends RedisConfiguration {
 
     public StandaloneConfiguration(RedisCacheProperties redisCacheProperties) {
@@ -33,5 +35,10 @@ public class StandaloneConfiguration extends RedisConfiguration {
         redisStandaloneConfiguration.setDatabase(redisCacheProperties.getDbIndex());
         // 创建连接工厂
         return new LettuceConnectionFactory(redisStandaloneConfiguration, buildLettuceClientConfiguration());
+    }
+
+    @Override
+    public int getOrder() {
+        return 0;
     }
 }

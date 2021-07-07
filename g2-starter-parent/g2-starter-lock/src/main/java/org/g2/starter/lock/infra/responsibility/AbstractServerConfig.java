@@ -1,4 +1,4 @@
-package org.g2.starter.lock.autoconfigure.responsibility;
+package org.g2.starter.lock.infra.responsibility;
 
 import org.apache.commons.lang3.StringUtils;
 import org.g2.core.base.BaseConstants;

@@ -6,15 +6,11 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.g2.core.exception.CommonException;
 import org.g2.core.handler.MethodInvocationHandler;
 import org.g2.core.handler.impl.ChainInvocationHandler;
-import org.g2.starter.lock.autoconfigure.responsibility.impl.ClusterServerConfig;
-import org.g2.starter.lock.autoconfigure.responsibility.impl.MasterSlaveServerConfig;
-import org.g2.starter.lock.autoconfigure.responsibility.impl.ReplicatedServerConfig;
-import org.g2.starter.lock.autoconfigure.responsibility.impl.SentinelServerConfig;
-import org.g2.starter.lock.autoconfigure.responsibility.impl.SingleServerConfig;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.config.ZookeeperLockConfigureProperties;
 import org.g2.starter.lock.infra.constants.LockConstants;
 import org.g2.starter.lock.infra.listener.CuratorStartListener;
+import org.g2.starter.lock.infra.responsibility.AbstractServerConfig;
 import org.g2.starter.lock.infra.service.impl.FairLockStrategy;
 import org.g2.starter.lock.infra.service.impl.MultiLockStrategy;
 import org.g2.starter.lock.infra.service.impl.ReadLockStrategy;
@@ -24,8 +20,6 @@ import org.g2.starter.lock.infra.service.impl.WriteLockStrategy;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -42,10 +36,8 @@ import java.util.List;
  */
 @Configuration
 @EnableConfigurationProperties(value = {RedissonConfigureProperties.class, ZookeeperLockConfigureProperties.class})
-@ComponentScan(basePackages = "org.g2.starter.lock")
+@ComponentScan(basePackages = "org.g2.starter.lock.infra")
 public class LockAutoConfiguration {
-
-    private static final Logger log = LoggerFactory.getLogger(LockAutoConfiguration.class);
 
     @Bean(
             name = "lockRedissonClient",
@@ -61,7 +53,7 @@ public class LockAutoConfiguration {
         config.setLockWatchdogTimeout(properties.getLockWatchdogTimeout());
         config.setUseScriptCache(properties.isUseScriptCache());
         // 生成其他配置信息
-        new RedissonClientAutoConfigureHandler(initChain(config, properties)).proceed();
+        new RedissonClientAutoConfigureHandler().proceed();
         return Redisson.create(config);
     }
 
@@ -78,7 +70,7 @@ public class LockAutoConfiguration {
 
     @Bean
     @ConditionalOnBean(name = "curator")
-    public CuratorStartListener curatorStartListener(){
+    public CuratorStartListener curatorStartListener() {
         return new CuratorStartListener();
     }
 
@@ -129,10 +121,6 @@ public class LockAutoConfiguration {
      */
     private static class RedissonClientAutoConfigureHandler extends ChainInvocationHandler {
 
-        private RedissonClientAutoConfigureHandler(List<? extends MethodInvocationHandler> methodInvocationHandlerList) {
-            super(methodInvocationHandlerList);
-        }
-
         @Override
         public Object proceed() {
             try {
@@ -146,15 +134,10 @@ public class LockAutoConfiguration {
         protected Object invoke() {
             throw new CommonException("No suitable handler found");
         }
-    }
 
-    private List<MethodInvocationHandler> initChain(Config config, RedissonConfigureProperties properties) {
-        List<MethodInvocationHandler> methodInvocationHandlerList = new ArrayList<>();
-        methodInvocationHandlerList.add(new SingleServerConfig(config, properties));
-        methodInvocationHandlerList.add(new MasterSlaveServerConfig(config, properties));
-        methodInvocationHandlerList.add(new SentinelServerConfig(config, properties));
-        methodInvocationHandlerList.add(new ClusterServerConfig(config, properties));
-        methodInvocationHandlerList.add(new ReplicatedServerConfig(config, properties));
-        return methodInvocationHandlerList;
+        @Override
+        protected Class<? extends MethodInvocationHandler> beanType() {
+            return AbstractServerConfig.class;
+        }
     }
 }
