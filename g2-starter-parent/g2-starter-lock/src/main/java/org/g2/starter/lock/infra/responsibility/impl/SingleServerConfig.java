@@ -2,7 +2,7 @@ package org.g2.starter.lock.infra.responsibility.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.g2.core.base.BaseConstants;
-import org.g2.core.chain.ChainHandler;
+import org.g2.core.chain.invoker.ChainInvoker;
 import org.g2.starter.lock.autoconfigure.RedissonBuildFactory;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.constants.LockConstants;
@@ -24,10 +24,10 @@ public class SingleServerConfig extends AbstractServerConfig {
     }
 
     @Override
-    public Object invoke(ChainHandler handler) throws Exception {
+    public Object invoke(ChainInvoker invoker) throws Exception {
         String pattern = properties.getPattern();
         if (!ServerPattern.SINGLE.getPattern().equals(pattern)) {
-            return handler.proceed();
+            return invoker.proceed();
         }
         org.redisson.config.SingleServerConfig singleServerConfig = config.useSingleServer();
         // 构建单节点配置

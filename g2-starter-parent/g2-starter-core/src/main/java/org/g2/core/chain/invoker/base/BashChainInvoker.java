@@ -1,9 +1,9 @@
-package org.g2.core.chain.base;
+package org.g2.core.chain.invoker.base;
 
 import org.g2.core.chain.Chain;
-import org.g2.core.chain.ChainHandler;
 import org.g2.core.chain.handler.ChainInvocationHandler;
 import org.g2.core.chain.handler.ParamChainInvocationHandler;
+import org.g2.core.chain.invoker.ChainInvoker;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -12,14 +12,14 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * @author wenxi.wu@hand-chian.com 2021-02-26
+ * @author wuwenxi 2021-07-07
  */
-public abstract class BashChainHandler implements ChainHandler {
+public abstract class BashChainInvoker implements ChainInvoker {
 
     private int currentHandlerIndex = -1;
     private final List<? extends Chain> chainInvocationHandlerList;
 
-    protected BashChainHandler() {
+    protected BashChainInvoker() {
         // 初始化调用链
         Collection<? extends Chain> chainInvocationHandlers = initChain();
         Assert.notEmpty(chainInvocationHandlers, "require init chain handler");
@@ -31,16 +31,11 @@ public abstract class BashChainHandler implements ChainHandler {
     }
 
     @Override
-    public Object proceed() throws Exception {
-        return proceed((Object) null);
-    }
-
-    @Override
     public Object proceed(Object... param) throws Exception {
         if (currentHandlerIndex == chainInvocationHandlerList.size() - 1) {
             return invoke();
         }
-        Object handler = chainInvocationHandlerList.get(++currentHandlerIndex);
+        Chain handler = chainInvocationHandlerList.get(++currentHandlerIndex);
         if (handler instanceof ChainInvocationHandler) {
             return ((ChainInvocationHandler) handler).invoke(this);
         } else if (handler instanceof ParamChainInvocationHandler) {

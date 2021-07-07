@@ -1,7 +1,7 @@
 package org.g2.starter.lock.infra.responsibility.impl;
 
 import org.g2.core.base.BaseConstants;
-import org.g2.core.chain.ChainHandler;
+import org.g2.core.chain.invoker.ChainInvoker;
 import org.g2.starter.lock.autoconfigure.RedissonBuildFactory;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.constants.LockConstants;
@@ -25,10 +25,10 @@ public class SentinelServerConfig extends AbstractServerConfig {
     }
 
     @Override
-    public Object invoke(ChainHandler handler) throws Exception {
+    public Object invoke(ChainInvoker invoker) throws Exception {
         String pattern = properties.getPattern();
         if (!ServerPattern.SENTINEL.getPattern().equals(pattern)) {
-            return handler.proceed();
+            return invoker.proceed();
         }
         SentinelServersConfig sentinelServersConfig = config.useSentinelServers();
         RedissonConfigureProperties.SentinelConfig sentinelConfig = properties.getSentinelConfig();

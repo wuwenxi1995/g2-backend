@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.g2.core.chain.Chain;
 import org.g2.core.exception.CommonException;
-import org.g2.core.chain.base.BashChainHandler;
+import org.g2.core.chain.invoker.base.BashChainInvoker;
 import org.g2.core.helper.ApplicationContextHelper;
 import org.g2.starter.redis.client.RedisCacheClient;
 import org.g2.starter.redis.config.factory.EnableShardingConnectionFactory;
@@ -35,7 +35,7 @@ public class EnableRedisAutoConfiguration {
 
     @Bean(value = RedisCacheClient.BEAN_NAME)
     public RedisCacheClient redisCacheClient() {
-        LettuceConnectionFactory lettuceConnectionFactory = (LettuceConnectionFactory) new RedisClientAutoConfigureHandler().proceed();
+        LettuceConnectionFactory lettuceConnectionFactory = (LettuceConnectionFactory) new RedisClientAutoConfigureInvoker().proceed();
         lettuceConnectionFactory.afterPropertiesSet();
         return new RedisCacheClient(lettuceConnectionFactory);
     }
@@ -45,12 +45,12 @@ public class EnableRedisAutoConfiguration {
         return new RedisHelper();
     }
 
-    private static class RedisClientAutoConfigureHandler extends BashChainHandler {
+    private static class RedisClientAutoConfigureInvoker extends BashChainInvoker {
 
         @Override
-        public Object proceed() {
+        public Object proceed(Object... param) {
             try {
-                return super.proceed();
+                return super.proceed(param);
             } catch (Exception e) {
                 throw new CommonException(e);
             }

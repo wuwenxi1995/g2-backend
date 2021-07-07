@@ -1,7 +1,7 @@
 package org.g2.starter.lock.infra.responsibility.impl;
 
 import org.g2.core.base.BaseConstants;
-import org.g2.core.chain.ChainHandler;
+import org.g2.core.chain.invoker.ChainInvoker;
 import org.g2.starter.lock.autoconfigure.RedissonBuildFactory;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.enums.ServerPattern;
@@ -24,10 +24,10 @@ public class ClusterServerConfig extends AbstractServerConfig {
     }
 
     @Override
-    public Object invoke(ChainHandler handler) throws Exception {
+    public Object invoke(ChainInvoker invoker) throws Exception {
         String pattern = properties.getPattern();
         if (!ServerPattern.CLUSTER.getPattern().equals(pattern)) {
-            return handler.proceed();
+            return invoker.proceed();
         }
         ClusterServersConfig clusterServerConfig = config.useClusterServers();
         RedissonConfigureProperties.ClusterConfig clusterConfig = properties.getClusterConfig();

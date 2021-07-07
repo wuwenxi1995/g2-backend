@@ -2,7 +2,7 @@ package org.g2.starter.lock.autoconfigure;
 
 import org.g2.core.chain.Chain;
 import org.g2.core.exception.CommonException;
-import org.g2.core.chain.base.BashChainHandler;
+import org.g2.core.chain.invoker.base.BashChainInvoker;
 import org.g2.core.helper.ApplicationContextHelper;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.constants.LockConstants;
@@ -41,19 +41,19 @@ public class RedissonBuildFactory {
 
     RedissonClient build() {
         // 生成其他配置信息
-        new RedissonClientAutoConfigureHandler().proceed();
+        new RedissonClientAutoConfigureInvoker().proceed();
         return Redisson.create(config);
     }
 
     /**
      * 构建redisson客户端其他配置信息
      */
-    private static class RedissonClientAutoConfigureHandler extends BashChainHandler {
+    private static class RedissonClientAutoConfigureInvoker extends BashChainInvoker {
 
         @Override
-        public Object proceed() {
+        public Object proceed(Object... param) {
             try {
-                return super.proceed();
+                return super.proceed(param);
             } catch (Exception e) {
                 throw new CommonException(e);
             }

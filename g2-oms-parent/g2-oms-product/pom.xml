@@ -78,6 +78,11 @@
             <artifactId>g2-boot-elasticsearch</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.g2</groupId>
+            <artifactId>g2-starter-lock</artifactId>
+        </dependency>
+
     </dependencies>
 
 

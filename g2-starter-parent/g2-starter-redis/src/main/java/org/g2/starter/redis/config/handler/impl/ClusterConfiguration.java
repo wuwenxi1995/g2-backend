@@ -1,6 +1,6 @@
 package org.g2.starter.redis.config.handler.impl;
 
-import org.g2.core.chain.ChainHandler;
+import org.g2.core.chain.invoker.ChainInvoker;
 import org.g2.starter.redis.config.handler.RedisConfiguration;
 import org.g2.starter.redis.config.properties.RedisCacheProperties;
 import org.g2.starter.redis.infra.enums.RedisServerPattern;
@@ -22,9 +22,9 @@ public class ClusterConfiguration extends RedisConfiguration {
     }
 
     @Override
-    public Object invoke(ChainHandler chainHandler) throws Exception {
+    public Object invoke(ChainInvoker chainInvoker) throws Exception {
         if (!RedisServerPattern.CLUSTER.getPattern().equals(redisCacheProperties.getPattern())) {
-            return chainHandler.proceed();
+            return chainInvoker.proceed();
         }
         Set<String> cluster = StringUtils.commaDelimitedListToSet(redisCacheProperties.getCluster().getNodes());
         RedisClusterConfiguration redisClusterConfiguration = new RedisClusterConfiguration(cluster);

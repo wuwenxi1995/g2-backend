@@ -1,6 +1,6 @@
 package org.g2.starter.redis.config.handler.impl;
 
-import org.g2.core.chain.ChainHandler;
+import org.g2.core.chain.invoker.ChainInvoker;
 import org.g2.starter.redis.config.handler.RedisConfiguration;
 import org.g2.starter.redis.config.properties.RedisCacheProperties;
 import org.g2.starter.redis.infra.enums.RedisServerPattern;
@@ -22,9 +22,9 @@ public class SentinelConfiguration extends RedisConfiguration {
     }
 
     @Override
-    public Object invoke(ChainHandler chainHandler) throws Exception {
+    public Object invoke(ChainInvoker chainInvoker) throws Exception {
         if (!RedisServerPattern.SENTINEL.getPattern().equals(redisCacheProperties.getPattern())) {
-            return chainHandler.proceed();
+            return chainInvoker.proceed();
         }
         // org.springframework.util.StringUtils 以 ","分割字符串
         Set<String> sentinels = StringUtils.commaDelimitedListToSet(redisCacheProperties.getSentinel().getNodes());
