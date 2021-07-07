@@ -1,12 +1,11 @@
 package org.g2.starter.lock.infra.responsibility.impl;
 
 import org.g2.core.base.BaseConstants;
-import org.g2.core.handler.InvocationHandler;
+import org.g2.core.chain.ChainHandler;
 import org.g2.starter.lock.autoconfigure.RedissonBuildFactory;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.enums.ServerPattern;
 import org.g2.starter.lock.infra.responsibility.AbstractServerConfig;
-import org.redisson.config.Config;
 import org.redisson.config.ReplicatedServersConfig;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +24,7 @@ public class ReplicatedServerConfig extends AbstractServerConfig {
     }
 
     @Override
-    public Object invoke(InvocationHandler handler) throws Exception {
+    public Object invoke(ChainHandler handler) throws Exception {
         String pattern = properties.getPattern();
         if (!ServerPattern.REPLICATED.getPattern().equals(pattern)) {
             return handler.proceed();

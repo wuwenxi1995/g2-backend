@@ -1,16 +1,14 @@
 package org.g2.starter.redis.config;
 
 import java.util.Collection;
-import java.util.List;
 
+import org.g2.core.chain.Chain;
 import org.g2.core.exception.CommonException;
-import org.g2.core.handler.MethodInvocationHandler;
-import org.g2.core.handler.impl.ChainInvocationHandler;
+import org.g2.core.chain.base.BashChainHandler;
 import org.g2.core.helper.ApplicationContextHelper;
 import org.g2.starter.redis.client.RedisCacheClient;
 import org.g2.starter.redis.config.factory.EnableShardingConnectionFactory;
 import org.g2.starter.redis.config.handler.RedisConfiguration;
-import org.g2.starter.redis.config.handler.impl.StandaloneConfiguration;
 import org.g2.starter.redis.config.properties.RedisCacheProperties;
 import org.g2.starter.redis.config.properties.RedisShardingProperties;
 import org.g2.starter.redis.infra.hepler.RedisHelper;
@@ -47,7 +45,7 @@ public class EnableRedisAutoConfiguration {
         return new RedisHelper();
     }
 
-    private static class RedisClientAutoConfigureHandler extends ChainInvocationHandler {
+    private static class RedisClientAutoConfigureHandler extends BashChainHandler {
 
         @Override
         public Object proceed() {
@@ -64,8 +62,8 @@ public class EnableRedisAutoConfiguration {
         }
 
         @Override
-        protected Class<? extends MethodInvocationHandler> beanType() {
-            return RedisConfiguration.class;
+        protected Collection<? extends Chain> initChain() {
+            return ApplicationContextHelper.getApplicationContext().getBeansOfType(RedisConfiguration.class).values();
         }
     }
 

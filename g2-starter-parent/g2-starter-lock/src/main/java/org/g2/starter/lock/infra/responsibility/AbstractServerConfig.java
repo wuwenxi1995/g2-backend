@@ -2,7 +2,7 @@ package org.g2.starter.lock.infra.responsibility;
 
 import org.apache.commons.lang3.StringUtils;
 import org.g2.core.base.BaseConstants;
-import org.g2.core.handler.MethodInvocationHandler;
+import org.g2.core.chain.handler.ChainInvocationHandler;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.constants.LockConstants;
 import org.redisson.config.BaseMasterSlaveServersConfig;
@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * @author wenxi.wu@hand-chian.com 2021-02-22
  */
-public abstract class AbstractServerConfig implements ServerConfig, MethodInvocationHandler {
+public abstract class AbstractServerConfig implements ServerConfig, ChainInvocationHandler {
 
     public Config config;
     protected RedissonConfigureProperties properties;

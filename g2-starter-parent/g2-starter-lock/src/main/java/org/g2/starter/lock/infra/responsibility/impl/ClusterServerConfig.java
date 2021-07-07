@@ -1,13 +1,12 @@
 package org.g2.starter.lock.infra.responsibility.impl;
 
 import org.g2.core.base.BaseConstants;
-import org.g2.core.handler.InvocationHandler;
+import org.g2.core.chain.ChainHandler;
 import org.g2.starter.lock.autoconfigure.RedissonBuildFactory;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.enums.ServerPattern;
 import org.g2.starter.lock.infra.responsibility.AbstractServerConfig;
 import org.redisson.config.ClusterServersConfig;
-import org.redisson.config.Config;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -25,7 +24,7 @@ public class ClusterServerConfig extends AbstractServerConfig {
     }
 
     @Override
-    public Object invoke(InvocationHandler handler) throws Exception {
+    public Object invoke(ChainHandler handler) throws Exception {
         String pattern = properties.getPattern();
         if (!ServerPattern.CLUSTER.getPattern().equals(pattern)) {
             return handler.proceed();

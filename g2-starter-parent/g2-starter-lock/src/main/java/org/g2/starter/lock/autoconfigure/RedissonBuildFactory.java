@@ -1,14 +1,17 @@
 package org.g2.starter.lock.autoconfigure;
 
+import org.g2.core.chain.Chain;
 import org.g2.core.exception.CommonException;
-import org.g2.core.handler.MethodInvocationHandler;
-import org.g2.core.handler.impl.ChainInvocationHandler;
+import org.g2.core.chain.base.BashChainHandler;
+import org.g2.core.helper.ApplicationContextHelper;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.constants.LockConstants;
 import org.g2.starter.lock.infra.responsibility.AbstractServerConfig;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
+
+import java.util.Collection;
 
 /**
  * @author wuwenxi 2021-07-07
@@ -45,7 +48,7 @@ public class RedissonBuildFactory {
     /**
      * 构建redisson客户端其他配置信息
      */
-    private static class RedissonClientAutoConfigureHandler extends ChainInvocationHandler {
+    private static class RedissonClientAutoConfigureHandler extends BashChainHandler {
 
         @Override
         public Object proceed() {
@@ -62,8 +65,8 @@ public class RedissonBuildFactory {
         }
 
         @Override
-        protected Class<? extends MethodInvocationHandler> beanType() {
-            return AbstractServerConfig.class;
+        protected Collection<? extends Chain> initChain() {
+            return ApplicationContextHelper.getApplicationContext().getBeansOfType(AbstractServerConfig.class).values();
         }
     }
 }
