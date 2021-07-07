@@ -23,7 +23,9 @@ public abstract class ChainInvocationHandler implements InvocationHandler {
         Collection<? extends MethodInvocationHandler> values = ApplicationContextHelper.getApplicationContext().getBeansOfType(beanType()).values();
         methodInvocationHandlerList = new ArrayList<>(values);
         // 调用链排序
-        methodInvocationHandlerList.sort(Comparator.comparing(MethodInvocationHandler::getOrder));
+        if (methodInvocationHandlerList.size() > 0) {
+            methodInvocationHandlerList.sort(Comparator.comparing(MethodInvocationHandler::getOrder));
+        }
     }
 
     @Override
