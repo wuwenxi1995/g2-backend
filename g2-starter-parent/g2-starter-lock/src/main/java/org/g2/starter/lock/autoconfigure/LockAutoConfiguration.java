@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Scope;
  */
 @Configuration
 @EnableConfigurationProperties(value = {RedissonConfigureProperties.class, ZookeeperLockConfigureProperties.class})
-@ComponentScan(basePackages = "org.g2.starter.lock.infra")
+@ComponentScan(basePackages = "org.g2.starter.lock")
 public class LockAutoConfiguration {
 
     @Bean(initMethod = "init")
