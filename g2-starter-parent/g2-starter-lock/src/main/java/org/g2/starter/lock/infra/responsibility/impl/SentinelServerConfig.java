@@ -2,6 +2,7 @@ package org.g2.starter.lock.infra.responsibility.impl;
 
 import org.g2.core.base.BaseConstants;
 import org.g2.core.handler.InvocationHandler;
+import org.g2.starter.lock.autoconfigure.RedissonBuildFactory;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.constants.LockConstants;
 import org.g2.starter.lock.infra.enums.ServerPattern;
@@ -20,8 +21,8 @@ import java.util.Arrays;
 @Component
 public class SentinelServerConfig extends AbstractServerConfig {
 
-    public SentinelServerConfig(Config config, RedissonConfigureProperties properties) {
-        super(config, properties);
+    public SentinelServerConfig(RedissonBuildFactory redissonBuildFactory, RedissonConfigureProperties properties) {
+        super(redissonBuildFactory.getConfig(), properties);
     }
 
     @Override

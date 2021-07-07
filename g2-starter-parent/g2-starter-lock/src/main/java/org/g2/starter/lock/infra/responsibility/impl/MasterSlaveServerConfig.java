@@ -2,6 +2,7 @@ package org.g2.starter.lock.infra.responsibility.impl;
 
 import org.g2.core.base.BaseConstants;
 import org.g2.core.handler.InvocationHandler;
+import org.g2.starter.lock.autoconfigure.RedissonBuildFactory;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.enums.ServerPattern;
 import org.g2.starter.lock.infra.responsibility.AbstractServerConfig;
@@ -19,8 +20,8 @@ import java.util.Arrays;
 @Component
 public class MasterSlaveServerConfig extends AbstractServerConfig {
 
-    public MasterSlaveServerConfig(Config config, RedissonConfigureProperties properties) {
-        super(config, properties);
+    public MasterSlaveServerConfig(RedissonBuildFactory redissonBuildFactory, RedissonConfigureProperties properties) {
+        super(redissonBuildFactory.getConfig(), properties);
     }
 
     @Override

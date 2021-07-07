@@ -3,6 +3,7 @@ package org.g2.starter.lock.infra.responsibility.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.g2.core.base.BaseConstants;
 import org.g2.core.handler.InvocationHandler;
+import org.g2.starter.lock.autoconfigure.RedissonBuildFactory;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.constants.LockConstants;
 import org.g2.starter.lock.infra.enums.ServerPattern;
@@ -19,8 +20,8 @@ import java.net.URI;
 @Component
 public class SingleServerConfig extends AbstractServerConfig {
 
-    public SingleServerConfig(Config config, RedissonConfigureProperties properties) {
-        super(config, properties);
+    public SingleServerConfig(RedissonBuildFactory redissonBuildFactory, RedissonConfigureProperties properties) {
+        super(redissonBuildFactory.getConfig(), properties);
     }
 
     @Override
