@@ -14,12 +14,12 @@ import java.util.List;
 /**
  * @author wuwenxi 2021-07-07
  */
-public abstract class BashChainInvoker implements ChainInvoker {
+public abstract class BaseChainInvoker implements ChainInvoker {
 
     private int currentHandlerIndex = -1;
     private final List<? extends Chain> chainInvocationHandlerList;
 
-    protected BashChainInvoker() {
+    protected BaseChainInvoker() {
         // 初始化调用链
         Collection<? extends Chain> chainInvocationHandlers = initChain();
         Assert.notEmpty(chainInvocationHandlers, "require init chain handler");

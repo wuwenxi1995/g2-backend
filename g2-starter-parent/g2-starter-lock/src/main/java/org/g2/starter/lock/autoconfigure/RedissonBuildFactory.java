@@ -2,7 +2,7 @@ package org.g2.starter.lock.autoconfigure;
 
 import org.g2.core.chain.Chain;
 import org.g2.core.exception.CommonException;
-import org.g2.core.chain.invoker.base.BashChainInvoker;
+import org.g2.core.chain.invoker.base.BaseChainInvoker;
 import org.g2.core.helper.ApplicationContextHelper;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.infra.constants.LockConstants;
@@ -48,7 +48,7 @@ public class RedissonBuildFactory {
     /**
      * 构建redisson客户端其他配置信息
      */
-    private static class RedissonClientAutoConfigureInvoker extends BashChainInvoker {
+    private static class RedissonClientAutoConfigureInvoker extends BaseChainInvoker {
 
         @Override
         public Object proceed(Object... param) {

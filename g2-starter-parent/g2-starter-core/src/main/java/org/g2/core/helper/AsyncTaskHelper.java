@@ -1,6 +1,6 @@
 package org.g2.core.helper;
 
-import org.g2.core.bean.Operation;
+import org.g2.core.util.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;

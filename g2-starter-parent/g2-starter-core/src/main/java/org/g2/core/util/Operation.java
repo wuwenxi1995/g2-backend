@@ -1,4 +1,4 @@
-package org.g2.core.bean;
+package org.g2.core.util;
 
 /**
  * @author wenxi.wu@hand-chian.com 2020-12-10

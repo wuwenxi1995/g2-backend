@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.g2.core.chain.Chain;
 import org.g2.core.exception.CommonException;
-import org.g2.core.chain.invoker.base.BashChainInvoker;
+import org.g2.core.chain.invoker.base.BaseChainInvoker;
 import org.g2.core.helper.ApplicationContextHelper;
 import org.g2.starter.redis.client.RedisCacheClient;
 import org.g2.starter.redis.config.factory.EnableShardingConnectionFactory;
@@ -45,7 +45,7 @@ public class EnableRedisAutoConfiguration {
         return new RedisHelper();
     }
 
-    private static class RedisClientAutoConfigureInvoker extends BashChainInvoker {
+    private static class RedisClientAutoConfigureInvoker extends BaseChainInvoker {
 
         @Override
         public Object proceed(Object... param) {
