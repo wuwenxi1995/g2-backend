@@ -25,7 +25,7 @@ public abstract class BaseChainInvoker implements ChainInvoker {
         Assert.notEmpty(chainInvocationHandlers, "require init chain handler");
         chainInvocationHandlerList = new ArrayList<>(chainInvocationHandlers);
         // 调用链排序
-        if (chainInvocationHandlerList.size() > 0) {
+        if (chainInvocationHandlerList.size() > 1) {
             chainInvocationHandlerList.sort(Comparator.comparing(Chain::getOrder));
         }
     }
