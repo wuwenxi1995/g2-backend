@@ -16,7 +16,7 @@ public class CallerRunsPolicyChain implements ThreadRejectChain {
     @Override
     public Object invoke(ChainInvoker chainInvoker, Object... param) throws Exception {
         String rejected = (String) param[0];
-        if (!ThreadRejected.DiscardPolicy.getValue().equals(rejected)) {
+        if (!ThreadRejected.CallerRunsPolicy.getValue().equals(rejected)) {
             return chainInvoker.proceed(param);
         }
         return new ThreadPoolExecutor.CallerRunsPolicy();

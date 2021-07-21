@@ -46,10 +46,10 @@ public class ThreadPoolProperties {
 
     public ThreadPoolProperties() {
         this.enable = false;
-        this.corePoolSize = 5;
-        this.maxPoolSize = 20;
+        this.corePoolSize = 15;
+        this.maxPoolSize = 30;
         this.keepAliveTime = 20;
-        this.queueSize = 999;
+        this.queueSize = 9999;
         this.prefixName = "g2-thread-pool-";
         this.allowCoreThreadTimeOut = false;
         this.threadRejected = ThreadRejected.AbortPolicy.getValue();
