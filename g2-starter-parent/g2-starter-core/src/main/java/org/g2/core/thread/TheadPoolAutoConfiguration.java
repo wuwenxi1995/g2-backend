@@ -19,15 +19,10 @@ import java.util.concurrent.RejectedExecutionHandler;
 @ComponentScan(basePackages = "org.g2.core.thread.chain")
 public class TheadPoolAutoConfiguration {
 
-    @Bean
-    public ThreadRejectedChainHandler threadRejectedChainHandler() {
-        return new ThreadRejectedChainHandler();
-    }
-
     @ConditionalOnProperty(prefix = "g2.thread.pool", name = "enable", havingValue = "true")
     @Bean(name = "g2ThreadPool")
     @Order
-    public ThreadPoolTaskExecutor threadPoolTaskExecutor(ThreadPoolProperties properties, ThreadRejectedChainHandler threadRejectedChainHandler) throws Exception {
+    public ThreadPoolTaskExecutor threadPoolTaskExecutor(ThreadPoolProperties properties) throws Exception {
         ThreadPoolTaskExecutor poolTaskExecutor = new ThreadPoolTaskExecutor();
         // 设置核心线程数
         poolTaskExecutor.setCorePoolSize(properties.getCorePoolSize());
@@ -44,7 +39,7 @@ public class TheadPoolAutoConfiguration {
         // 设置线程名前缀
         poolTaskExecutor.setThreadNamePrefix(properties.getPrefixName());
         // 设置拒绝策略
-        poolTaskExecutor.setRejectedExecutionHandler(threadRejectedChainHandler.proceed(properties.getThreadRejected()));
+        poolTaskExecutor.setRejectedExecutionHandler(new ThreadRejectedChainHandler().proceed(properties.getThreadRejected()));
         return poolTaskExecutor;
     }
 }

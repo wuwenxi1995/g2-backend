@@ -1,5 +1,6 @@
 package org.g2.core.util;
 
+import org.g2.core.base.BaseConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,5 +32,9 @@ public class StringUtil {
             LOG.error(errorMsg, e);
             return errorMsg;
         }
+    }
+
+    public static String getBeanName(String prefix, String beanName) {
+        return prefix + BaseConstants.Symbol.WELL + beanName;
     }
 }

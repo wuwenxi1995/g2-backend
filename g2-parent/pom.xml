@@ -46,6 +46,7 @@
         <g2.starter.mongo.version>0.1.0-SNAPSHOT</g2.starter.mongo.version>
         <g2.starter.core.version>0.1.0-SNAPSHOT</g2.starter.core.version>
         <g2.starter.mq.version>0.1.0-SNAPSHOT</g2.starter.mq.version>
+        <g2.starter.aop.version>0.1.0-SNAPSHOT</g2.starter.aop.version>
         <g2.starter.mybatis.helper.version>0.1.0-SNAPSHOT</g2.starter.mybatis.helper.version>
 
         <!-- boot version -->
@@ -160,6 +161,12 @@
                 <groupId>org.g2</groupId>
                 <artifactId>g2-starter-mq</artifactId>
                 <version>${g2.starter.mq.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-starter-aop</artifactId>
+                <version>${g2.starter.aop.version}</version>
             </dependency>
 
             <!-- g2 boot -->
