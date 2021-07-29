@@ -7,7 +7,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.lang.NonNull;
-import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;

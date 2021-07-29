@@ -1,7 +1,6 @@
 package org.g2.starter.aop.infra.advisor;
 
 import org.aopalliance.aop.Advice;
-import org.aopalliance.intercept.MethodInterceptor;
 import org.g2.core.util.StringUtil;
 import org.g2.starter.aop.infra.constant.InterceptorConstant;
 import org.springframework.aop.Pointcut;
