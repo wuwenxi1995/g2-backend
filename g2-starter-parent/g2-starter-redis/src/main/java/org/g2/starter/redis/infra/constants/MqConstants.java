@@ -1,4 +1,4 @@
-package org.g2.starter.mq.infra.constants;
+package org.g2.starter.redis.infra.constants;
 
 /**
  * @author wenxi.wu@hand-chian.com 2021-05-17

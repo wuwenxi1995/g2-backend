@@ -1,8 +1,8 @@
-package org.g2.starter.mq.listener.config;
+package org.g2.starter.redis.mq.listener.config;
 
-import org.g2.starter.mq.config.MqProcessorCreator;
-import org.g2.starter.mq.infra.constants.MqConstants;
-import org.g2.starter.mq.listener.annotation.Listener;
+import org.g2.starter.redis.infra.constants.MqConstants;
+import org.g2.starter.redis.mq.config.processor.MqProcessorCreator;
+import org.g2.starter.redis.mq.listener.annotation.Listener;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.Topic;

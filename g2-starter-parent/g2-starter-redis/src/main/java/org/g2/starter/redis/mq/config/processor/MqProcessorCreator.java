@@ -1,7 +1,6 @@
-package org.g2.starter.mq.config;
+package org.g2.starter.redis.mq.config.processor;
 
-import org.g2.starter.mq.infra.constants.MqConstants;
-import org.g2.starter.mq.infra.util.MqUtil;
+import org.g2.core.base.BaseConstants;
 import org.g2.starter.redis.client.RedisCacheClient;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -16,6 +15,7 @@ import org.springframework.util.Assert;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author wenxi.wu@hand-chian.com 2021-05-18
@@ -23,28 +23,32 @@ import java.util.Collection;
 public class MqProcessorCreator implements BeanPostProcessor, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
-    private volatile RedisCacheClient redisCacheClient;
 
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean, String beanName) throws BeansException {
-        Annotation annotation;
-        if (bean instanceof MessageListener && (annotation = findAnnotation(bean)) != null) {
-            // 获取messageListerAdapter
-            String messageListerBeanName = MqUtil.getBeanName(MqConstants.MESSAGE_LISTENER_ADAPTER, beanName);
-            MessageListenerAdapter messageListenerAdapter = applicationContext.getBean(messageListerBeanName, MessageListenerAdapter.class);
-            messageListenerAdapter.setDelegate(bean);
+        if (bean instanceof RedisMessageListenerContainer
+                && beanName.contains(BaseConstants.Symbol.WELL)) {
             // 获取 RedisMessageListenerContainer
-            String containerBeanName = MqUtil.getBeanName(MqConstants.REDIS_MESSAGE_LISTENER_CONTAINER, beanName);
-            RedisMessageListenerContainer container = applicationContext.getBean(containerBeanName, RedisMessageListenerContainer.class);
-            Collection<? extends Topic> topic = getTopic(annotation);
-            Assert.notEmpty(topic, "at least one topic required");
-            container.addMessageListener(messageListenerAdapter, topic);
-            if (redisCacheClient == null) {
-                redisCacheClient = applicationContext.getBean(RedisCacheClient.class);
+            RedisMessageListenerContainer container = (RedisMessageListenerContainer) bean;
+            Map<String, MessageListenerAdapter> messageListenerAdapterMap = applicationContext.getBeansOfType(MessageListenerAdapter.class);
+            messageListenerAdapterMap.forEach((name, messageListenerAdapter) -> {
+                if (name.contains(BaseConstants.Symbol.WELL)) {
+                    MessageListener messageListener = applicationContext.getBean(name.split(BaseConstants.Symbol.WELL)[1], MessageListener.class);
+                    Annotation annotation = findAnnotation(messageListener);
+                    if (annotation == null) {
+                        return;
+                    }
+                    Collection<? extends Topic> topic = getTopic(annotation);
+                    Assert.notEmpty(topic, "at least one topic required");
+                    container.addMessageListener(messageListenerAdapter, topic);
+                }
+            });
+            if (container.getConnectionFactory() == null) {
+                RedisCacheClient redisCacheClient = applicationContext.getBean(RedisCacheClient.class);
+                container.setConnectionFactory(redisCacheClient.getRequiredConnectionFactory());
             }
-            container.setConnectionFactory(redisCacheClient.getRequiredConnectionFactory());
         }
-        return bean;
+        return null;
     }
 
     @Override
@@ -71,4 +75,5 @@ public class MqProcessorCreator implements BeanPostProcessor, ApplicationContext
     protected Collection<? extends Topic> getTopic(Annotation bean) {
         return null;
     }
+
 }

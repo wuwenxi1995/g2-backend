@@ -1,4 +1,6 @@
-package org.g2.starter.mq.subject.annotation;
+package org.g2.starter.redis.mq.listener.annotation;
+
+import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,19 +9,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * redis pub/sub 订阅者
+ * redis 监听过期事件
  *
  * @author wenxi.wu@hand-chian.com 2021-05-17
  */
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
-public @interface Subject {
+@Component
+public @interface Listener {
 
     /**
-     * topic
+     * 监听redis库，默认-1为全部库
      *
-     * @return topic 名称
+     * @return db
      */
-    String[] values();
+    int db() default -1;
 }

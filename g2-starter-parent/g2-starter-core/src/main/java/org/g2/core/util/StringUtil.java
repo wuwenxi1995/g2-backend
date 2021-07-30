@@ -34,7 +34,7 @@ public class StringUtil {
         }
     }
 
-    public static String getBeanName(String prefix, String beanName) {
+    public static String getBeanName(String prefix, Object beanName) {
         return prefix + BaseConstants.Symbol.WELL + beanName;
     }
 }

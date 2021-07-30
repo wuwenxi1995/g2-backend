@@ -11,6 +11,7 @@ import org.g2.starter.redis.config.factory.EnableShardingConnectionFactory;
 import org.g2.starter.redis.config.handler.RedisConfiguration;
 import org.g2.starter.redis.config.properties.RedisCacheProperties;
 import org.g2.starter.redis.config.properties.RedisShardingProperties;
+import org.g2.starter.redis.mq.config.EnableMqAutoConfiguration;
 import org.g2.starter.redis.infra.hepler.RedisHelper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -29,7 +30,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 @Configuration
 @ConditionalOnClass(RedisTemplate.class)
 @EnableConfigurationProperties({RedisCacheProperties.class, RedisShardingProperties.class})
-@Import({EnableShardingConnectionFactory.class})
+@Import({EnableShardingConnectionFactory.class, EnableMqAutoConfiguration.class})
 @ComponentScan(basePackages = "org.g2.starter.redis")
 public class EnableRedisAutoConfiguration {
 

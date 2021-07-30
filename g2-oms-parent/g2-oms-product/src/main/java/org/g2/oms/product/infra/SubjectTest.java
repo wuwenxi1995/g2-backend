@@ -1,7 +1,7 @@
 package org.g2.oms.product.infra;
 
 import org.g2.oms.start.core.constants.CoreConstants;
-import org.g2.starter.mq.subject.annotation.Subject;
+import org.g2.starter.redis.mq.subject.annotation.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.Message;

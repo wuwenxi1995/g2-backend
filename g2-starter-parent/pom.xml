@@ -20,7 +20,6 @@
         <module>g2-starter-core</module>
         <module>g2-starter-mybatis-helper</module>
         <module>g2-starter-kafka</module>
-        <module>g2-starter-mq</module>
     </modules>
 
 
