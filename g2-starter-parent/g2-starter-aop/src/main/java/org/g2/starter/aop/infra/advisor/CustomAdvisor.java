@@ -5,8 +5,8 @@ import org.g2.core.util.StringUtil;
 import org.g2.starter.aop.infra.constant.InterceptorConstant;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractPointcutAdvisor;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.lang.NonNull;
 
 /**
@@ -14,13 +14,13 @@ import org.springframework.lang.NonNull;
  */
 public class CustomAdvisor extends AbstractPointcutAdvisor implements InitializingBean {
 
-    private ApplicationContext applicationContext;
+    private BeanFactory beanFactory;
     private String beanName;
     private Pointcut pointcut;
     private Advice advice;
 
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 
     public void setBeanName(String beanName) {
@@ -41,7 +41,7 @@ public class CustomAdvisor extends AbstractPointcutAdvisor implements Initializi
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.advice = applicationContext.getBean(beanName, Advice.class);
-        this.pointcut = applicationContext.getBean(StringUtil.getBeanName(InterceptorConstant.POINT_CUT_PREFIX, beanName), Pointcut.class);
+        this.advice = beanFactory.getBean(beanName, Advice.class);
+        this.pointcut = beanFactory.getBean(StringUtil.getBeanName(InterceptorConstant.POINT_CUT_PREFIX, beanName), Pointcut.class);
     }
 }

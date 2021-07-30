@@ -1,6 +1,7 @@
 package org.g2.starter.aop.annotation;
 
 import org.aopalliance.intercept.MethodInterceptor;
+import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -16,6 +17,7 @@ import java.lang.annotation.Target;
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
+@Component
 public @interface Interceptor {
 
     /**

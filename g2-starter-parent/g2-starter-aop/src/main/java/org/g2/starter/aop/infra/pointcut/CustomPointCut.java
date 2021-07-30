@@ -3,8 +3,8 @@ package org.g2.starter.aop.infra.pointcut;
 import org.g2.starter.aop.annotation.Interceptor;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.support.StaticMethodMatcherPointcut;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.lang.NonNull;
 
@@ -17,13 +17,13 @@ import java.util.Objects;
  */
 public class CustomPointCut extends StaticMethodMatcherPointcut implements InitializingBean {
 
-    private ApplicationContext applicationContext;
+    private BeanFactory beanFactory;
     private String beanName;
     private String[] methodName;
     private Class<?> target;
 
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 
     public void setBeanName(String beanName) {
@@ -43,7 +43,7 @@ public class CustomPointCut extends StaticMethodMatcherPointcut implements Initi
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Object bean = this.applicationContext.getBean(beanName);
+        Object bean = this.beanFactory.getBean(beanName);
         Interceptor interceptor = AnnotationUtils.findAnnotation(bean.getClass(), Interceptor.class);
         if (interceptor != null) {
             this.target = interceptor.clazz();
