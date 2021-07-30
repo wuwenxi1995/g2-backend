@@ -1,23 +1,25 @@
 package org.g2.core.aop.infra.advisor;
 
 import org.aopalliance.aop.Advice;
-import org.g2.core.aop.infra.constant.InterceptorConstant;
-import org.g2.core.util.StringUtil;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractPointcutAdvisor;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.NonNull;
+import org.springframework.util.Assert;
 
 /**
  * @author wuwenxi 2021-07-29
  */
-public class CustomAdvisor extends AbstractPointcutAdvisor implements InitializingBean {
+public class CustomAdvisor extends AbstractPointcutAdvisor {
 
     private BeanFactory beanFactory;
     private String beanName;
-    private Pointcut pointcut;
     private Advice advice;
+
+    public void setAdvice(Object advice) {
+        Assert.isTrue(advice instanceof Advice, "CustomAdvisor require an advice");
+        this.advice = (Advice) advice;
+    }
 
     public void setBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
@@ -30,18 +32,12 @@ public class CustomAdvisor extends AbstractPointcutAdvisor implements Initializi
     @Override
     @NonNull
     public Pointcut getPointcut() {
-        return pointcut;
+        return beanFactory.getBean(beanName, Pointcut.class);
     }
 
     @Override
     @NonNull
     public Advice getAdvice() {
         return advice;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        this.advice = beanFactory.getBean(beanName, Advice.class);
-        this.pointcut = beanFactory.getBean(StringUtil.getBeanName(InterceptorConstant.POINT_CUT_PREFIX, beanName), Pointcut.class);
     }
 }

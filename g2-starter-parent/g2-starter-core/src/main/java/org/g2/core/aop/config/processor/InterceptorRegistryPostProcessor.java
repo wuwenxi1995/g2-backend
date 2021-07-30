@@ -21,6 +21,7 @@ public class InterceptorRegistryPostProcessor implements BeanDefinitionRegistryP
 
     private static final String BEAN_NAME = "beanName";
     private static final String BEAN_FACTORY = "beanFactory";
+    private static final String ADVICE = "advice";
 
     private BeanDefinitionRegistry registry;
 
@@ -32,19 +33,20 @@ public class InterceptorRegistryPostProcessor implements BeanDefinitionRegistryP
     @Override
     public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
         Map<String, Object> beans = beanFactory.getBeansWithAnnotation(Interceptor.class);
-        for (String beanName : beans.keySet()) {
+        beans.forEach((beanName, bean) -> {
             // 注入自定义方法拦截点CustomPointCut
-            RootBeanDefinition pointCut = new RootBeanDefinition();
-            pointCut.setBeanClass(CustomPointCut.class);
-            pointCut.getPropertyValues().add(BEAN_FACTORY, beanFactory);
-            pointCut.getPropertyValues().add(BEAN_NAME, beanName);
-            registry.registerBeanDefinition(StringUtil.getBeanName(InterceptorConstant.POINT_CUT_PREFIX, beanName), pointCut);
+            RootBeanDefinition pointcut = new RootBeanDefinition();
+            pointcut.setBeanClass(CustomPointCut.class);
+            pointcut.getPropertyValues().add(ADVICE, bean);
+            String pointcutBeanName = StringUtil.getBeanName(InterceptorConstant.POINT_CUT_PREFIX, beanName);
+            registry.registerBeanDefinition(pointcutBeanName, pointcut);
             // 注入自定义增强器CustomAdvisor
             RootBeanDefinition advisor = new RootBeanDefinition();
             advisor.setBeanClass(CustomAdvisor.class);
+            advisor.getPropertyValues().add(ADVICE, bean);
             advisor.getPropertyValues().add(BEAN_FACTORY, beanFactory);
-            advisor.getPropertyValues().add(BEAN_NAME, beanName);
+            advisor.getPropertyValues().add(BEAN_NAME, pointcutBeanName);
             registry.registerBeanDefinition(StringUtil.getBeanName(InterceptorConstant.ADVISOR_PREFIX, beanName), advisor);
-        }
+        });
     }
 }

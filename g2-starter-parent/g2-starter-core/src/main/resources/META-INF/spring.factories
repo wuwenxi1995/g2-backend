@@ -1,4 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.g2.core.config.G2CoreAutoConfiguration,\
 org.g2.core.feign.FeignLogger,\
-org.g2.core.thread.TheadPoolAutoConfiguration
+org.g2.core.thread.TheadPoolAutoConfiguration,\
+org.g2.core.aop.config.InterceptorConfiguration
