@@ -1,4 +1,4 @@
-package org.g2.starter.aop.infra.constant;
+package org.g2.core.aop.infra.constant;
 
 /**
  * @author wuwenxi 2021-07-29

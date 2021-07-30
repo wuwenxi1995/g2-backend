@@ -1,6 +1,6 @@
-package org.g2.starter.aop.infra.pointcut;
+package org.g2.core.aop.infra.pointcut;
 
-import org.g2.starter.aop.annotation.Interceptor;
+import org.g2.core.aop.annotation.Interceptor;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.support.StaticMethodMatcherPointcut;
 import org.springframework.beans.factory.BeanFactory;

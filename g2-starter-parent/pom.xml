@@ -21,7 +21,6 @@
         <module>g2-starter-mybatis-helper</module>
         <module>g2-starter-kafka</module>
         <module>g2-starter-mq</module>
-        <module>g2-starter-aop</module>
     </modules>
 
 

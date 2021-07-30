@@ -1,4 +1,4 @@
-package org.g2.starter.aop.annotation;
+package org.g2.core.aop.annotation;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.springframework.stereotype.Component;

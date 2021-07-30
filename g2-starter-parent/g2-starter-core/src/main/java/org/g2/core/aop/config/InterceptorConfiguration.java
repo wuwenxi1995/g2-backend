@@ -1,6 +1,6 @@
-package org.g2.starter.aop.config;
+package org.g2.core.aop.config;
 
-import org.g2.starter.aop.config.processor.InterceptorRegistryPostProcessor;
+import org.g2.core.aop.config.processor.InterceptorRegistryPostProcessor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 

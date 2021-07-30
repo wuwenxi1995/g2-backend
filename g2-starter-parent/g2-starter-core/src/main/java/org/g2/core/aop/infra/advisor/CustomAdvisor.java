@@ -1,8 +1,8 @@
-package org.g2.starter.aop.infra.advisor;
+package org.g2.core.aop.infra.advisor;
 
 import org.aopalliance.aop.Advice;
+import org.g2.core.aop.infra.constant.InterceptorConstant;
 import org.g2.core.util.StringUtil;
-import org.g2.starter.aop.infra.constant.InterceptorConstant;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractPointcutAdvisor;
 import org.springframework.beans.factory.BeanFactory;
