@@ -2,11 +2,11 @@ package org.g2.boot.inf.config.spring.bean;
 
 import org.g2.boot.inf.infra.exception.InfClientException;
 import org.g2.boot.inf.infra.proxy.InfClientProxy;
+import org.g2.core.base.CheckFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.dao.support.DaoSupport;
 import org.springframework.util.Assert;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author wuwenxi 2021-06-24
  */
-public class InfClientFactoryBean extends DaoSupport implements FactoryBean {
+public class InfClientFactoryBean extends CheckFactoryBean implements FactoryBean {
 
     private static final Logger log = LoggerFactory.getLogger(InfClientFactoryBean.class);
 
@@ -35,12 +35,17 @@ public class InfClientFactoryBean extends DaoSupport implements FactoryBean {
     }
 
     @Override
-    protected void checkDaoConfig() throws IllegalArgumentException {
+    protected boolean checkBean() throws IllegalArgumentException {
         Assert.notNull(beanClass, "Property 'beanClass' is required");
         if (!beanClass.isInterface()) {
             log.warn("Skip put proxyMap. Cause bean " + beanClass + " is not an interface");
-            return;
+            return false;
         }
+        return true;
+    }
+
+    @Override
+    protected void initBean() throws Exception {
         if (!proxyMap.containsKey(this.beanClass)) {
             proxyMap.put(this.beanClass, new InfClientProxy(beanClass, applicationContext));
         }
