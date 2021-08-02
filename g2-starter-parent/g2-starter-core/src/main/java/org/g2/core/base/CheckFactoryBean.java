@@ -9,7 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 public abstract class CheckFactoryBean implements InitializingBean {
 
     @Override
-    public void afterPropertiesSet() throws IllegalArgumentException, BeanInitializationException {
+    public final void afterPropertiesSet() throws IllegalArgumentException, BeanInitializationException {
         boolean success = checkBean();
         if (success) {
             try {

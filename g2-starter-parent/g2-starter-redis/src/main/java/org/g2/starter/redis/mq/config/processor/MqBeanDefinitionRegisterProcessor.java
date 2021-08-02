@@ -3,7 +3,9 @@ package org.g2.starter.redis.mq.config.processor;
 import org.g2.core.util.StringUtil;
 import org.g2.starter.redis.infra.constants.MqConstants;
 import org.g2.starter.redis.mq.listener.annotation.Listener;
+import org.g2.starter.redis.mq.listener.config.ListenerProcessor;
 import org.g2.starter.redis.mq.subject.annotation.Subject;
+import org.g2.starter.redis.mq.subject.config.SubjectProcessor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -44,6 +46,9 @@ public class MqBeanDefinitionRegisterProcessor implements BeanDefinitionRegistry
             RootBeanDefinition containerBean = new RootBeanDefinition();
             containerBean.setBeanClass(RedisMessageListenerContainer.class);
             registry.registerBeanDefinition(StringUtil.getBeanName(MqConstants.REDIS_MESSAGE_LISTENER_CONTAINER, listenerBeans.size()), containerBean);
+            // 加入后置处理器
+            beanFactory.addBeanPostProcessor(new ListenerProcessor());
+            beanFactory.addBeanPostProcessor(new SubjectProcessor());
         }
     }
 }
