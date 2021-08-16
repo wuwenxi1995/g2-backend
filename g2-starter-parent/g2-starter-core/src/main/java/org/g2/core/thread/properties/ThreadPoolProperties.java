@@ -1,5 +1,6 @@
-package org.g2.core.thread;
+package org.g2.core.thread.properties;
 
+import org.g2.core.thread.ThreadRejected;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

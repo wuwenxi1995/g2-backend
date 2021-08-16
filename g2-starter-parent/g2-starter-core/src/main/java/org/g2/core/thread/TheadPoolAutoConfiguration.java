@@ -1,6 +1,8 @@
 package org.g2.core.thread;
 
 import org.g2.core.thread.chain.ThreadRejectedChainHandler;
+import org.g2.core.thread.properties.ScheduledPoolProperties;
+import org.g2.core.thread.properties.ThreadPoolProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -8,14 +10,15 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author wuwenxi 2021-07-16
  */
 @Configuration
-@EnableConfigurationProperties(ThreadPoolProperties.class)
+@EnableConfigurationProperties({ThreadPoolProperties.class, ScheduledPoolProperties.class})
 @ComponentScan(basePackages = "org.g2.core.thread.chain")
 public class TheadPoolAutoConfiguration {
 
@@ -41,5 +44,16 @@ public class TheadPoolAutoConfiguration {
         // 设置拒绝策略
         poolTaskExecutor.setRejectedExecutionHandler(new ThreadRejectedChainHandler().proceed(properties.getThreadRejected()));
         return poolTaskExecutor;
+    }
+
+    @ConditionalOnProperty(prefix = "g2.thread.scheduled", name = "enable", havingValue = "true")
+    @Bean
+    public ThreadPoolTaskScheduler threadPoolTaskScheduler(ScheduledPoolProperties properties) {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setPoolSize(properties.getCorePoolSize());
+        scheduler.setDaemon(properties.isDaemon());
+        scheduler.setThreadNamePrefix(properties.getPrefixName());
+        scheduler.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+        return scheduler;
     }
 }
