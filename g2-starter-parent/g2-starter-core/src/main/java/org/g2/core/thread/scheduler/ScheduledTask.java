@@ -2,8 +2,6 @@ package org.g2.core.thread.scheduler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.util.TimerTask;
 import java.util.concurrent.Future;
@@ -24,8 +22,8 @@ public class ScheduledTask extends TimerTask {
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTask.class);
 
     private final String name;
-    private final ThreadPoolTaskScheduler scheduler;
-    private final ThreadPoolTaskExecutor executor;
+    private final ScheduledThreadPoolExecutor scheduler;
+    private final ThreadPoolExecutor executor;
     private final Runnable task;
     private final long delay;
     private final boolean timeout;
@@ -36,7 +34,7 @@ public class ScheduledTask extends TimerTask {
     private final AtomicInteger throwableCounter;
     private final AtomicInteger timeoutCounter;
 
-    public ScheduledTask(String name, ThreadPoolTaskScheduler scheduler, ThreadPoolTaskExecutor executor, Runnable task, int delay, TimeUnit timeUnit, boolean timeout) {
+    public ScheduledTask(String name, ScheduledThreadPoolExecutor scheduler, ThreadPoolExecutor executor, Runnable task, int delay, TimeUnit timeUnit, boolean timeout) {
         this.name = name;
         this.scheduler = scheduler;
         this.executor = executor;
@@ -54,11 +52,14 @@ public class ScheduledTask extends TimerTask {
 
     @Override
     public void run() {
-        ScheduledThreadPoolExecutor scheduler = this.scheduler.getScheduledThreadPoolExecutor();
-        ThreadPoolExecutor executor = this.executor.getThreadPoolExecutor();
+        Future<?> future;
         try {
-            Future<?> future = executor.submit(task);
-            Object result = timeout ? future.get(timeoutMillis, TimeUnit.MILLISECONDS) : future.get();
+            future = executor.submit(task);
+            if (timeout) {
+                future.get(timeoutMillis, TimeUnit.MILLISECONDS);
+            } else {
+                future.get();
+            }
             successCounter.incrementAndGet();
         } catch (TimeoutException e) {
             logger.warn("scheduled task timed out", e);
@@ -86,8 +87,8 @@ public class ScheduledTask extends TimerTask {
 
     @Override
     public boolean cancel() {
-        logger.info("scheduled task {} shutdown and execute success count : {} , rejected count : {} , throwable count : {}",
-                name, successCounter.get(), rejectedCounter.get(), throwableCounter.get());
+        logger.info("scheduled task {} shutdown and execute success count : {} , timeout count :{} ,rejected count : {} , throwable count : {}",
+                name, successCounter.get(), timeoutCounter.get(), rejectedCounter.get(), throwableCounter.get());
         return super.cancel();
     }
 }
