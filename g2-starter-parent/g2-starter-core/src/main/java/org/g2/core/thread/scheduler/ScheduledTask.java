@@ -41,7 +41,7 @@ public class ScheduledTask extends TimerTask {
         this.task = task;
         this.delay = timeUnit.toMillis(delay);
         this.timeout = timeout;
-        this.timeoutMillis = timeout ? delay : 0;
+        this.timeoutMillis = timeout ? this.delay : 0;
 
         // Initialize the counters
         this.successCounter = new AtomicInteger(0);
