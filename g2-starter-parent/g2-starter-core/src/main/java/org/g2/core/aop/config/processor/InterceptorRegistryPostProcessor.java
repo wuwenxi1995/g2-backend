@@ -1,5 +1,6 @@
 package org.g2.core.aop.config.processor;
 
+import org.aopalliance.intercept.MethodInterceptor;
 import org.g2.core.aop.annotation.Interceptor;
 import org.g2.core.aop.infra.advisor.CustomAdvisor;
 import org.g2.core.aop.infra.constant.InterceptorConstant;
@@ -34,6 +35,9 @@ public class InterceptorRegistryPostProcessor implements BeanDefinitionRegistryP
     public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
         Map<String, Object> beans = beanFactory.getBeansWithAnnotation(Interceptor.class);
         beans.forEach((beanName, bean) -> {
+            if (!(bean instanceof MethodInterceptor)) {
+                return;
+            }
             // 注入自定义方法拦截点CustomPointCut
             RootBeanDefinition pointcut = new RootBeanDefinition();
             pointcut.setBeanClass(CustomPointCut.class);
