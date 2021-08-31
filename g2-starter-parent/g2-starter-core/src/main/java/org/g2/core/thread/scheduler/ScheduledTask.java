@@ -52,7 +52,7 @@ public class ScheduledTask extends TimerTask {
 
     @Override
     public void run() {
-        Future<?> future;
+        Future<?> future = null;
         try {
             future = executor.submit(task);
             if (timeout) {
@@ -79,6 +79,10 @@ public class ScheduledTask extends TimerTask {
             }
             throwableCounter.incrementAndGet();
         } finally {
+            // 如果执行过程发生异常，FutureTask未完成，取消任务执行
+            if (future != null && !future.isDone()) {
+                future.cancel(true);
+            }
             if (!scheduler.isShutdown()) {
                 scheduler.schedule(this, delay, TimeUnit.MILLISECONDS);
             }
