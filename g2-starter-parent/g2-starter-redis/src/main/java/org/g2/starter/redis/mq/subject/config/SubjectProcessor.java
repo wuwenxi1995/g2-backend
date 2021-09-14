@@ -5,6 +5,7 @@ import org.g2.starter.redis.mq.subject.annotation.Subject;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.Topic;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.Assert;
 
 import java.lang.annotation.Annotation;
@@ -16,6 +17,10 @@ import java.util.List;
  * @author wenxi.wu@hand-chian.com 2021-05-18
  */
 public class SubjectProcessor extends MqProcessorCreator {
+
+    public SubjectProcessor(ThreadPoolTaskExecutor executor) {
+        super(executor);
+    }
 
     @Override
     protected Collection<? extends Topic> getTopic(Annotation annotation) {

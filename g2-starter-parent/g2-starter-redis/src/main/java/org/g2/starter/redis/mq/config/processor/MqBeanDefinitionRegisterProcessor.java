@@ -14,6 +14,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.lang.NonNull;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.Map;
 
@@ -25,6 +26,12 @@ public class MqBeanDefinitionRegisterProcessor implements BeanDefinitionRegistry
     private static final String DELEGATE = "delegate";
 
     private BeanDefinitionRegistry registry;
+
+    private ThreadPoolTaskExecutor executor;
+
+    public MqBeanDefinitionRegisterProcessor(ThreadPoolTaskExecutor executor) {
+        this.executor = executor;
+    }
 
     @Override
     public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry registry) throws BeansException {
@@ -47,8 +54,8 @@ public class MqBeanDefinitionRegisterProcessor implements BeanDefinitionRegistry
             containerBean.setBeanClass(RedisMessageListenerContainer.class);
             registry.registerBeanDefinition(StringUtil.getBeanName(MqConstants.REDIS_MESSAGE_LISTENER_CONTAINER, listenerBeans.size()), containerBean);
             // 加入后置处理器
-            beanFactory.addBeanPostProcessor(new ListenerProcessor());
-            beanFactory.addBeanPostProcessor(new SubjectProcessor());
+            beanFactory.addBeanPostProcessor(new ListenerProcessor(executor));
+            beanFactory.addBeanPostProcessor(new SubjectProcessor(executor));
         }
     }
 }

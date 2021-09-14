@@ -6,11 +6,13 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.Topic;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.lang.NonNull;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.Assert;
 
 import java.lang.annotation.Annotation;
@@ -18,11 +20,22 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
+ * RedisMessageListenerContainer 必须设置线程池，
+ * <p>
+ * spring-data-redis监听默认线程池{@link SimpleAsyncTaskExecutor}没有使用池化，
+ * 会一直创建线程，可能导致OOM
+ * </p>
+ *
  * @author wenxi.wu@hand-chian.com 2021-05-18
  */
 public class MqProcessorCreator implements BeanPostProcessor, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
+    private ThreadPoolTaskExecutor executor;
+
+    public MqProcessorCreator(ThreadPoolTaskExecutor executor) {
+        this.executor = executor;
+    }
 
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean, String beanName) throws BeansException {
@@ -47,6 +60,8 @@ public class MqProcessorCreator implements BeanPostProcessor, ApplicationContext
                 RedisCacheClient redisCacheClient = applicationContext.getBean(RedisCacheClient.class);
                 container.setConnectionFactory(redisCacheClient.getRequiredConnectionFactory());
             }
+            // 设置redis监听线程池
+            container.setTaskExecutor(executor);
         }
         return null;
     }
