@@ -28,6 +28,7 @@ public class EnableMqAutoConfiguration {
         executor.setAllowCoreThreadTimeOut(properties.isAllowCoreThreadTimeOut());
         executor.setThreadNamePrefix("redis-listener-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+        executor.afterPropertiesSet();
         return new MqBeanDefinitionRegisterProcessor(executor);
     }
 }
