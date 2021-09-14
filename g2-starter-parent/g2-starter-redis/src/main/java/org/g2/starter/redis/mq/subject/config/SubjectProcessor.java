@@ -2,6 +2,7 @@ package org.g2.starter.redis.mq.subject.config;
 
 import org.g2.starter.redis.mq.config.processor.MqProcessorCreator;
 import org.g2.starter.redis.mq.subject.annotation.Subject;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.Topic;
@@ -17,10 +18,6 @@ import java.util.List;
  * @author wenxi.wu@hand-chian.com 2021-05-18
  */
 public class SubjectProcessor extends MqProcessorCreator {
-
-    public SubjectProcessor(ThreadPoolTaskExecutor executor) {
-        super(executor);
-    }
 
     @Override
     protected Collection<? extends Topic> getTopic(Annotation annotation) {
@@ -38,5 +35,11 @@ public class SubjectProcessor extends MqProcessorCreator {
     @Override
     protected Annotation findAnnotation(Object bean) {
         return AnnotationUtils.findAnnotation(bean.getClass(), Subject.class);
+    }
+
+    @Override
+    public SubjectProcessor setApplicationContext(ApplicationContext applicationContext) {
+        super.setApplicationContext(applicationContext);
+        return this;
     }
 }

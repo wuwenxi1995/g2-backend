@@ -2,6 +2,7 @@ package org.g2.starter.redis.mq.config.processor;
 
 import org.g2.core.base.BaseConstants;
 import org.g2.starter.redis.client.RedisCacheClient;
+import org.g2.starter.redis.infra.constants.MqConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -28,47 +29,33 @@ import java.util.Map;
  *
  * @author wenxi.wu@hand-chian.com 2021-05-18
  */
-public class MqProcessorCreator implements BeanPostProcessor, ApplicationContextAware {
+public class MqProcessorCreator implements BeanPostProcessor {
 
     private ApplicationContext applicationContext;
-    private ThreadPoolTaskExecutor executor;
-
-    public MqProcessorCreator(ThreadPoolTaskExecutor executor) {
-        this.executor = executor;
-    }
 
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean, String beanName) throws BeansException {
         if (bean instanceof RedisMessageListenerContainer
-                && beanName.contains(BaseConstants.Symbol.WELL)) {
+                && beanName.equals(MqConstants.REDIS_MESSAGE_LISTENER_CONTAINER)) {
             // 获取 RedisMessageListenerContainer
             RedisMessageListenerContainer container = (RedisMessageListenerContainer) bean;
-            Map<String, MessageListenerAdapter> messageListenerAdapterMap = applicationContext.getBeansOfType(MessageListenerAdapter.class);
-            messageListenerAdapterMap.forEach((name, messageListenerAdapter) -> {
-                if (name.contains(BaseConstants.Symbol.WELL)) {
-                    MessageListener messageListener = applicationContext.getBean(name.split(BaseConstants.Symbol.WELL)[1], MessageListener.class);
-                    Annotation annotation = findAnnotation(messageListener);
-                    if (annotation == null) {
-                        return;
-                    }
-                    Collection<? extends Topic> topic = getTopic(annotation);
-                    Assert.notEmpty(topic, "at least one topic required");
-                    container.addMessageListener(messageListenerAdapter, topic);
+            Map<String, MessageListener> messageListenerMap = applicationContext.getBeansOfType(MessageListener.class);
+            messageListenerMap.forEach((name, messageListener) -> {
+                Annotation annotation = findAnnotation(messageListener);
+                if (annotation == null) {
+                    return;
                 }
+                Collection<? extends Topic> topic = getTopic(annotation);
+                Assert.notEmpty(topic, "at least one topic required");
+                container.addMessageListener(messageListener, topic);
             });
-            if (container.getConnectionFactory() == null) {
-                RedisCacheClient redisCacheClient = applicationContext.getBean(RedisCacheClient.class);
-                container.setConnectionFactory(redisCacheClient.getRequiredConnectionFactory());
-            }
-            // 设置redis监听线程池
-            container.setTaskExecutor(executor);
         }
         return null;
     }
 
-    @Override
-    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
+    public MqProcessorCreator setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+        return this;
     }
 
     /**

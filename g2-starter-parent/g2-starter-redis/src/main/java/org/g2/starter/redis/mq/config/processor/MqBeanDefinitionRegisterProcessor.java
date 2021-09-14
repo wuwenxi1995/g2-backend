@@ -1,6 +1,7 @@
 package org.g2.starter.redis.mq.config.processor;
 
 import org.g2.core.util.StringUtil;
+import org.g2.starter.redis.client.RedisCacheClient;
 import org.g2.starter.redis.infra.constants.MqConstants;
 import org.g2.starter.redis.mq.listener.annotation.Listener;
 import org.g2.starter.redis.mq.listener.config.ListenerProcessor;
@@ -11,8 +12,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -21,13 +23,14 @@ import java.util.Map;
 /**
  * @author wenxi.wu@hand-chian.com 2021-05-17
  */
-public class MqBeanDefinitionRegisterProcessor implements BeanDefinitionRegistryPostProcessor {
-
-    private static final String DELEGATE = "delegate";
+public class MqBeanDefinitionRegisterProcessor implements BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
 
     private BeanDefinitionRegistry registry;
 
     private ThreadPoolTaskExecutor executor;
+
+    private MqProcessorCreator listenerProcessor;
+    private MqProcessorCreator subjectProcessor;
 
     public MqBeanDefinitionRegisterProcessor(ThreadPoolTaskExecutor executor) {
         this.executor = executor;
@@ -44,18 +47,21 @@ public class MqBeanDefinitionRegisterProcessor implements BeanDefinitionRegistry
         Map<String, Object> listenerBeans = beanFactory.getBeansWithAnnotation(Listener.class);
         listenerBeans.putAll(subjectBeans);
         if (listenerBeans.size() > 0) {
-            listenerBeans.forEach((beanName, bean) -> {
-                RootBeanDefinition messageListenerAdapterBean = new RootBeanDefinition();
-                messageListenerAdapterBean.setBeanClass(MessageListenerAdapter.class);
-                messageListenerAdapterBean.getPropertyValues().add(DELEGATE, bean);
-                registry.registerBeanDefinition(StringUtil.getBeanName(MqConstants.MESSAGE_LISTENER_ADAPTER, beanName), messageListenerAdapterBean);
-            });
             RootBeanDefinition containerBean = new RootBeanDefinition();
             containerBean.setBeanClass(RedisMessageListenerContainer.class);
+            // 必须设置监听线程池
+            containerBean.getPropertyValues().add("taskExecutor", executor);
+            containerBean.getPropertyValues().add("connectionFactory", beanFactory.getBean(RedisCacheClient.class).getRequiredConnectionFactory());
             registry.registerBeanDefinition(StringUtil.getBeanName(MqConstants.REDIS_MESSAGE_LISTENER_CONTAINER, listenerBeans.size()), containerBean);
             // 加入后置处理器
-            beanFactory.addBeanPostProcessor(new ListenerProcessor(executor));
-            beanFactory.addBeanPostProcessor(new SubjectProcessor(executor));
+            beanFactory.addBeanPostProcessor(listenerProcessor);
+            beanFactory.addBeanPostProcessor(subjectProcessor);
         }
+    }
+
+    @Override
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
+        this.listenerProcessor = new ListenerProcessor().setApplicationContext(applicationContext);
+        this.subjectProcessor = new SubjectProcessor().setApplicationContext(applicationContext);
     }
 }

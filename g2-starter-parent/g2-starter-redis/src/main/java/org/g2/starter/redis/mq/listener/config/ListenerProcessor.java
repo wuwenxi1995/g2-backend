@@ -3,6 +3,7 @@ package org.g2.starter.redis.mq.listener.config;
 import org.g2.starter.redis.infra.constants.MqConstants;
 import org.g2.starter.redis.mq.config.processor.MqProcessorCreator;
 import org.g2.starter.redis.mq.listener.annotation.Listener;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.Topic;
@@ -17,10 +18,6 @@ import java.util.Collections;
  */
 public class ListenerProcessor extends MqProcessorCreator {
 
-    public ListenerProcessor(ThreadPoolTaskExecutor executor) {
-        super(executor);
-    }
-
     @Override
     protected Collection<? extends Topic> getTopic(Annotation annotation) {
         Listener listener = (Listener) annotation;
@@ -31,5 +28,11 @@ public class ListenerProcessor extends MqProcessorCreator {
     @Override
     protected Annotation findAnnotation(Object bean) {
         return AnnotationUtils.findAnnotation(bean.getClass(), Listener.class);
+    }
+
+    @Override
+    public ListenerProcessor setApplicationContext(ApplicationContext applicationContext) {
+        super.setApplicationContext(applicationContext);
+        return this;
     }
 }
