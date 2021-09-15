@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.g2.starter.lock.autoconfigure.LockAutoConfiguration
+org.g2.starter.lock.autoconfigure.LockAutoConfiguration,\
+org.g2.starter.delayed.config.RedisDelayedQueueConfiguration
