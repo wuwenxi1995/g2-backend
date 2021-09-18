@@ -32,6 +32,7 @@ public class ScheduledPoolProperties {
         this.enable = false;
         this.corePoolSize = 15;
         this.prefixName = "schedule-task-";
+        this.daemon = true;
     }
 
     public boolean isEnable() {

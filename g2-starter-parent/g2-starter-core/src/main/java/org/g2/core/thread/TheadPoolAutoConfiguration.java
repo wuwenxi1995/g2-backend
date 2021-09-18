@@ -1,12 +1,10 @@
 package org.g2.core.thread;
 
-import org.g2.core.thread.chain.ThreadRejectedChainHandler;
 import org.g2.core.thread.properties.ScheduledPoolProperties;
 import org.g2.core.thread.properties.ThreadPoolProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -19,7 +17,6 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @Configuration
 @EnableConfigurationProperties({ThreadPoolProperties.class, ScheduledPoolProperties.class})
-@ComponentScan(basePackages = "org.g2.core.thread.chain")
 public class TheadPoolAutoConfiguration {
 
     @ConditionalOnProperty(prefix = "g2.thread.pool", name = "enable", havingValue = "true")
@@ -42,7 +39,7 @@ public class TheadPoolAutoConfiguration {
         // 设置线程名前缀
         poolTaskExecutor.setThreadNamePrefix(properties.getPrefixName());
         // 设置拒绝策略
-        poolTaskExecutor.setRejectedExecutionHandler(new ThreadRejectedChainHandler().proceed(properties.getThreadRejected()));
+        poolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         return poolTaskExecutor;
     }
 

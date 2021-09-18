@@ -1,29 +1,41 @@
-package org.g2.starter.delayed.init;
+package org.g2.starter.delayed.process;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.g2.core.thread.scheduler.ScheduledTask;
 import org.g2.starter.delayed.RedisDelayedQueue;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author wuwenxi 2021-09-15
  */
-public class DelayedQueueProcessing implements CommandLineRunner {
+public class DelayedQueueProcessing implements CommandLineRunner, Runnable {
 
     @Autowired
     private ApplicationContext applicationContext;
 
     private List<Thread> delayedQueueThreadList = new ArrayList<>();
 
-    @Override
+    @Autowired
+    @Qualifier("g2ThreadPool")
+    private ThreadPoolTaskExecutor taskExecutor;
 
+    @Autowired
+    @Qualifier("threadPoolTaskScheduler")
+    private ThreadPoolTaskScheduler scheduler;
+
+    @Override
     public void run(String... args) throws Exception {
         Map<String, RedisDelayedQueue> beansOfType = applicationContext.getBeansOfType(RedisDelayedQueue.class);
         if (CollectionUtils.isNotEmpty(beansOfType.values())) {
@@ -37,6 +49,9 @@ public class DelayedQueueProcessing implements CommandLineRunner {
                 // 启动线程
                 thread.start();
             }
+            ScheduledTask scheduledTask = new ScheduledTask("", scheduler.getScheduledThreadPoolExecutor(), taskExecutor.getThreadPoolExecutor(), this, 10, TimeUnit.SECONDS, false);
+            ScheduledExecutorService scheduledExecutor = scheduler.getScheduledExecutor();
+            scheduledExecutor.schedule(scheduledTask, 10, TimeUnit.SECONDS);
         }
     }
 
@@ -48,5 +63,10 @@ public class DelayedQueueProcessing implements CommandLineRunner {
             }
         }
         delayedQueueThreadList = null;
+    }
+
+    @Override
+    public void run() {
+
     }
 }

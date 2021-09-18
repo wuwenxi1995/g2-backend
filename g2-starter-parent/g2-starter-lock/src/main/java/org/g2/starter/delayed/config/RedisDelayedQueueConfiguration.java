@@ -1,7 +1,7 @@
 package org.g2.starter.delayed.config;
 
 import org.g2.starter.delayed.RedisDelayedQueue;
-import org.g2.starter.delayed.init.DelayedQueueProcessing;
+import org.g2.starter.delayed.process.DelayedQueueProcessing;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

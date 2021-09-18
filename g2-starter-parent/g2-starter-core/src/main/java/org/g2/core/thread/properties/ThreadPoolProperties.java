@@ -1,6 +1,5 @@
 package org.g2.core.thread.properties;
 
-import org.g2.core.thread.ThreadRejected;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -39,11 +38,6 @@ public class ThreadPoolProperties {
      * 核心线程是否允许在空闲后被销毁
      */
     private boolean allowCoreThreadTimeOut;
-    /**
-     * @see ThreadRejected
-     * 线程拒绝策略 可自定义拒绝策略
-     */
-    private String threadRejected;
 
     public ThreadPoolProperties() {
         this.enable = false;
@@ -53,7 +47,6 @@ public class ThreadPoolProperties {
         this.queueSize = 9999;
         this.prefixName = "g2-thread-pool-";
         this.allowCoreThreadTimeOut = false;
-        this.threadRejected = ThreadRejected.AbortPolicy.getValue();
     }
 
     public boolean isEnable() {
@@ -110,13 +103,5 @@ public class ThreadPoolProperties {
 
     public void setPrefixName(String prefixName) {
         this.prefixName = prefixName;
-    }
-
-    public String getThreadRejected() {
-        return threadRejected;
-    }
-
-    public void setThreadRejected(String threadRejected) {
-        this.threadRejected = threadRejected;
     }
 }
