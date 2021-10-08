@@ -12,8 +12,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PreDestroy;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,11 +32,11 @@ public abstract class RedisDelayedQueue<T> implements InitializingBean {
 
     private RBlockingDeque<T> blockingDeque;
     private RDelayedQueue<T> delayedQueue;
+    private boolean enableExecutor = true;
 
     /**
      * 线程池用来提交任务，默认创建自定义线程池，推荐使用公用线程池
      *
-     * @see RedisDelayedQueue#createExecutorService()
      * @see RedisDelayedQueue#setExecutorService(java.util.concurrent.ExecutorService)
      */
     private ExecutorService executorService;
@@ -65,34 +67,66 @@ public abstract class RedisDelayedQueue<T> implements InitializingBean {
     }
 
     /**
+     * 移除延时队列
+     */
+    public final boolean remove(T data) {
+        try {
+            delayedQueue.remove(data);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * 处理任务
      */
     public final void processing() {
-        Assert.notNull(executorService, "require executorService not null");
         if (!status.compareAndSet(Status.PENDING, Status.RUNNING)) {
             throw new IllegalStateException("RedisDelayedQueue processing status is RUNNING");
         }
-        while (!Thread.currentThread().isInterrupted()
-                && !executorService.isShutdown()) {
+        if (executorService == null) {
+            this.enableExecutor = false;
+        }
+        while (!Thread.currentThread().isInterrupted()) {
+            T take = null;
             try {
-                T take = blockingDeque.take();
-                // 如果线程池已关闭，说明服务不可用，将数据重新放入阻塞队列
-                if (executorService.isShutdown() || Thread.currentThread().isInterrupted()) {
+                take = blockingDeque.take();
+                // 如果线程中断，说明服务不可用，将数据重新放入阻塞队列
+                if (Thread.currentThread().isInterrupted()) {
                     delayedQueue.offer(take, 0, timeUnit());
                     break;
-                } else {
-                    // 提交任务
-                    executorService.submit(() -> process(take));
+                } else if (Objects.isNull(take)) {
+                    continue;
                 }
-            } catch (Exception e) {
-                log.error("redis delayed queue processing error , msg :", e);
+                // 处理数据
+                if (enableExecutor) {
+                    if (executorService.isShutdown()) {
+                        delayedQueue.offer(take, 0, timeUnit());
+                        break;
+                    }
+                    T submit = take;
+                    executorService.submit(() -> process(submit));
+                } else {
+                    process(take);
+                }
+            } catch (InterruptedException e) {
+                // take()被中断，记录错误日志
+                log.error("take delayedQueue Interrupted, msg :", e);
+            } catch (RejectedExecutionException e) {
+                // 提交线程池被拒绝，重新放入阻塞队列
+                delayedQueue.offer(take, 0, timeUnit());
+                log.error("delayedQueue submit task rejected, msg : ", e);
+            } catch (Throwable t) {
+                // 如果发生异常，记录错误日志
+                log.error("RedisDelayedQueue has error , msg :", t);
             }
         }
         // gc
         status = null;
     }
 
-    protected void setExecutorService(ExecutorService executorService) {
+    public final void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
     }
 
@@ -116,32 +150,20 @@ public abstract class RedisDelayedQueue<T> implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(redissonClient,"require redissonClient not null");
+        Assert.notNull(redissonClient, "require redissonClient not null");
         String queue = queue();
         Assert.isTrue(StringUtils.hasText(queue), "delayedQueue require queue not null");
         this.blockingDeque = redissonClient.getBlockingDeque(queue);
         this.delayedQueue = redissonClient.getDelayedQueue(blockingDeque);
-        // 创建
-        if (executorService == null) {
-            this.executorService = createExecutorService();
-        }
         status = new AtomicReference<>(Status.PENDING);
     }
 
     @PreDestroy
     private void destroy() {
         delayedQueue.destroy();
-        if (!executorService.isShutdown()) {
+        if (enableExecutor && !executorService.isShutdown()) {
             executorService.shutdown();
         }
-    }
-
-    private ExecutorService createExecutorService() {
-        int threads = Runtime.getRuntime().availableProcessors() * 2;
-        return new ThreadPoolExecutor(threads, threads, 0L,
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(999),
-                new ThreadFactoryBuilder().setNameFormat(String.format("%s-", this.getClass().getSimpleName())).build(),
-                new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
     /**
