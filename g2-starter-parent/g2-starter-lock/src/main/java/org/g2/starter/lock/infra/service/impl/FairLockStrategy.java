@@ -22,7 +22,7 @@ public class FairLockStrategy extends LockStrategy {
     @Override
     public boolean lock() {
         try {
-            LockInfo lockInfo = lockInfoThreadLocal.get();
+            LockInfo lockInfo = getLockInfo();
             RLock rLock = redissonClient.getFairLock(lockInfo.getName());
             return rLock.tryLock(lockInfo.getWaitTime(), lockInfo.getLeaseTime(), lockInfo.getTimeUnit());
         } catch (Exception e) {
@@ -32,12 +32,12 @@ public class FairLockStrategy extends LockStrategy {
 
     @Override
     public void unLock() {
-        LockInfo lockInfo = lockInfoThreadLocal.get();
+        LockInfo lockInfo = getLockInfo();
         RLock rLock = redissonClient.getFairLock(lockInfo.getName());
         if (rLock.isHeldByCurrentThread()) {
             rLock.unlockAsync();
         }
-        lockInfoThreadLocal.remove();
+        clear();
     }
 
     @Override

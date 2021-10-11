@@ -6,6 +6,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.g2.starter.lock.config.RedissonConfigureProperties;
 import org.g2.starter.lock.config.ZookeeperLockConfigureProperties;
 import org.g2.starter.lock.infra.listener.CuratorStartListener;
+import org.g2.starter.lock.infra.responsibility.AbstractServerConfig;
 import org.g2.starter.lock.infra.service.impl.FairLockStrategy;
 import org.g2.starter.lock.infra.service.impl.MultiLockStrategy;
 import org.g2.starter.lock.infra.service.impl.ReadLockStrategy;
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+
 /**
  * @author wenxi.wu@hand-china.com 2020-11-10
  */
@@ -30,6 +32,7 @@ public class LockAutoConfiguration {
 
     @Bean(initMethod = "init")
     @ConditionalOnProperty(prefix = "g2.lock.redisson", value = "enable", havingValue = "true")
+    @ConditionalOnBean(AbstractServerConfig.class)
     public RedissonBuildFactory redissonBuildFactory(RedissonConfigureProperties properties) {
         return new RedissonBuildFactory(properties);
     }

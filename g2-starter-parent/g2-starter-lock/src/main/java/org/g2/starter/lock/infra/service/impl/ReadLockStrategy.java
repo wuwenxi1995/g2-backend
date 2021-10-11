@@ -22,7 +22,7 @@ public class ReadLockStrategy extends LockStrategy {
 
     @Override
     public boolean lock() {
-        LockInfo lockInfo = lockInfoThreadLocal.get();
+        LockInfo lockInfo = getLockInfo();
         RReadWriteLock readWriteLock = redissonClient.getReadWriteLock(lockInfo.getName());
         try {
             RLock rLock = readWriteLock.readLock();
@@ -34,13 +34,13 @@ public class ReadLockStrategy extends LockStrategy {
 
     @Override
     public void unLock() {
-        LockInfo lockInfo = lockInfoThreadLocal.get();
+        LockInfo lockInfo = getLockInfo();
         RReadWriteLock readWriteLock = redissonClient.getReadWriteLock(lockInfo.getName());
         RLock rLock = readWriteLock.readLock();
         if (rLock.isHeldByCurrentThread()) {
             rLock.unlockAsync();
         }
-        lockInfoThreadLocal.remove();
+        clear();;
     }
 
     @Override

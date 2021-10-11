@@ -7,7 +7,7 @@ import org.g2.starter.lock.domain.LockInfo;
  */
 public abstract class LockStrategy implements LockService {
 
-    protected ThreadLocal<LockInfo> lockInfoThreadLocal = new ThreadLocal<>();
+    private ThreadLocal<LockInfo> lockInfoThreadLocal = new ThreadLocal<>();
 
     /**
      * 设置分布式锁信息
@@ -22,7 +22,7 @@ public abstract class LockStrategy implements LockService {
         return lockInfoThreadLocal.get();
     }
 
-    public final void clear() {
+    protected final void clear() {
         lockInfoThreadLocal.remove();
     }
 }

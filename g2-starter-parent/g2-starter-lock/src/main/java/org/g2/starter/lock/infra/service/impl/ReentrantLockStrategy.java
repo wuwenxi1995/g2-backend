@@ -21,7 +21,7 @@ public class ReentrantLockStrategy extends LockStrategy {
 
     @Override
     public boolean lock() {
-        LockInfo lockInfo = lockInfoThreadLocal.get();
+        LockInfo lockInfo = getLockInfo();
         try {
             RLock rLock = redissonClient.getLock(lockInfo.getName());
             return rLock.tryLock(lockInfo.getWaitTime(), lockInfo.getLeaseTime(), lockInfo.getTimeUnit());
@@ -32,12 +32,12 @@ public class ReentrantLockStrategy extends LockStrategy {
 
     @Override
     public void unLock() {
-        LockInfo lockInfo = lockInfoThreadLocal.get();
+        LockInfo lockInfo = getLockInfo();
         RLock rLock = redissonClient.getLock(lockInfo.getName());
         if (rLock.isHeldByCurrentThread()) {
             rLock.unlockAsync();
         }
-        lockInfoThreadLocal.remove();
+        clear();
     }
 
     @Override

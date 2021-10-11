@@ -22,7 +22,7 @@ public class MultiLockStrategy extends LockStrategy {
 
     @Override
     public boolean lock() {
-        LockInfo lockInfo = lockInfoThreadLocal.get();
+        LockInfo lockInfo = getLockInfo();
         RLock[] rLocks = new RLock[lockInfo.getKeyList().size()];
         for (int i = 0; i < rLocks.length; i++) {
             rLocks[i] = redissonClient.getLock(lockInfo.getKeyList().get(i));
@@ -37,7 +37,7 @@ public class MultiLockStrategy extends LockStrategy {
 
     @Override
     public void unLock() {
-        LockInfo lockInfo = this.lockInfoThreadLocal.get();
+        LockInfo lockInfo = getLockInfo();
         RLock[] lockList = new RLock[lockInfo.getKeyList().size()];
 
         for(int i = 0; i < lockInfo.getKeyList().size(); ++i) {
@@ -46,7 +46,7 @@ public class MultiLockStrategy extends LockStrategy {
 
         RedissonMultiLock lock = new RedissonMultiLock(lockList);
         lock.unlock();
-        this.lockInfoThreadLocal.remove();
+        clear();
     }
 
     @Override

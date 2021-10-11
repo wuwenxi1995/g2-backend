@@ -9,6 +9,7 @@ import org.g2.starter.lock.infra.constants.LockConstants;
 import org.g2.starter.lock.infra.responsibility.AbstractServerConfig;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
+import org.redisson.client.codec.StringCodec;
 import org.redisson.config.Config;
 
 import java.util.Collection;
@@ -27,6 +28,7 @@ public class RedissonBuildFactory {
     }
 
     private void init() {
+        config.setCodec(new StringCodec());
         config.setTransportMode(LockConstants.TransportMode.getTransportMode(properties.getTransportMode()));
         config.setThreads(properties.getThreads());
         config.setNettyThreads(properties.getNettyThreads());
