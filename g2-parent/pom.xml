@@ -39,7 +39,8 @@
 
         <!-- starter version -->
         <g2.starter.redis.version>0.1.0-SNAPSHOT</g2.starter.redis.version>
-        <g2.starter.lock.version>0.1.0-SNAPSHOT</g2.starter.lock.version>
+        <g2.starter.redisson.version>0.1.0-SNAPSHOT</g2.starter.redisson.version>
+        <g2.starter.zookeeper.version>0.1.0-SNAPSHOT</g2.starter.zookeeper.version>
         <g2.starter.elasticsearch.version>0.1.0-SNAPSHOT</g2.starter.elasticsearch.version>
         <g2.starter.rabbitmq.version>0.1.0-SNAPSHOT</g2.starter.rabbitmq.version>
         <g2.starter.kafka.version>0.1.0-SNAPSHOT</g2.starter.kafka.version>
@@ -145,8 +146,14 @@
 
             <dependency>
                 <groupId>org.g2</groupId>
-                <artifactId>g2-starter-lock</artifactId>
-                <version>${g2.starter.lock.version}</version>
+                <artifactId>g2-starter-redisson</artifactId>
+                <version>${g2.starter.redisson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-starter-zookeeper</artifactId>
+                <version>${g2.starter.zookeeper.version}</version>
             </dependency>
 
             <dependency>

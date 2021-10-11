@@ -16,10 +16,11 @@
     <modules>
         <module>g2-starter-redis</module>
         <module>g2-starter-elasticsearch</module>
-        <module>g2-starter-lock</module>
+        <module>g2-starter-redisson</module>
         <module>g2-starter-core</module>
         <module>g2-starter-mybatis-helper</module>
         <module>g2-starter-kafka</module>
+        <module>g2-starter-zookeeper</module>
     </modules>
 
 

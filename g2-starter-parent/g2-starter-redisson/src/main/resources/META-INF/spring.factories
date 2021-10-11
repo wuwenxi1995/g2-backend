@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.g2.starter.redisson.lock.autoconfigure.LockAutoConfiguration,\
+org.g2.starter.redisson.delayed.config.RedisDelayedQueueConfiguration
