@@ -141,8 +141,7 @@ public class DocumentInitProcessor implements BeanPostProcessor {
         }
         if (!field.index()) {
             properties.put("index", field.index());
-        }
-        if (FieldType.TEXT.equals(field.type())) {
+        } else if (FieldType.TEXT.equals(field.type())) {
             Analyzer analyzer = Analyzer.DEFAULT.equals(field.analyzer()) ? Analyzer.IK_MAX_WORD : field.analyzer();
             properties.put("analyzer", analyzer.getAnalyzer());
             if (StringUtils.isNotBlank(field.searchAnalyzer().getAnalyzer())) {

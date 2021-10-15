@@ -75,7 +75,7 @@
 
         <dependency>
             <groupId>org.g2</groupId>
-            <artifactId>g2-starter-lock</artifactId>
+            <artifactId>g2-starter-redisson</artifactId>
         </dependency>
 
     </dependencies>
