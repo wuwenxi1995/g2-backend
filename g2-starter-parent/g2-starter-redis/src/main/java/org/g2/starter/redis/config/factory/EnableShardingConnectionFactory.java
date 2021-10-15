@@ -54,12 +54,6 @@ public class EnableShardingConnectionFactory {
             redisStandaloneConfiguration.setDatabase(instance.getDbIndex());
             // 创建连接工厂
             lettuceConnectionFactory = new LettuceConnectionFactory(redisStandaloneConfiguration, lettuceClientConfiguration);
-
-            lettuceConnectionFactory.afterPropertiesSet();
-            redisShardingClient.addRedisConnectionFactory(shardingConnection.getKey(), lettuceConnectionFactory);
-
-            StringRedisTemplate redisTemplate = new StringRedisTemplate(lettuceConnectionFactory);
-            redisShardingClient.addRedisTemplate(shardingConnection.getKey(), redisTemplate);
         }
         return redisShardingClient;
     }
