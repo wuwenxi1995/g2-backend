@@ -34,16 +34,22 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- 使用nacos作为服务注册中心-->
+        <!-- 使用 eureka作为作为注册中心 -->
         <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-        </dependency>
+        <!-- 使用nacos作为服务注册中心-->
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>-->
+<!--        </dependency>-->
 
         <!-- openfeign -->
         <dependency>
@@ -65,6 +71,11 @@
         <dependency>
             <groupId>org.g2</groupId>
             <artifactId>g2-starter-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.g2</groupId>
+            <artifactId>g2-starter-kafka</artifactId>
         </dependency>
 
     </dependencies>
