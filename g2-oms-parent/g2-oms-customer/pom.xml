@@ -59,7 +59,7 @@
 
         <dependency>
             <groupId>org.g2</groupId>
-            <artifactId>g2-starter-core</artifactId>
+            <artifactId>g2-oms-start-core</artifactId>
         </dependency>
 
         <dependency>
