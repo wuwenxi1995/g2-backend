@@ -39,6 +39,7 @@
 
         <!-- starter version -->
         <g2.starter.redis.version>0.1.0-SNAPSHOT</g2.starter.redis.version>
+        <g2.starter.dynamic.redis.version>0.1.0-SNAPSHOT</g2.starter.dynamic.redis.version>
         <g2.starter.redisson.version>0.1.0-SNAPSHOT</g2.starter.redisson.version>
         <g2.starter.zookeeper.version>0.1.0-SNAPSHOT</g2.starter.zookeeper.version>
         <g2.starter.elasticsearch.version>0.1.0-SNAPSHOT</g2.starter.elasticsearch.version>
@@ -74,6 +75,7 @@
         <hutool.version>5.4.7</hutool.version>
         <okhttp3.version>4.9.0</okhttp3.version>
         <junit.version>4.12</junit.version>
+        <jedis.version>2.9.0</jedis.version>
     </properties>
 
     <dependencyManagement>
@@ -160,6 +162,12 @@
                 <groupId>org.g2</groupId>
                 <artifactId>g2-starter-redis</artifactId>
                 <version>${g2.starter.redis.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2</groupId>
+                <artifactId>g2-starter-dynamic-redis</artifactId>
+                <version>${g2.starter.dynamic.redis.version}</version>
             </dependency>
 
             <dependency>
@@ -368,6 +376,12 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
             </dependency>
 
         </dependencies>
