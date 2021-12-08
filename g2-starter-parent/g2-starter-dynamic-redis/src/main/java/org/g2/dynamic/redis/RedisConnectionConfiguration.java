@@ -27,16 +27,14 @@ public abstract class RedisConnectionConfiguration {
 
     private final RedisClusterConfiguration clusterConfiguration;
 
-    private final int database;
+    private Integer database;
 
     protected RedisConnectionConfiguration(RedisProperties properties,
                                            ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
-                                           ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
-                                           int database) {
+                                           ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider) {
         this.properties = properties;
         this.sentinelConfiguration = sentinelConfigurationProvider.getIfAvailable();
         this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
-        this.database = database;
     }
 
     /**
@@ -54,7 +52,7 @@ public abstract class RedisConnectionConfiguration {
             if (this.properties.getPassword() != null) {
                 config.setPassword(RedisPassword.of(this.properties.getPassword()));
             }
-            config.setDatabase(database);
+            config.setDatabase(database == null ? 0 : database);
             return config;
         }
         return null;
@@ -97,7 +95,7 @@ public abstract class RedisConnectionConfiguration {
             config.setPort(this.properties.getPort());
             config.setPassword(RedisPassword.of(this.properties.getPassword()));
         }
-        config.setDatabase(database);
+        config.setDatabase(database == null ? 0 : database);
         return config;
     }
 
@@ -161,6 +159,11 @@ public abstract class RedisConnectionConfiguration {
         int getPort() {
             return this.uri.getPort();
         }
+    }
+
+    RedisConnectionConfiguration setDatabase(int database) {
+        this.database = database;
+        return this;
     }
 
     /**

@@ -501,8 +501,14 @@ public abstract class AbstractRoutingRedisTemplate<K, V> extends RedisTemplate<K
         }
         RedisTemplate<K, V> redisTemplate = redisTemplates.get(lookupKey);
         if (redisTemplate == null) {
-            redisTemplate = createRedisTemplateOnMissing(lookupKey);
-            redisTemplates.put(lookupKey, redisTemplate);
+            // 双重校验
+            synchronized (this) {
+                redisTemplate = redisTemplates.get(lookupKey);
+                if (redisTemplate == null) {
+                    redisTemplate = createRedisTemplateOnMissing(lookupKey);
+                    redisTemplates.put(lookupKey, redisTemplate);
+                }
+            }
         }
         return redisTemplate;
     }

@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurat
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -33,6 +34,7 @@ import java.util.List;
 @Configuration
 @EnableConfigurationProperties({RedisProperties.class, DynamicRedisProperties.class})
 @ConditionalOnClass(name = "org.springframework.data.redis.connection.RedisConnectionFactory")
+@ComponentScan(basePackages = {"org.g2.dynamic.redis"})
 public class DynamicRedisAutoConfiguration {
 
     @Bean
@@ -49,6 +51,15 @@ public class DynamicRedisAutoConfiguration {
         return redisTemplate;
     }
 
+    @Bean(initMethod = "init")
+    public CustomizerRedisTemplateFactory<String, String> customizerRedisTemplateFactory(RedisProperties redisProperties,
+                                                                                         ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
+                                                                                         ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
+                                                                                         ObjectProvider<List<JedisClientConfigurationBuilderCustomizer>> jedisBuilderCustomizers,
+                                                                                         ObjectProvider<List<LettuceClientConfigurationBuilderCustomizer>> lettuceBuilderCustomizers) {
+        return new CustomizerRedisTemplateFactory<>(redisProperties, sentinelConfiguration, clusterConfiguration, jedisBuilderCustomizers, lettuceBuilderCustomizers);
+    }
+
     @Bean
     @ConditionalOnProperty(prefix = "g2.redis", name = "dynamic-database", havingValue = "false")
     public RedisHelper redisHelper() {
@@ -57,16 +68,7 @@ public class DynamicRedisAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "g2.redis", name = "dynamic-database", havingValue = "true", matchIfMissing = true)
-    public RedisHelper dynamicRedisHelper(RedisProperties redisProperties,
-                                          ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
-                                          ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
-                                          ObjectProvider<List<JedisClientConfigurationBuilderCustomizer>> jedisBuilderCustomizers,
-                                          ObjectProvider<List<LettuceClientConfigurationBuilderCustomizer>> lettuceBuilderCustomizers) {
-        CustomizerRedisTemplateFactory<String, String> redisTemplateFactory = new CustomizerRedisTemplateFactory<>(redisProperties,
-                sentinelConfiguration,
-                clusterConfiguration,
-                jedisBuilderCustomizers,
-                lettuceBuilderCustomizers);
+    public RedisHelper dynamicRedisHelper(RedisProperties redisProperties, CustomizerRedisTemplateFactory<String, String> redisTemplateFactory) {
         DynamicRedisTemplate<String, String> dynamicRedisTemplate = new DynamicRedisTemplate<>(redisTemplateFactory);
         // 创建默认的redisTemplate
         RedisTemplate<String, String> defaultRedisTemplate = dynamicRedisTemplate.createRedisTemplateOnMissing(redisProperties.getDatabase());
@@ -81,16 +83,7 @@ public class DynamicRedisAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "g2.redis", name = "sharding", havingValue = "true", matchIfMissing = true)
-    public RedisHelper shardingRedisHelper(RedisProperties redisProperties,
-                                           ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
-                                           ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
-                                           ObjectProvider<List<JedisClientConfigurationBuilderCustomizer>> jedisBuilderCustomizers,
-                                           ObjectProvider<List<LettuceClientConfigurationBuilderCustomizer>> lettuceBuilderCustomizers) {
-        CustomizerRedisTemplateFactory<String, String> redisTemplateFactory = new CustomizerRedisTemplateFactory<>(redisProperties,
-                sentinelConfiguration,
-                clusterConfiguration,
-                jedisBuilderCustomizers,
-                lettuceBuilderCustomizers);
+    public RedisHelper shardingRedisHelper(RedisProperties redisProperties, CustomizerRedisTemplateFactory<String, String> redisTemplateFactory) {
         ShardingRedisTemplate<String, String> shardingRedisTemplate = new ShardingRedisTemplate<>(redisTemplateFactory);
         try {
             DatabaseThreadLocal.set(redisProperties.getDatabase());

@@ -30,8 +30,8 @@ public class LettuceConnectionConfiguration extends RedisConnectionConfiguration
     public LettuceConnectionConfiguration(RedisProperties properties,
                                           ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
                                           ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
-                                          ObjectProvider<List<LettuceClientConfigurationBuilderCustomizer>> builderCustomizers, int database) {
-        super(properties, sentinelConfiguration, clusterConfiguration, database);
+                                          ObjectProvider<List<LettuceClientConfigurationBuilderCustomizer>> builderCustomizers) {
+        super(properties, sentinelConfiguration, clusterConfiguration);
         this.properties = properties;
         this.builderCustomizers = builderCustomizers.getIfAvailable(Collections::emptyList);
         this.clientResources = DefaultClientResources.create();

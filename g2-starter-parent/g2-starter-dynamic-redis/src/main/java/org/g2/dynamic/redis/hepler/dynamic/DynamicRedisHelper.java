@@ -2,7 +2,6 @@ package org.g2.dynamic.redis.hepler.dynamic;
 
 import org.g2.dynamic.redis.hepler.RedisHelper;
 import org.g2.dynamic.redis.util.DatabaseThreadLocal;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -25,7 +24,7 @@ public class DynamicRedisHelper extends RedisHelper {
     }
 
     @Override
-    public RedisTemplate<String, String> getRedisTemplate() {
+    public DynamicRedisTemplate<String, String> getRedisTemplate() {
         return redisTemplate;
     }
 

@@ -27,8 +27,8 @@ public class JedisConnectionConfiguration extends RedisConnectionConfiguration {
     public JedisConnectionConfiguration(RedisProperties properties,
                                         ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
                                         ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
-                                        ObjectProvider<List<JedisClientConfigurationBuilderCustomizer>> builderCustomizers, int database) {
-        super(properties, sentinelConfiguration, clusterConfiguration, database);
+                                        ObjectProvider<List<JedisClientConfigurationBuilderCustomizer>> builderCustomizers) {
+        super(properties, sentinelConfiguration, clusterConfiguration);
         this.properties = properties;
         this.builderCustomizers = builderCustomizers.getIfAvailable(Collections::emptyList);
     }

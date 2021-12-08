@@ -11,13 +11,13 @@ public class RedisShardingTheadLocal {
     private RedisShardingTheadLocal() {
     }
 
-    private static ThreadLocal<Deque<String>> THREAD_SHARDING_NAME = new ThreadLocal<>();
+    private static ThreadLocal<Deque<Object>> THREAD_SHARDING_NAME = new ThreadLocal<>();
 
     /**
      * 给当前线程添加一个分片
      */
-    public static void set(String shardingName) {
-        Deque<String> deque = THREAD_SHARDING_NAME.get();
+    public static void set(Object shardingName) {
+        Deque<Object> deque = THREAD_SHARDING_NAME.get();
         if (deque == null) {
             deque = new ArrayDeque<>();
         }
@@ -28,8 +28,8 @@ public class RedisShardingTheadLocal {
     /**
      * 获取当前线程第一个分片
      */
-    public static String get() {
-        Deque<String> deque = THREAD_SHARDING_NAME.get();
+    public static Object get() {
+        Deque<Object> deque = THREAD_SHARDING_NAME.get();
         if (deque == null) {
             return null;
         }
@@ -40,7 +40,7 @@ public class RedisShardingTheadLocal {
      * 如果当前现在有多个分片，依次进行清理
      */
     public static void clear() {
-        Deque<String> deque = THREAD_SHARDING_NAME.get();
+        Deque<Object> deque = THREAD_SHARDING_NAME.get();
         if (deque == null || deque.size() <= 1) {
             THREAD_SHARDING_NAME.remove();
             return;

@@ -3,7 +3,6 @@ package org.g2.dynamic.redis.hepler.sharding;
 import org.g2.dynamic.redis.hepler.RedisHelper;
 import org.g2.dynamic.redis.util.DatabaseThreadLocal;
 import org.g2.dynamic.redis.util.RedisShardingTheadLocal;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -13,7 +12,7 @@ import org.springframework.util.Assert;
  */
 public class ShardingRedisHelper extends RedisHelper {
 
-    private RedisTemplate<String, String> redisTemplate;
+    private ShardingRedisTemplate<String, String> redisTemplate;
 
     public ShardingRedisHelper(ShardingRedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
@@ -25,7 +24,7 @@ public class ShardingRedisHelper extends RedisHelper {
     }
 
     @Override
-    public RedisTemplate<String, String> getRedisTemplate() {
+    public ShardingRedisTemplate<String, String> getRedisTemplate() {
         return this.redisTemplate;
     }
 
@@ -39,7 +38,7 @@ public class ShardingRedisHelper extends RedisHelper {
         DatabaseThreadLocal.clear();
     }
 
-    public void setShardingName(String lookupKey) {
+    public void setShardingName(Object lookupKey) {
         RedisShardingTheadLocal.set(lookupKey);
     }
 

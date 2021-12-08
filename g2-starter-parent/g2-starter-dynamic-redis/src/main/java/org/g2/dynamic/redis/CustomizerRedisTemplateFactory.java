@@ -34,6 +34,8 @@ public class CustomizerRedisTemplateFactory<K, V> {
     private ObjectProvider<List<JedisClientConfigurationBuilderCustomizer>> jedisBuilderCustomizers;
     private ObjectProvider<List<LettuceClientConfigurationBuilderCustomizer>> lettuceBuilderCustomizers;
 
+    private RedisConnectionConfiguration redisConnectionConfiguration;
+
     public CustomizerRedisTemplateFactory(RedisProperties properties,
                                           ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
                                           ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
@@ -47,21 +49,8 @@ public class CustomizerRedisTemplateFactory<K, V> {
     }
 
     public RedisTemplate<K, V> createRedisTemplate(int database) {
-        RedisConnectionConfiguration redisConnectionConfiguration = null;
-        switch (getRedisClientTyep()) {
-            case REDIS_CLIENT_LETTUCE:
-                redisConnectionConfiguration = new LettuceConnectionConfiguration(properties, sentinelConfiguration,
-                        clusterConfiguration, lettuceBuilderCustomizers, database);
-                break;
-            case REDIS_CLIENT_JEDIS:
-                redisConnectionConfiguration = new JedisConnectionConfiguration(properties, sentinelConfiguration,
-                        clusterConfiguration, jedisBuilderCustomizers, database);
-                break;
-            default:
-                //
-        }
         Assert.notNull(redisConnectionConfiguration, "redisConnectionConfigure is null");
-        RedisConnectionFactory redisConnectionFactory = redisConnectionConfiguration.redisConnectionFactory();
+        RedisConnectionFactory redisConnectionFactory = redisConnectionConfiguration.setDatabase(database).redisConnectionFactory();
         return createRedisTemplate(redisConnectionFactory);
     }
 
@@ -79,7 +68,22 @@ public class CustomizerRedisTemplateFactory<K, V> {
         return redisTemplate;
     }
 
-    private String getRedisClientTyep() {
+    private void init() {
+        switch (getRedisClientType()) {
+            case REDIS_CLIENT_LETTUCE:
+                redisConnectionConfiguration = new LettuceConnectionConfiguration(properties, sentinelConfiguration,
+                        clusterConfiguration, lettuceBuilderCustomizers);
+                break;
+            case REDIS_CLIENT_JEDIS:
+                redisConnectionConfiguration = new JedisConnectionConfiguration(properties, sentinelConfiguration,
+                        clusterConfiguration, jedisBuilderCustomizers);
+                break;
+            default:
+                //
+        }
+    }
+
+    private String getRedisClientType() {
         try {
             Class.forName("io.lettuce.core.RedisClient");
             return REDIS_CLIENT_LETTUCE;
