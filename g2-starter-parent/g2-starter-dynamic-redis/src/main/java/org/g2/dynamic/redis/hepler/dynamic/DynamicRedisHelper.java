@@ -17,7 +17,6 @@ public class DynamicRedisHelper extends RedisHelper {
         this.redisTemplate = redisTemplate;
     }
 
-
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(redisTemplate, "redisTemplate must not be null");

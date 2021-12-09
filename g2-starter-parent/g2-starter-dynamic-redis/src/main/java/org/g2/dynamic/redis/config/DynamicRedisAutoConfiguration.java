@@ -7,7 +7,6 @@ import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
 import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisTemplate;
 import org.g2.dynamic.redis.hepler.sharding.ShardingRedisHelper;
 import org.g2.dynamic.redis.hepler.sharding.ShardingRedisTemplate;
-import org.g2.dynamic.redis.util.DatabaseThreadLocal;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -83,15 +82,9 @@ public class DynamicRedisAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "g2.redis", name = "sharding", havingValue = "true", matchIfMissing = true)
-    public RedisHelper shardingRedisHelper(RedisProperties redisProperties, CustomizerRedisTemplateFactory<String, String> redisTemplateFactory) {
+    public RedisHelper shardingRedisHelper(StringRedisTemplate redisTemplate, CustomizerRedisTemplateFactory<String, String> redisTemplateFactory) {
         ShardingRedisTemplate<String, String> shardingRedisTemplate = new ShardingRedisTemplate<>(redisTemplateFactory);
-        try {
-            DatabaseThreadLocal.set(redisProperties.getDatabase());
-            RedisTemplate<String, String> redisTemplate = shardingRedisTemplate.createRedisTemplateOnMissing(redisProperties.getDatabase());
-            shardingRedisTemplate.setDefaultRedisTemplate(redisTemplate);
-        } finally {
-            DatabaseThreadLocal.clear();
-        }
+        shardingRedisTemplate.setDefaultRedisTemplate(redisTemplate);
         // 设置template映射关系
         HashMap<Object, RedisTemplate<String, String>> map = new HashMap<>(16);
         shardingRedisTemplate.setRedisTemplates(map);

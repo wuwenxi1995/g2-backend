@@ -54,6 +54,11 @@ public class CustomizerRedisTemplateFactory<K, V> {
         return createRedisTemplate(redisConnectionFactory);
     }
 
+    public boolean isCluster() {
+        Assert.notNull(redisConnectionConfiguration, "redisConnectionConfigure is null");
+        return redisConnectionConfiguration.isCluster();
+    }
+
     private RedisTemplate<K, V> createRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
         RedisTemplate<K, V> redisTemplate = new RedisTemplate<>();

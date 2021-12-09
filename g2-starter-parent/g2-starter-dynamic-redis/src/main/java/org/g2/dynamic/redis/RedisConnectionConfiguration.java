@@ -132,6 +132,10 @@ public abstract class RedisConnectionConfiguration {
         return nodes;
     }
 
+    boolean isCluster() {
+        return getClusterConfiguration() != null;
+    }
+
     protected static class Connection {
 
         private URI uri;

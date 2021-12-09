@@ -495,8 +495,8 @@ public abstract class AbstractRoutingRedisTemplate<K, V> extends RedisTemplate<K
      * 获取动态redisTemplate
      */
     private RedisTemplate<K, V> determineTargetRedisTemplate() {
-        Object lookupKey = determineCurrentLookupKey();
-        if (lookupKey == null) {
+        Object lookupKey;
+        if (isCluster() || (lookupKey = determineCurrentLookupKey()) == null) {
             return this.defaultRedisTemplate;
         }
         RedisTemplate<K, V> redisTemplate = redisTemplates.get(lookupKey);
@@ -512,6 +512,8 @@ public abstract class AbstractRoutingRedisTemplate<K, V> extends RedisTemplate<K
         }
         return redisTemplate;
     }
+
+    protected abstract boolean isCluster();
 
     /**
      * 查询当前动态对象
