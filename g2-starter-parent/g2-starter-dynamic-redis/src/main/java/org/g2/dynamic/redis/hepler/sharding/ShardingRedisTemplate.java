@@ -18,11 +18,6 @@ public class ShardingRedisTemplate<K, V> extends AbstractRoutingRedisTemplate<K,
     }
 
     @Override
-    protected boolean isCluster() {
-        return customizerRedisTemplateFactory.isCluster();
-    }
-
-    @Override
     protected Object determineCurrentLookupKey() {
         return RedisShardingTheadLocal.get();
     }

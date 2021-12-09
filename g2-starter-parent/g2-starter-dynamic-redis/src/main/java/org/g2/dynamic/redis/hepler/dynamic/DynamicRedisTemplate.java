@@ -17,11 +17,6 @@ public class DynamicRedisTemplate<K, V> extends AbstractRoutingRedisTemplate<K, 
     }
 
     @Override
-    protected boolean isCluster() {
-        return customizerRedisTemplateFactory.isCluster();
-    }
-
-    @Override
     protected Object determineCurrentLookupKey() {
         return DatabaseThreadLocal.get();
     }

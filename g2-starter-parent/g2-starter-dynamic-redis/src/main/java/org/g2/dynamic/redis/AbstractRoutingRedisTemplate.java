@@ -30,6 +30,7 @@ import org.springframework.lang.NonNull;
 import java.io.Closeable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractRoutingRedisTemplate<K, V> extends RedisTemplate<K, V> {
 
-    private Map<Object, RedisTemplate<K, V>> redisTemplates;
+    private final Map<Object, RedisTemplate<K, V>> redisTemplates = new HashMap<>(16);
 
     private RedisTemplate<K, V> defaultRedisTemplate;
 
@@ -473,7 +474,7 @@ public abstract class AbstractRoutingRedisTemplate<K, V> extends RedisTemplate<K
     // =====================================================================================
 
     public void setRedisTemplates(Map<Object, RedisTemplate<K, V>> redisTemplates) {
-        this.redisTemplates = redisTemplates;
+        this.redisTemplates.putAll(redisTemplates);
     }
 
     public void setDefaultRedisTemplate(RedisTemplate<K, V> defaultRedisTemplate) {
@@ -483,9 +484,6 @@ public abstract class AbstractRoutingRedisTemplate<K, V> extends RedisTemplate<K
     @Override
     public void afterPropertiesSet() {
         super.afterPropertiesSet();
-        if (this.redisTemplates == null) {
-            throw new IllegalArgumentException("Property 'redisTemplates' is required");
-        }
         if (this.defaultRedisTemplate == null) {
             throw new IllegalArgumentException("Property 'defaultRedisTemplate' is required");
         }
@@ -495,14 +493,14 @@ public abstract class AbstractRoutingRedisTemplate<K, V> extends RedisTemplate<K
      * 获取动态redisTemplate
      */
     private RedisTemplate<K, V> determineTargetRedisTemplate() {
-        Object lookupKey;
-        if (isCluster() || (lookupKey = determineCurrentLookupKey()) == null) {
+        Object lookupKey = determineCurrentLookupKey();
+        if (lookupKey == null) {
             return this.defaultRedisTemplate;
         }
         RedisTemplate<K, V> redisTemplate = redisTemplates.get(lookupKey);
         if (redisTemplate == null) {
             // 双重校验
-            synchronized (this) {
+            synchronized (redisTemplates) {
                 redisTemplate = redisTemplates.get(lookupKey);
                 if (redisTemplate == null) {
                     redisTemplate = createRedisTemplateOnMissing(lookupKey);
@@ -512,8 +510,6 @@ public abstract class AbstractRoutingRedisTemplate<K, V> extends RedisTemplate<K
         }
         return redisTemplate;
     }
-
-    protected abstract boolean isCluster();
 
     /**
      * 查询当前动态对象
