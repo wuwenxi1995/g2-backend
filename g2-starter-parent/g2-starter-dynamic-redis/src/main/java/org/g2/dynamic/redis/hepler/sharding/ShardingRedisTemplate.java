@@ -11,7 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
  */
 public class ShardingRedisTemplate<K, V> extends AbstractRoutingRedisTemplate<K, V> {
 
-    private CustomizerRedisTemplateFactory<K, V> customizerRedisTemplateFactory;
+    private final CustomizerRedisTemplateFactory<K, V> customizerRedisTemplateFactory;
 
     public ShardingRedisTemplate(CustomizerRedisTemplateFactory<K, V> customizerRedisTemplateFactory) {
         this.customizerRedisTemplateFactory = customizerRedisTemplateFactory;

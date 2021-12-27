@@ -17,9 +17,15 @@ public class DynamicRedisProperties {
      */
     private boolean sharding;
 
+    /**
+     * 动态redis客户端数量
+     */
+    private int shardingNum;
+
     public DynamicRedisProperties() {
         this.dynamicDatabase = true;
         this.sharding = true;
+        this.shardingNum = 5;
     }
 
     public boolean isDynamicDatabase() {
@@ -36,5 +42,13 @@ public class DynamicRedisProperties {
 
     public void setSharding(boolean sharding) {
         this.sharding = sharding;
+    }
+
+    public int getShardingNum() {
+        return shardingNum;
+    }
+
+    public void setShardingNum(int shardingNum) {
+        this.shardingNum = shardingNum;
     }
 }

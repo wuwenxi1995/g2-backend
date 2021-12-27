@@ -481,6 +481,10 @@ public abstract class AbstractRoutingRedisTemplate<K, V> extends RedisTemplate<K
         this.defaultRedisTemplate = defaultRedisTemplate;
     }
 
+    protected RedisTemplate<K, V> getDefaultRedisTemplate() {
+        return defaultRedisTemplate;
+    }
+
     @Override
     public void afterPropertiesSet() {
         super.afterPropertiesSet();
@@ -492,7 +496,7 @@ public abstract class AbstractRoutingRedisTemplate<K, V> extends RedisTemplate<K
     /**
      * 获取动态redisTemplate
      */
-    private RedisTemplate<K, V> determineTargetRedisTemplate() {
+    protected RedisTemplate<K, V> determineTargetRedisTemplate() {
         Object lookupKey = determineCurrentLookupKey();
         if (lookupKey == null) {
             return this.defaultRedisTemplate;
