@@ -18,20 +18,13 @@ public class StringUtil {
     /**
      * 将异常栈中的内容转化为String
      *
-     * @param e exception-string
+     * @param throwable exception-string
      * @return string
      */
-    public static String exceptionString(final Exception e) {
-        try {
-            final StringWriter sw = new StringWriter();
-            final PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            return "exceptionString> " + sw.toString() + "\r\n";
-        } catch (final Exception e2) {
-            final String errorMsg = "Common exception util error occured :" + e2.getMessage();
-            LOG.error(errorMsg, e);
-            return errorMsg;
-        }
+    public static String exceptionString(final Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        throwable.printStackTrace(new PrintWriter(stringWriter));
+        return stringWriter.toString();
     }
 
     public static String getBeanName(String prefix, Object beanName) {
