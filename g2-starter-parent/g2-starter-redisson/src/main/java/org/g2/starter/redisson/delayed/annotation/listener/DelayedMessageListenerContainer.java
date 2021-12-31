@@ -24,6 +24,7 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
 
     private final Object lifecycleMonitor = new Object();
     private final DelayedListenerProperties properties;
+    private final DelayedMessageListenerContainer messageListenerContainer;
 
     private volatile boolean running;
 
@@ -33,11 +34,16 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
 
     public DelayedMessageListenerContainer(DelayedListenerProperties properties) {
         this.properties = properties;
+        this.messageListenerContainer = this;
     }
 
     @Override
     public void setupListenerContainer(Object messageListener) {
         this.messageListener = messageListener;
+    }
+
+    public DelayedMessageTask getTask() {
+        return task;
     }
 
     private void doStart() {
@@ -56,7 +62,7 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
 
     public class DelayedMessageTask implements Runnable {
 
-        private String delayedQueue;
+        private String queue;
         private MessageListenerAdapter messageListener;
         private RedissonClient redissonClient;
         private RBlockingDeque<String> blockingDeque;
@@ -65,11 +71,11 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
 
         DelayedMessageTask() {
             BeanFactory beanFactory = properties.getBeanFactory();
-            this.delayedQueue = properties.getDelayedQueue();
+            this.queue = properties.getDelayedQueue();
             this.redissonClient = beanFactory.getBean(RedissonClient.class);
-            this.blockingDeque = redissonClient.getBlockingDeque(delayedQueue);
+            this.blockingDeque = redissonClient.getBlockingDeque(queue);
             this.messageProducer = beanFactory.getBean(DelayedMessageProducer.class);
-            messageProducer.registryDelayedQueue(delayedQueue, this);
+            messageProducer.registryDelayedQueue(this.queue, DelayedMessageListenerContainer.this.messageListenerContainer);
             if (DelayedMessageListenerContainer.this.messageListener instanceof MessageListenerAdapter) {
                 this.messageListener = (MessageListenerAdapter) DelayedMessageListenerContainer.this.messageListener;
             }
@@ -100,7 +106,7 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
                 }
                 if (StringUtils.isNotBlank(message)) {
                     if (thread.isInterrupted()) {
-                        messageProducer.add(delayedQueue, message, 0, TimeUnit.SECONDS);
+                        messageProducer.add(queue, message, 0, TimeUnit.SECONDS);
                         break;
                     }
                     if (executor != null) {
@@ -108,7 +114,7 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
                             executor.execute(() -> messageListener.handlerMessage(message));
                         } catch (RejectedExecutionException e) {
                             // 线程池拒绝任务，重新加入队列，等待消费
-                            messageProducer.add(delayedQueue, message, 0, TimeUnit.SECONDS);
+                            messageProducer.add(queue, message, 0, TimeUnit.SECONDS);
                         }
                     } else {
                         messageListener.handlerMessage(message);
@@ -116,7 +122,7 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
                 }
             }
             // 关闭延时队列
-            messageProducer.destroy(this.delayedQueue);
+            messageProducer.destroy(this.queue);
         }
     }
 

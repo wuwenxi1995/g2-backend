@@ -4,6 +4,7 @@ import org.g2.core.helper.FastJsonHelper;
 import org.g2.core.util.StringUtil;
 import org.g2.starter.redisson.delayed.annotation.exception.DelayedQueueException;
 import org.g2.starter.redisson.delayed.annotation.listener.DelayedMessageListenerContainer;
+import org.g2.starter.redisson.delayed.annotation.listener.MessageListenerContainer;
 import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -23,9 +24,11 @@ public class DelayedMessageProducer {
     private static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.MINUTES;
 
     private final Map<String, RDelayedQueue<String>> delayedQueueMap;
+    private final Map<String, MessageListenerContainer> messageListenerContainerMap;
 
     public DelayedMessageProducer() {
         this.delayedQueueMap = new ConcurrentHashMap<>();
+        this.messageListenerContainerMap = new ConcurrentHashMap<>();
     }
 
     public boolean add(String queue, Object message, int delay, TimeUnit timeUnit) {
@@ -43,11 +46,27 @@ public class DelayedMessageProducer {
         return add(queue, message, DEFAULT_DELAY_TIME, DEFAULT_TIME_UNIT);
     }
 
-    public void registryDelayedQueue(String queue, DelayedMessageListenerContainer.DelayedMessageTask delayedMessageTask) {
+    public void registryDelayedQueue(String queue, DelayedMessageListenerContainer messageListenerContainer) {
         this.delayedQueueMap.computeIfPresent(queue, (key, oldValue) -> {
+            DelayedMessageListenerContainer.DelayedMessageTask delayedMessageTask = messageListenerContainer.getTask();
             RedissonClient redissonClient = delayedMessageTask.getRedissonClient();
             return redissonClient.getDelayedQueue(delayedMessageTask.getBlockingDeque());
         });
+        this.messageListenerContainerMap.computeIfPresent(queue, (key, oldValue) -> messageListenerContainer);
+    }
+
+    public void destroy(String queue) {
+        MessageListenerContainer messageListenerContainer = messageListenerContainerMap.remove(queue);
+        if (messageListenerContainer == null
+                || messageListenerContainer.isRunning()) {
+            return;
+        }
+        // 销毁
+        RDelayedQueue<String> delayedQueue = delayedQueueMap.remove(queue);
+        if (delayedQueue == null) {
+            return;
+        }
+        delayedQueue.destroy();
     }
 
     private RDelayedQueue<String> getDelayedQueue(String queue) {
@@ -56,14 +75,5 @@ public class DelayedMessageProducer {
             throw new DelayedQueueException("没有找到[%s]对应的延时队列", queue);
         }
         return delayedQueue;
-    }
-
-    public void destroy(String queue) {
-        // 销毁
-        RDelayedQueue<String> delayedQueue = delayedQueueMap.remove(queue);
-        if (delayedQueue == null) {
-            return;
-        }
-        delayedQueue.destroy();
     }
 }
