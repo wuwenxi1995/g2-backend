@@ -24,7 +24,6 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
 
     private final Object lifecycleMonitor = new Object();
     private final DelayedListenerProperties properties;
-    private final DelayedMessageListenerContainer messageListenerContainer;
 
     private volatile boolean running;
 
@@ -34,7 +33,6 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
 
     public DelayedMessageListenerContainer(DelayedListenerProperties properties) {
         this.properties = properties;
-        this.messageListenerContainer = this;
     }
 
     @Override
@@ -67,7 +65,6 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
         private RedissonClient redissonClient;
         private RBlockingDeque<String> blockingDeque;
         private DelayedMessageProducer messageProducer;
-        private Thread thread;
 
         DelayedMessageTask() {
             BeanFactory beanFactory = properties.getBeanFactory();
@@ -75,11 +72,10 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
             this.redissonClient = beanFactory.getBean(RedissonClient.class);
             this.blockingDeque = redissonClient.getBlockingDeque(queue);
             this.messageProducer = beanFactory.getBean(DelayedMessageProducer.class);
-            messageProducer.registryDelayedQueue(this.queue, DelayedMessageListenerContainer.this.messageListenerContainer);
+            messageProducer.registryDelayedQueue(this.queue, DelayedMessageListenerContainer.this);
             if (DelayedMessageListenerContainer.this.messageListener instanceof MessageListenerAdapter) {
                 this.messageListener = (MessageListenerAdapter) DelayedMessageListenerContainer.this.messageListener;
             }
-            this.thread = Thread.currentThread();
         }
 
         public RedissonClient getRedissonClient() {
@@ -88,10 +84,6 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
 
         public RBlockingDeque<String> getBlockingDeque() {
             return blockingDeque;
-        }
-
-        Thread getThread() {
-            return thread;
         }
 
         @Override
@@ -105,7 +97,7 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
                     continue;
                 }
                 if (StringUtils.isNotBlank(message)) {
-                    if (thread.isInterrupted()) {
+                    if (!isRunning()) {
                         messageProducer.add(queue, message, 0, TimeUnit.SECONDS);
                         break;
                     }
@@ -121,6 +113,9 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
                     }
                 }
             }
+        }
+
+        void stop() {
             // 关闭延时队列
             messageProducer.destroy(this.queue);
         }
@@ -139,10 +134,9 @@ public class DelayedMessageListenerContainer implements MessageListenerContainer
 
     @Override
     public void stop() {
-        running = false;
-        Thread taskThread = this.task.getThread();
-        if (taskThread.isAlive()) {
-            taskThread.interrupt();
+        synchronized (this.lifecycleMonitor) {
+            running = false;
+            task.stop();
         }
     }
 
