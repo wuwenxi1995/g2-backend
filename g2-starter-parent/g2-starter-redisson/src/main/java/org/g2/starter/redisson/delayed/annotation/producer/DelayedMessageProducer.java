@@ -47,20 +47,21 @@ public class DelayedMessageProducer {
     }
 
     public void registryDelayedQueue(String queue, DelayedMessageListenerContainer messageListenerContainer) {
-        this.delayedQueueMap.computeIfPresent(queue, (key, oldValue) -> {
+        this.delayedQueueMap.computeIfAbsent(queue, (key) -> {
             DelayedMessageListenerContainer.DelayedMessageTask delayedMessageTask = messageListenerContainer.getTask();
             RedissonClient redissonClient = delayedMessageTask.getRedissonClient();
             return redissonClient.getDelayedQueue(delayedMessageTask.getBlockingDeque());
         });
-        this.messageListenerContainerMap.computeIfPresent(queue, (key, oldValue) -> messageListenerContainer);
+        this.messageListenerContainerMap.computeIfAbsent(queue, (key) -> messageListenerContainer);
     }
 
     public void destroy(String queue) {
-        MessageListenerContainer messageListenerContainer = messageListenerContainerMap.remove(queue);
+        MessageListenerContainer messageListenerContainer = messageListenerContainerMap.get(queue);
         if (messageListenerContainer == null
                 || messageListenerContainer.isRunning()) {
             return;
         }
+        messageListenerContainerMap.remove(queue);
         // 销毁
         RDelayedQueue<String> delayedQueue = delayedQueueMap.remove(queue);
         if (delayedQueue == null) {
