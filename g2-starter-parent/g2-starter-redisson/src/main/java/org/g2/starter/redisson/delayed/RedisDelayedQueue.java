@@ -1,6 +1,6 @@
 package org.g2.starter.redisson.delayed;
 
-import org.g2.core.task.DaemonTaskHandler;
+import org.g2.core.task.TaskHandler;
 import org.g2.core.util.ThreadFactoryBuilder;
 import org.g2.starter.redisson.delayed.config.properties.DelayedQueueProperties;
 import org.g2.starter.redisson.delayed.infra.RedisDelayedRepository;
@@ -14,7 +14,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -24,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author wuwenxi 2021-09-15
  */
-public abstract class RedisDelayedQueue<T> extends DaemonTaskHandler implements RedisDelayedRepository<T> {
+public abstract class RedisDelayedQueue<T> extends TaskHandler implements RedisDelayedRepository<T> {
 
     private static final Logger log = LoggerFactory.getLogger(RedisDelayedQueue.class);
 

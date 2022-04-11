@@ -10,7 +10,7 @@ import org.springframework.lang.NonNull;
 /**
  * @author wuwenxi 2022-03-09
  */
-public abstract class DaemonTaskHandler
+public abstract class TaskHandler
         implements InitializingBean, SmartLifecycle, ApplicationListener<ApplicationReadyEvent> {
 
     private volatile boolean running = false;

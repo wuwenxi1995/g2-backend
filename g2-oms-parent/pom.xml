@@ -25,14 +25,22 @@
     <properties>
         <g2.cart.version>0.1.0-SNAPSHOT</g2.cart.version>
         <g2.order.version>0.1.0-SNAPSHOT</g2.order.version>
+        <g2.order.console.version>0.1.0-SNAPSHOT</g2.order.console.version>
         <g2.order.core.version>0.1.0-SNAPSHOT</g2.order.core.version>
         <g2.order.fulfilment.version>0.1.0-SNAPSHOT</g2.order.fulfilment.version>
         <g2.seckill.version>0.1.0-SNAPSHOT</g2.seckill.version>
         <g2.settlement.version>0.1.0-SNAPSHOT</g2.settlement.version>
+        <g2.inventory.version>0.1.0-SNAPSHOT</g2.inventory.version>
+        <g2.inventory.console.version>0.1.0-SNAPSHOT</g2.inventory.console.version>
+        <g2.inventory.core.version>0.1.0-SNAPSHOT</g2.inventory.core.version>
+        <g2.inventory.trigger.version>0.1.0-SNAPSHOT</g2.inventory.trigger.version>
+        <g2.inventory.api.version>0.1.0-SNAPSHOT</g2.inventory.api.version>
+        <g2.inventory.calculate.version>0.1.0-SNAPSHOT</g2.inventory.calculate.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- trade -->
             <dependency>
                 <groupId>org.g2.oms.trade</groupId>
                 <artifactId>g2-cart</artifactId>
@@ -63,6 +71,45 @@
                 <artifactId>g2-settlement</artifactId>
                 <version>${g2.settlement.version}</version>
             </dependency>
+            <!-- inventory -->
+            <dependency>
+                <groupId>org.g2.oms.trade</groupId>
+                <artifactId>g2-order-console</artifactId>
+                <version>${g2.order.console.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.inventory</groupId>
+                <artifactId>g2-inventory</artifactId>
+                <version>${g2.inventory.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.inventory</groupId>
+                <artifactId>g2-inventory-console</artifactId>
+                <version>${g2.inventory.console.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.inventory</groupId>
+                <artifactId>g2-inventory-api</artifactId>
+                <version>${g2.inventory.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.inventory</groupId>
+                <artifactId>g2-inventory-calculate</artifactId>
+                <version>${g2.inventory.calculate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.inventory</groupId>
+                <artifactId>g2-inventory-core</artifactId>
+                <version>${g2.inventory.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.inventory</groupId>
+                <artifactId>g2-inventory-trigger</artifactId>
+                <version>${g2.inventory.trigger.version}</version>
+            </dependency>
+            <!-- product -->
+            <!-- marketing -->
+            <!-- customer -->
         </dependencies>
     </dependencyManagement>
 
