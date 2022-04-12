@@ -19,16 +19,17 @@ import java.util.Date;
 @Table(name = "g2inv_transaction")
 public class InvTransaction extends AuditDomain {
 
-    private static final String FILED_INV_TRANSACTION_ID = "invTransactionId";
-    private static final String FILED_TRANSACTION_CODE = "transactionCode";
-    private static final String FILED_TRANSACTION_TYPE = "transactionType";
-    private static final String FILED_TRANSACTION_SOURCE = "transactionSource";
-    private static final String FILED_SOURCE_DATE = "sourceDate";
-    private static final String FILED_PROCESSING_STATUS_CODE = "processingStatusCode";
-    private static final String FILED_SKU_CODE = "skuCode";
-    private static final String FILED_POS_CODE = "posCode";
-    private static final String FILED_ON_HAND_INV = "onHandInv";
-    private static final String FILED_RESERVE_INV = "reserveInv";
+    public static final String FILED_INV_TRANSACTION_ID = "invTransactionId";
+    public static final String FILED_TRANSACTION_CODE = "transactionCode";
+    public static final String FILED_TRANSACTION_TYPE = "transactionType";
+    public static final String FILED_TRANSACTION_SOURCE = "transactionSource";
+    public static final String FILED_SOURCE_DATE = "sourceDate";
+    public static final String FILED_PROCESSING_STATUS_CODE = "processingStatusCode";
+    public static final String FILED_SKU_CODE = "skuCode";
+    public static final String FILED_POS_CODE = "posCode";
+    public static final String FILED_ON_HAND_INV = "onHandInv";
+    public static final String FILED_RESERVE_INV = "reserveInv";
+    public static final String FILED_ERROR_MSG = "errorMsg";
 
     public InvTransaction() {
     }

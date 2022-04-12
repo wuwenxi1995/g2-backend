@@ -1,8 +1,10 @@
 package org.g2.inv.calculate.app.handler.transaction.impl;
 
 import org.g2.inv.calculate.app.handler.transaction.AbstractTransactionHandler;
+import org.g2.inv.calculate.domain.repository.TransactionOperationRepository;
 import org.g2.inv.calculate.infra.constant.InvCalculateConstants;
 import org.g2.inv.core.domain.entity.InvTransaction;
+import org.g2.inv.core.domain.repository.StockLevelRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +14,11 @@ import java.util.List;
  */
 @Component
 public class DefaultTransactionHandler extends AbstractTransactionHandler {
+
+    public DefaultTransactionHandler(TransactionOperationRepository transactionOperationRepository,
+                                     StockLevelRepository stockLevelRepository) {
+        super(stockLevelRepository, transactionOperationRepository);
+    }
 
     @Override
     public String transactionType() {

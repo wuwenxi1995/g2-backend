@@ -24,7 +24,7 @@ public class BaseRepositoryImpl<T> extends BaseServiceImpl<T> implements BaseRep
     @Override
     public List<T> batchInsert(List<T> list) {
         this.batchDml(list, this::insert);
-        this.test(list,this::insertSelective);
+        this.test(list, this::insertSelective);
         return list;
     }
 
@@ -46,6 +46,12 @@ public class BaseRepositoryImpl<T> extends BaseServiceImpl<T> implements BaseRep
     @Override
     public List<T> batchUpdateByPrimaryKeySelective(List<T> list) {
         this.batchDml(list, this::updateByPrimaryKeySelective);
+        return list;
+    }
+
+    @Override
+    public List<T> batchUpdateOptional(List<T> list, String... fields) {
+        this.batchDml(list, (data) -> this.updateOptional(data, fields));
         return list;
     }
 

@@ -1,4 +1,4 @@
-package org.g2.inv.calculate.domain.vo;
+package org.g2.inv.calculate.domain.entity.vo;
 
 import java.util.Objects;
 

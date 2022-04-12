@@ -41,4 +41,13 @@ public interface BaseRepository<T> extends BaseService<T> {
      * @return 更新之后的list
      */
     List<T> batchUpdateByPrimaryKeySelective(List<T> list);
+
+    /**
+     * 更新指定字段
+     *
+     * @param list   准备更新的list
+     * @param fields 更新字段
+     * @return 更新之后的list
+     */
+    List<T> batchUpdateOptional(List<T> list, String... fields);
 }

@@ -1,12 +1,11 @@
 package org.g2.inv.core.config;
 
 import org.g2.inv.core.config.properties.InvThreadProperties;
-import org.g2.inv.core.domain.repository.InvTransactionRepository;
-import org.g2.inv.core.infra.repository.impl.InvTransactionRepositoryImpl;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -18,6 +17,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 @EnableConfigurationProperties(value = {InvThreadProperties.class})
 @MapperScan(basePackages = "org.g2.inv.core.infra.mapper")
+@ComponentScan(basePackages = {"org.g2.inv.core.domain",
+        "org.g2.inv.core.infra"})
 public class InventoryCoreAutoConfiguration {
 
     @Bean("invThreadPool")
@@ -33,10 +34,5 @@ public class InventoryCoreAutoConfiguration {
         // 拒绝继续提交线程
         taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
         return taskExecutor;
-    }
-
-    @Bean
-    public InvTransactionRepository invTransactionRepository() {
-        return new InvTransactionRepositoryImpl();
     }
 }
