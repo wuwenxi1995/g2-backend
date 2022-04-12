@@ -19,7 +19,7 @@ public class IncrementAmountTransactionHandler extends AbstractTransactionHandle
     }
 
     @Override
-    protected void handler(String posCode, List<InvTransaction> transactions) {
+    public void handler(String posCode, List<InvTransaction> transactions) {
     }
 
     @Override

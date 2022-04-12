@@ -32,12 +32,4 @@ public abstract class AbstractTransactionHandler implements TransactionHandler {
     protected void trigger(List<TransactionTriggerVO> triggers) {
         invCalculateTriggerService.triggerByTransaction(triggers);
     }
-
-    /**
-     * 事务库存处理
-     *
-     * @param posCode      门店编码
-     * @param transactions 库存事务
-     */
-    protected abstract void handler(String posCode, List<InvTransaction> transactions);
 }

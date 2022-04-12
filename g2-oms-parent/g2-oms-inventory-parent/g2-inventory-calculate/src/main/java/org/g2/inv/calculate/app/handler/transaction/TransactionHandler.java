@@ -17,4 +17,12 @@ public interface TransactionHandler extends ParamChainInvocationHandler {
      * @return 事务类型
      */
     String transactionType();
+
+    /**
+     * 事务库存处理
+     *
+     * @param posCode      门店编码
+     * @param transactions 库存事务
+     */
+    void handler(String posCode, List<InvTransaction> transactions);
 }

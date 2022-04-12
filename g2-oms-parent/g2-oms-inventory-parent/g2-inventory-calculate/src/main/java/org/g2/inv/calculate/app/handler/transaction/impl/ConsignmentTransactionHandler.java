@@ -19,7 +19,7 @@ public class ConsignmentTransactionHandler extends AbstractTransactionHandler {
     }
 
     @Override
-    protected void handler(String posCode, List<InvTransaction> transactions) {
+    public void handler(String posCode, List<InvTransaction> transactions) {
 
     }
 }
