@@ -2,7 +2,10 @@ package org.g2.inv.calculate.app.handler.transaction;
 
 import org.g2.core.chain.Chain;
 import org.g2.core.chain.invoker.base.BaseChainInvoker;
+import org.g2.core.util.StringUtil;
 import org.g2.inv.calculate.infra.constant.InvCalculateConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
  */
 @Component
 public class TransactionHandlerChain extends BaseChainInvoker {
+    private static final Logger log = LoggerFactory.getLogger(TransactionHandlerChain.class);
 
     private final List<TransactionHandler> transactionHandlers;
     private final Map<String, TransactionHandler> handlerMap;
@@ -29,10 +33,13 @@ public class TransactionHandlerChain extends BaseChainInvoker {
     }
 
     @Override
-    public Object proceed(Object... param) throws Exception {
+    public Object proceed(Object... param) {
         lock.lock();
         try {
             return super.proceed(param);
+        } catch (Exception e) {
+            log.error("库存事务处理异常, 异常信息:{}", StringUtil.exceptionString(e));
+            return invoke();
         } finally {
             lock.unlock();
         }

@@ -19,7 +19,6 @@ public class DefaultTransactionHandler extends AbstractTransactionHandler {
     }
 
     @Override
-    protected Object handler(String posCode, List<InvTransaction> transactions) {
-        return null;
+    protected void handler(String posCode, List<InvTransaction> transactions) {
     }
 }

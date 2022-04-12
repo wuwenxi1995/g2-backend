@@ -14,7 +14,7 @@ public interface InvCalculateConstants {
     }
 
     interface RedisKey {
-        String INVENTORY_TRANSACTION_KEY = "g2inv:transaction:queue";
+        String INVENTORY_TRANSACTION_KEY = "g2inv:queue:transaction";
     }
 
     interface TransactionType {

@@ -83,13 +83,7 @@ public class InvTransactionTaskHandler extends TaskHandler {
                     if (CollectionUtils.isNotEmpty(transactions)) {
                         // 将库存事务按照门店和事务类型分组处理
                         Map<InvTransaction, List<InvTransaction>> groupByPosCode = transactions.stream().collect(Collectors.groupingBy(e -> new InvTransaction(e.getPosCode(), e.getTransactionType())));
-                        groupByPosCode.forEach((key, value) -> {
-                            try {
-                                transactionHandlerChain.proceed(key.getTransactionType(), key.getPosCode(), value);
-                            } catch (Exception e) {
-                                log.error("库存事务处理异常,posCode:{},transactionType:{}", key.getPosCode(), key.getTransactionType());
-                            }
-                        });
+                        transactionHandlerChain.proceed(groupByPosCode);
                     }
                 }
             } finally {

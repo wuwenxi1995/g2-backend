@@ -10,7 +10,9 @@ import org.g2.inv.core.domain.repository.InvTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,12 +43,14 @@ public class InvTransactionServiceImpl implements InvTransactionService {
         return null;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void create(List<InvTransaction> invTransactions) {
         String invTransactionCode = invTransactionCode();
         for (InvTransaction invTransaction : invTransactions) {
             invTransaction.setTransactionCode(invTransactionCode);
             invTransaction.setProcessingStatusCode(CoreConstants.ProcessStatus.PENDING);
+            invTransaction.setSourceDate(new Date());
         }
         this.invTransactionRepository.batchInsertSelective(invTransactions);
         safeRedisHelper.execute(0, redisHelper, () -> {

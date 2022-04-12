@@ -7,6 +7,7 @@ import org.g2.inv.trigger.domain.vo.TransactionTriggerVO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author wuwenxi 2022-04-11
@@ -19,10 +20,13 @@ public abstract class AbstractTransactionHandler implements TransactionHandler {
     @SuppressWarnings("unchecked")
     @Override
     public Object invoke(ChainInvoker chainInvoker, Object... param) throws Exception {
-        if (!transactionType().equals(param[0])) {
-            return chainInvoker.proceed(param);
-        }
-        return handler((String) param[1], (List<InvTransaction>) param[2]);
+        Map<InvTransaction, List<InvTransaction>> transactionListMap = (Map<InvTransaction, List<InvTransaction>>) param[0];
+        transactionListMap.forEach((key, value) -> {
+            if (transactionType().equals(key.getTransactionType())) {
+                handler(key.getPosCode(), value);
+            }
+        });
+        return chainInvoker.proceed(param);
     }
 
     protected void trigger(List<TransactionTriggerVO> triggers) {
@@ -34,7 +38,6 @@ public abstract class AbstractTransactionHandler implements TransactionHandler {
      *
      * @param posCode      门店编码
      * @param transactions 库存事务
-     * @return 处理结果
      */
-    protected abstract Object handler(String posCode, List<InvTransaction> transactions);
+    protected abstract void handler(String posCode, List<InvTransaction> transactions);
 }
