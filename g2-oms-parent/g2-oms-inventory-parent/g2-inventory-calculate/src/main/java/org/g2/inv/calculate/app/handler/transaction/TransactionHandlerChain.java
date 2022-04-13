@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ public class TransactionHandlerChain extends BaseChainInvoker {
 
     public TransactionHandlerChain(List<TransactionHandler> transactionHandlers) {
         this.transactionHandlers = transactionHandlers;
-        this.handlerMap = transactionHandlers.stream().collect(Collectors.toMap(TransactionHandler::transactionType, Function.identity()));
+        this.handlerMap = transactionHandlers.stream().collect(Collectors.toMap(TransactionHandler::transactionType, Function.identity(), (u, v) -> v, TreeMap::new));
         this.lock = new ReentrantLock(false);
     }
 

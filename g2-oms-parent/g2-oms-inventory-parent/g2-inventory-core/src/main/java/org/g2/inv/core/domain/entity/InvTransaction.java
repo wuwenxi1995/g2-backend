@@ -31,14 +31,6 @@ public class InvTransaction extends AuditDomain {
     public static final String FILED_RESERVE_INV = "reserveInv";
     public static final String FILED_ERROR_MSG = "errorMsg";
 
-    public InvTransaction() {
-    }
-
-    public InvTransaction(String posCode, String transactionType) {
-        this.posCode = posCode;
-        this.transactionType = transactionType;
-    }
-
     /**
      * 库存事务id
      */

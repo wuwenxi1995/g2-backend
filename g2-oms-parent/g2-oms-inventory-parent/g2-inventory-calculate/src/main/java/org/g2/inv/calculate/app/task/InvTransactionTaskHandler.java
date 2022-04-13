@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -82,8 +83,8 @@ public class InvTransactionTaskHandler extends TaskHandler {
                     List<InvTransaction> transactions = invTransactionRepository.select(invTransaction);
                     if (CollectionUtils.isNotEmpty(transactions)) {
                         // 将库存事务按照门店和事务类型分组处理
-                        Map<InvTransaction, List<InvTransaction>> groupByPosCode = transactions.stream().collect(Collectors.groupingBy(e -> new InvTransaction(e.getPosCode(), e.getTransactionType())));
-                        transactionHandlerChain.proceed(groupByPosCode);
+                        Map<String, Map<String, List<InvTransaction>>> groupMap = transactions.stream().collect(Collectors.groupingBy(InvTransaction::getTransactionType, HashMap::new, Collectors.groupingBy(InvTransaction::getPosCode)));
+                        transactionHandlerChain.proceed(groupMap);
                     }
                 }
             } finally {

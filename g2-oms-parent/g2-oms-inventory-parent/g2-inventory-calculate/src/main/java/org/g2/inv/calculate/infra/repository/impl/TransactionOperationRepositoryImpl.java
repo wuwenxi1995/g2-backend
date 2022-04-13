@@ -1,5 +1,6 @@
 package org.g2.inv.calculate.infra.repository.impl;
 
+import org.g2.inv.calculate.domain.repository.StockLevelRedisRepository;
 import org.g2.inv.calculate.domain.repository.TransactionOperationRepository;
 import org.g2.inv.core.domain.entity.InvTransaction;
 import org.g2.inv.core.domain.entity.StockLevel;
@@ -19,29 +20,38 @@ public class TransactionOperationRepositoryImpl implements TransactionOperationR
 
     private final StockLevelRepository stockLevelRepository;
     private final InvTransactionRepository invTransactionRepository;
+    private final StockLevelRedisRepository stockLevelRedisRepository;
 
-    public TransactionOperationRepositoryImpl(StockLevelRepository stockLevelRepository, InvTransactionRepository invTransactionRepository) {
+    public TransactionOperationRepositoryImpl(StockLevelRepository stockLevelRepository, InvTransactionRepository invTransactionRepository, StockLevelRedisRepository stockLevelRedisRepository) {
         this.stockLevelRepository = stockLevelRepository;
         this.invTransactionRepository = invTransactionRepository;
+        this.stockLevelRedisRepository = stockLevelRedisRepository;
     }
 
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.NESTED)
     @Override
-    public void persistence(StockLevel stockLevel, InvTransaction invTransaction, boolean isCreate, boolean isSync) {
+    public void persistence(StockLevel stockLevel, InvTransaction invTransaction, boolean isCreate) {
         if (isCreate) {
             stockLevelRepository.insertSelective(stockLevel);
         } else {
             stockLevelRepository.updateByPrimaryKey(stockLevel);
         }
         invTransactionRepository.updateOptional(invTransaction, InvTransaction.FILED_PROCESSING_STATUS_CODE);
-        if (isSync) {
-            sync(stockLevel);
-        }
+        // 库存同步缓存
+        stockLevelRedisRepository.sync(stockLevel);
     }
 
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.NESTED)
     @Override
-    public void sync(StockLevel stockLevel) {
-
+    public void persistence(StockLevel stockLevel, List<InvTransaction> invTransactions, boolean isCreate) {
+        if (isCreate) {
+            stockLevelRepository.insertSelective(stockLevel);
+        } else {
+            stockLevelRepository.updateByPrimaryKey(stockLevel);
+        }
+        invTransactionRepository.batchUpdateOptional(invTransactions, InvTransaction.FILED_PROCESSING_STATUS_CODE);
+        // 库存同步缓存
+        stockLevelRedisRepository.sync(stockLevel);
     }
 
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.NESTED)

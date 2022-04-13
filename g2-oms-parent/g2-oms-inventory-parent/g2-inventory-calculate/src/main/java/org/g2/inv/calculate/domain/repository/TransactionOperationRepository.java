@@ -16,16 +16,17 @@ public interface TransactionOperationRepository {
      * @param stockLevel     库存信息
      * @param invTransaction 库存事务
      * @param isCreate       是否新建库存
-     * @param isSync         是否同步缓存
      */
-    void persistence(StockLevel stockLevel, InvTransaction invTransaction, boolean isCreate, boolean isSync);
+    void persistence(StockLevel stockLevel, InvTransaction invTransaction, boolean isCreate);
 
     /**
-     * 库存同步缓存
+     * 持久化数据
      *
-     * @param stockLevel 库存信息
+     * @param stockLevel      库存信息
+     * @param invTransactions 库存事务
+     * @param isCreate        是否新建库存
      */
-    void sync(StockLevel stockLevel);
+    void persistence(StockLevel stockLevel, List<InvTransaction> invTransactions, boolean isCreate);
 
     /**
      * 更新库存事务信息

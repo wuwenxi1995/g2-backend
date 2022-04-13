@@ -20,57 +20,19 @@ import java.util.Map;
 public abstract class AbstractTransactionHandler implements TransactionHandler {
 
     private final StockLevelRepository stockLevelRepository;
-    private final TransactionOperationRepository transactionOperationRepository;
 
-    protected AbstractTransactionHandler(StockLevelRepository stockLevelRepository, TransactionOperationRepository transactionOperationRepository) {
+    protected AbstractTransactionHandler(StockLevelRepository stockLevelRepository) {
         this.stockLevelRepository = stockLevelRepository;
-        this.transactionOperationRepository = transactionOperationRepository;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Object invoke(ChainInvoker chainInvoker, Object... param) throws Exception {
-        Map<InvTransaction, List<InvTransaction>> transactionListMap = (Map<InvTransaction, List<InvTransaction>>) param[0];
-        transactionListMap.forEach((key, value) -> {
-            if (transactionType().equals(key.getTransactionType())) {
-                handler(key.getPosCode(), value);
-            }
-        });
+        Map<String, Map<String, List<InvTransaction>>> transactionListMap = (Map<String, Map<String, List<InvTransaction>>>) param[0];
+        if (transactionListMap.containsKey(transactionType())) {
+            transactionListMap.get(transactionType()).forEach(this::handler);
+        }
         return chainInvoker.proceed(param);
-    }
-
-    protected Map<String, InvTransaction> filter(List<InvTransaction> invTransactions) {
-        // 处理相同sku，时间最新的事务
-        return DataUniqueUtil.filter(invTransactions, new DataUniqueUtil.DataUniqueHandler<String, InvTransaction>() {
-            @Override
-            public String mapKey(InvTransaction value) {
-                return value.getSkuCode();
-            }
-
-            @Override
-            public InvTransaction choose(List<InvTransaction> operationData) {
-                if (operationData.size() > 1) {
-                    operationData.sort(Comparator.comparing(InvTransaction::getSourceDate));
-                }
-                return operationData.get(0);
-            }
-
-            @Override
-            public void abandonData(List<InvTransaction> abandonVar) {
-                if (CollectionUtils.isEmpty(abandonVar)) {
-                    return;
-                }
-                for (InvTransaction invTransaction : abandonVar) {
-                    invTransaction.setProcessingStatusCode(CoreConstants.ProcessStatus.SKIP);
-                }
-                transactionOperationRepository.updateOperational(abandonVar, InvTransaction.FILED_PROCESSING_STATUS_CODE);
-            }
-
-            @Override
-            public boolean parallel() {
-                return false;
-            }
-        });
     }
 
     protected Long defValue(Long value) {
