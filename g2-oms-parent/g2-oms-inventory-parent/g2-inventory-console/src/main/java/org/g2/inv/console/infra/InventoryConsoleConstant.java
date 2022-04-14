@@ -5,7 +5,4 @@ package org.g2.inv.console.infra;
  */
 public interface InventoryConsoleConstant {
 
-    interface RedisKey {
-        String INVENTORY_TRANSACTION_KEY = "g2inv:queue:transaction";
-    }
 }

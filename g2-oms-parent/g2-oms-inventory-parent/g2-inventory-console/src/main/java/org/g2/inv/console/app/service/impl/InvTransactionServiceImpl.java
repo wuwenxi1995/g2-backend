@@ -1,14 +1,10 @@
 package org.g2.inv.console.app.service.impl;
 
 import org.g2.core.CoreConstants;
-import org.g2.dynamic.redis.hepler.RedisHelper;
-import org.g2.dynamic.redis.safe.SafeRedisHelper;
 import org.g2.inv.console.app.service.InvTransactionService;
-import org.g2.inv.console.infra.InventoryConsoleConstant;
 import org.g2.inv.core.domain.entity.InvTransaction;
 import org.g2.inv.core.domain.repository.InvTransactionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.g2.inv.trigger.app.service.TriggerInvTransactionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +18,11 @@ import java.util.List;
 public class InvTransactionServiceImpl implements InvTransactionService {
 
     private final InvTransactionRepository invTransactionRepository;
+    private final TriggerInvTransactionService triggerInvTransactionService;
 
-    private final RedisHelper redisHelper;
-
-    private final SafeRedisHelper safeRedisHelper;
-
-    public InvTransactionServiceImpl(InvTransactionRepository invTransactionRepository, @Qualifier(value = "dynamicRedisHelper") RedisHelper redisHelper, SafeRedisHelper safeRedisHelper) {
+    public InvTransactionServiceImpl(InvTransactionRepository invTransactionRepository, TriggerInvTransactionService triggerInvTransactionService) {
         this.invTransactionRepository = invTransactionRepository;
-        this.redisHelper = redisHelper;
-        this.safeRedisHelper = safeRedisHelper;
+        this.triggerInvTransactionService = triggerInvTransactionService;
     }
 
     @Override
@@ -53,9 +45,7 @@ public class InvTransactionServiceImpl implements InvTransactionService {
             invTransaction.setSourceDate(new Date());
         }
         this.invTransactionRepository.batchInsertSelective(invTransactions);
-        safeRedisHelper.execute(0, redisHelper, () -> {
-            redisHelper.lstRightPush(InventoryConsoleConstant.RedisKey.INVENTORY_TRANSACTION_KEY, invTransactionCode);
-        });
+        triggerInvTransactionService.triggerCalculate(invTransactionCode);
     }
 
     @Override

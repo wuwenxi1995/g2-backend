@@ -11,6 +11,7 @@ import org.g2.inv.calculate.infra.constant.InvCalculateConstants;
 import org.g2.inv.core.domain.entity.InvTransaction;
 import org.g2.inv.core.domain.entity.StockLevel;
 import org.g2.inv.core.domain.repository.StockLevelRepository;
+import org.g2.inv.trigger.app.service.InvCalculateTriggerService;
 import org.g2.inv.trigger.domain.vo.TransactionTriggerVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +41,8 @@ public class FullAmountTransactionHandler extends AbstractTransactionHandler {
 
     public FullAmountTransactionHandler(TransactionOperationRepository transactionOperationRepository,
                                         StockLevelRepository stockLevelRepository,
-                                        DynamicRedisHelper redisHelper) {
-        super(stockLevelRepository, redisHelper);
+                                        InvCalculateTriggerService invCalculateTriggerService) {
+        super(stockLevelRepository, invCalculateTriggerService);
         this.transactionOperationRepository = transactionOperationRepository;
     }
 

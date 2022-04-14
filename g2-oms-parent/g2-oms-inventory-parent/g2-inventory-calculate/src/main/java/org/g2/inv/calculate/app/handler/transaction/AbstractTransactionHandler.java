@@ -1,12 +1,11 @@
 package org.g2.inv.calculate.app.handler.transaction;
 
-import com.alibaba.fastjson.JSONObject;
 import org.g2.core.chain.invoker.ChainInvoker;
-import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
 import org.g2.inv.calculate.infra.constant.InvCalculateConstants;
 import org.g2.inv.core.domain.entity.InvTransaction;
 import org.g2.inv.core.domain.entity.StockLevel;
 import org.g2.inv.core.domain.repository.StockLevelRepository;
+import org.g2.inv.trigger.app.service.InvCalculateTriggerService;
 import org.g2.inv.trigger.domain.vo.TransactionTriggerVO;
 
 import java.util.List;
@@ -18,11 +17,11 @@ import java.util.Map;
 public abstract class AbstractTransactionHandler implements TransactionHandler {
 
     private final StockLevelRepository stockLevelRepository;
-    private final DynamicRedisHelper redisHelper;
+    private final InvCalculateTriggerService invCalculateTriggerService;
 
-    protected AbstractTransactionHandler(StockLevelRepository stockLevelRepository, DynamicRedisHelper redisHelper) {
+    protected AbstractTransactionHandler(StockLevelRepository stockLevelRepository, InvCalculateTriggerService invCalculateTriggerService) {
         this.stockLevelRepository = stockLevelRepository;
-        this.redisHelper = redisHelper;
+        this.invCalculateTriggerService = invCalculateTriggerService;
     }
 
     @SuppressWarnings("unchecked")
@@ -60,12 +59,7 @@ public abstract class AbstractTransactionHandler implements TransactionHandler {
     }
 
     protected void trigger(List<TransactionTriggerVO> triggers) {
-        redisHelper.setCurrentDataBase(0);
-        try {
-            // 触发服务点库存计算
-            redisHelper.lstRightPush(InvCalculateConstants.RedisKey.TRANSACTION_TRIGGER_POS_KEY, JSONObject.toJSONString(triggers));
-        } finally {
-            redisHelper.clearCurrentDataBase();
-        }
+        // 触发服务点库存计算
+        invCalculateTriggerService.triggerByTransaction(triggers);
     }
 }

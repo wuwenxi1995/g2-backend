@@ -1,5 +1,6 @@
 package org.g2.inv.calculate.app.task;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.g2.core.CoreConstants;
@@ -11,6 +12,7 @@ import org.g2.inv.calculate.app.handler.transaction.TransactionHandlerChain;
 import org.g2.inv.calculate.infra.constant.InvCalculateConstants;
 import org.g2.inv.core.domain.entity.InvTransaction;
 import org.g2.inv.core.domain.repository.InvTransactionRepository;
+import org.g2.inv.trigger.domain.vo.TriggerMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -53,12 +55,13 @@ public class StockLevelTsTaskHandler extends TaskHandler {
         redisHelper.setCurrentDataBase(0);
         try {
             while (isRunning()) {
-                String transactionCode = redisHelper.lstLeftPop(InvCalculateConstants.RedisKey.INVENTORY_TRANSACTION_KEY);
-                if (StringUtils.isBlank(transactionCode)) {
+                String triggerMessageStr = redisHelper.lstLeftPop(InvCalculateConstants.RedisKey.INVENTORY_TRANSACTION_KEY);
+                if (StringUtils.isBlank(triggerMessageStr)) {
                     return;
                 }
+                TriggerMessage triggerMessage = JSONObject.parseObject(triggerMessageStr, TriggerMessage.class);
                 InvTransaction invTransaction = new InvTransaction();
-                invTransaction.setTransactionCode(transactionCode);
+                invTransaction.setTransactionCode((String) triggerMessage.getContent());
                 invTransaction.setProcessingStatusCode(CoreConstants.ProcessStatus.PENDING);
                 List<InvTransaction> transactions = invTransactionRepository.select(invTransaction);
                 if (CollectionUtils.isNotEmpty(transactions)) {
@@ -66,7 +69,7 @@ public class StockLevelTsTaskHandler extends TaskHandler {
                     Map<String, Map<String, List<InvTransaction>>> groupMap = transactions.stream().collect(Collectors.groupingBy(InvTransaction::getTransactionType, HashMap::new, Collectors.groupingBy(InvTransaction::getPosCode)));
                     long start = System.currentTimeMillis();
                     transactionHandlerChain.proceed(groupMap);
-                    log.info("库存事务处理完成, 库存编码:{}, 处理时间:{}", transactionCode, (System.currentTimeMillis() - start));
+                    log.info("库存事务处理完成, 触发时间：{}, 库存编码:{}, 处理时间:{}", triggerMessage.getTriggerDate(), triggerMessage.getContent(), (System.currentTimeMillis() - start));
                 }
             }
         } finally {

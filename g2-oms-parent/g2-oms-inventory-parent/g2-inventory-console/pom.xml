@@ -18,8 +18,8 @@
             <artifactId>g2-inventory-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.g2</groupId>
-            <artifactId>g2-starter-kafka</artifactId>
+            <groupId>org.g2.oms.inventory</groupId>
+            <artifactId>g2-inventory-trigger</artifactId>
         </dependency>
         <dependency>
             <groupId>org.g2</groupId>
