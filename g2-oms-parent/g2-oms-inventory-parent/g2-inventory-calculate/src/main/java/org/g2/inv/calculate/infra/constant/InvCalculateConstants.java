@@ -22,6 +22,5 @@ public interface InvCalculateConstants {
         String DEFAULT_TYPE = "default";
         String FULL = "full";
         String INCREMENT = "increment";
-        String CONSIGNMENT = "consignment";
     }
 }

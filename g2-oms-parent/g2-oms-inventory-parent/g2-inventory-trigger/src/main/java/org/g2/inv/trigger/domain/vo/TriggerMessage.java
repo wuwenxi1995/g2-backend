@@ -11,7 +11,16 @@ import java.util.List;
 @Data
 public class TriggerMessage<T> {
 
+    /**
+     * 消息内容
+     */
     private T content;
+    /**
+     * 消息类型
+     */
     private String type;
+    /**
+     * 触发时间
+     */
     private Date triggerDate;
 }
