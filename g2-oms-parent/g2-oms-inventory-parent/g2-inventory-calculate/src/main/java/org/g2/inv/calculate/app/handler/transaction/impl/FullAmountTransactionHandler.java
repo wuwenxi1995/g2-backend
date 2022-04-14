@@ -4,16 +4,19 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.g2.core.CoreConstants;
 import org.g2.core.util.DataUniqueUtil;
 import org.g2.core.util.StringUtil;
+import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
 import org.g2.inv.calculate.app.handler.transaction.AbstractTransactionHandler;
 import org.g2.inv.calculate.domain.repository.TransactionOperationRepository;
 import org.g2.inv.calculate.infra.constant.InvCalculateConstants;
 import org.g2.inv.core.domain.entity.InvTransaction;
 import org.g2.inv.core.domain.entity.StockLevel;
 import org.g2.inv.core.domain.repository.StockLevelRepository;
+import org.g2.inv.trigger.domain.vo.TransactionTriggerVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -36,8 +39,9 @@ public class FullAmountTransactionHandler extends AbstractTransactionHandler {
     private final TransactionOperationRepository transactionOperationRepository;
 
     public FullAmountTransactionHandler(TransactionOperationRepository transactionOperationRepository,
-                                        StockLevelRepository stockLevelRepository) {
-        super(stockLevelRepository);
+                                        StockLevelRepository stockLevelRepository,
+                                        DynamicRedisHelper redisHelper) {
+        super(stockLevelRepository, redisHelper);
         this.transactionOperationRepository = transactionOperationRepository;
     }
 
@@ -83,6 +87,7 @@ public class FullAmountTransactionHandler extends AbstractTransactionHandler {
         if (transactionMap == null) {
             return;
         }
+        List<TransactionTriggerVO> transactionTriggers = new ArrayList<>();
         for (InvTransaction invTransaction : transactionMap.values()) {
             try {
                 invTransaction.setProcessingStatusCode(CoreConstants.ProcessStatus.SUCCESS);
@@ -110,6 +115,7 @@ public class FullAmountTransactionHandler extends AbstractTransactionHandler {
                     isCreate = false;
                 }
                 transactionOperationRepository.persistence(stockLevel, invTransaction, isCreate);
+                transactionTriggers.add(preparedTriggerData(invTransaction));
             } catch (Exception e) {
                 String errMsg = StringUtil.exceptionString(e);
                 log.error("处理全量库存事务发生异常,skuCode: {},posCode:{}, 异常信息:{}", invTransaction.getSkuCode(), posCode, errMsg);
@@ -118,6 +124,7 @@ public class FullAmountTransactionHandler extends AbstractTransactionHandler {
                 transactionOperationRepository.updateOperational(invTransaction, InvTransaction.FILED_PROCESSING_STATUS_CODE, InvTransaction.FILED_ERROR_MSG);
             }
         }
+        this.trigger(transactionTriggers);
     }
 
     @Override

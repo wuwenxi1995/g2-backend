@@ -2,16 +2,19 @@ package org.g2.inv.calculate.app.handler.transaction.impl;
 
 import org.g2.core.CoreConstants;
 import org.g2.core.util.StringUtil;
+import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
 import org.g2.inv.calculate.app.handler.transaction.AbstractTransactionHandler;
 import org.g2.inv.calculate.domain.repository.TransactionOperationRepository;
 import org.g2.inv.calculate.infra.constant.InvCalculateConstants;
 import org.g2.inv.core.domain.entity.InvTransaction;
 import org.g2.inv.core.domain.entity.StockLevel;
 import org.g2.inv.core.domain.repository.StockLevelRepository;
+import org.g2.inv.trigger.domain.vo.TransactionTriggerVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -27,10 +30,10 @@ public class DefaultTransactionHandler extends AbstractTransactionHandler {
 
     private final TransactionOperationRepository transactionOperationRepository;
 
-    public DefaultTransactionHandler(TransactionOperationRepository transactionOperationRepository,
-                                     StockLevelRepository stockLevelRepository, TransactionOperationRepository transactionOperationRepository1) {
-        super(stockLevelRepository);
-        this.transactionOperationRepository = transactionOperationRepository1;
+    public DefaultTransactionHandler(StockLevelRepository stockLevelRepository,
+                                     TransactionOperationRepository transactionOperationRepository, DynamicRedisHelper redisHelper) {
+        super(stockLevelRepository, redisHelper);
+        this.transactionOperationRepository = transactionOperationRepository;
     }
 
     @Override
@@ -43,6 +46,7 @@ public class DefaultTransactionHandler extends AbstractTransactionHandler {
         Map<String, List<InvTransaction>> groupMap = transactions.stream()
                 .peek(e -> e.setProcessingStatusCode(CoreConstants.ProcessStatus.SUCCESS))
                 .collect(Collectors.groupingBy(InvTransaction::getSkuCode));
+        List<TransactionTriggerVO> transactionTriggers = new ArrayList<>();
         groupMap.forEach((key, value) -> {
             try {
                 StockLevel stockLevel = selectOneBySkuAndPos(key, posCode);
@@ -63,6 +67,7 @@ public class DefaultTransactionHandler extends AbstractTransactionHandler {
                     stockLevel.setLastModifiedTime(new Date());
                 }
                 transactionOperationRepository.persistence(stockLevel, value, isCreate);
+                transactionTriggers.add(preparedTriggerData(value.get(0)));
             } catch (Exception e) {
                 String errMsg = StringUtil.exceptionString(e);
                 log.error("处理普通库存事务发生异常,skuCode: {},posCode:{}, 异常信息:{}", key, posCode, errMsg);
@@ -73,5 +78,6 @@ public class DefaultTransactionHandler extends AbstractTransactionHandler {
                 transactionOperationRepository.updateOperational(value, InvTransaction.FILED_PROCESSING_STATUS_CODE, InvTransaction.FILED_ERROR_MSG);
             }
         });
+        this.trigger(transactionTriggers);
     }
 }

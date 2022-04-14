@@ -2,18 +2,12 @@ package org.g2.inv.trigger.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.g2.core.util.StringUtil;
+import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
 import org.g2.inv.trigger.app.service.InvCalculateTriggerService;
 import org.g2.inv.trigger.domain.vo.TransactionTriggerVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
-import org.springframework.lang.NonNull;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -25,10 +19,10 @@ import static org.g2.inv.trigger.infra.constant.InvTriggerConstants.*;
 public class InvCalculateTriggerServiceImpl implements InvCalculateTriggerService {
     private static final Logger log = LoggerFactory.getLogger(InvCalculateTriggerServiceImpl.class);
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final DynamicRedisHelper redisHelper;
 
-    public InvCalculateTriggerServiceImpl(KafkaTemplate<String, String> kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
+    public InvCalculateTriggerServiceImpl(DynamicRedisHelper redisHelper) {
+        this.redisHelper = redisHelper;
     }
 
     @Override
@@ -49,18 +43,5 @@ public class InvCalculateTriggerServiceImpl implements InvCalculateTriggerServic
 
     @Override
     public <T> void trigger(List<T> triggerData, String topic, Integer partition, String key) {
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, partition, key, JSONObject.toJSONString(triggerData));
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(producerRecord);
-        future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
-            @Override
-            public void onFailure(@NonNull Throwable ex) {
-                log.error("kafka推送数据失败, 推送key:{}, 异常信息:{}", key, StringUtil.exceptionString(ex));
-            }
-
-            @Override
-            public void onSuccess(SendResult<String, String> result) {
-                log.info("kafka推送数据成功, 推送key:{}", key);
-            }
-        });
     }
 }

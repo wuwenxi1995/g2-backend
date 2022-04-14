@@ -54,7 +54,7 @@ public class InvTransactionServiceImpl implements InvTransactionService {
         }
         this.invTransactionRepository.batchInsertSelective(invTransactions);
         safeRedisHelper.execute(0, redisHelper, () -> {
-            redisHelper.lstLeftPush(InventoryConsoleConstant.RedisKey.INVENTORY_TRANSACTION_KEY, invTransactionCode);
+            redisHelper.lstRightPush(InventoryConsoleConstant.RedisKey.INVENTORY_TRANSACTION_KEY, invTransactionCode);
         });
     }
 

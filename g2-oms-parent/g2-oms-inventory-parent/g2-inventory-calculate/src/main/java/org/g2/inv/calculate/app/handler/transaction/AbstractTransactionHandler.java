@@ -1,16 +1,14 @@
 package org.g2.inv.calculate.app.handler.transaction;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.g2.core.CoreConstants;
+import com.alibaba.fastjson.JSONObject;
 import org.g2.core.chain.invoker.ChainInvoker;
-import org.g2.core.util.DataUniqueUtil;
-import org.g2.inv.calculate.domain.repository.TransactionOperationRepository;
+import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
+import org.g2.inv.calculate.infra.constant.InvCalculateConstants;
 import org.g2.inv.core.domain.entity.InvTransaction;
 import org.g2.inv.core.domain.entity.StockLevel;
 import org.g2.inv.core.domain.repository.StockLevelRepository;
 import org.g2.inv.trigger.domain.vo.TransactionTriggerVO;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,17 +18,25 @@ import java.util.Map;
 public abstract class AbstractTransactionHandler implements TransactionHandler {
 
     private final StockLevelRepository stockLevelRepository;
+    private final DynamicRedisHelper redisHelper;
 
-    protected AbstractTransactionHandler(StockLevelRepository stockLevelRepository) {
+    protected AbstractTransactionHandler(StockLevelRepository stockLevelRepository, DynamicRedisHelper redisHelper) {
         this.stockLevelRepository = stockLevelRepository;
+        this.redisHelper = redisHelper;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Object invoke(ChainInvoker chainInvoker, Object... param) throws Exception {
         Map<String, Map<String, List<InvTransaction>>> transactionListMap = (Map<String, Map<String, List<InvTransaction>>>) param[0];
-        if (transactionListMap.containsKey(transactionType())) {
+        // 默认库存事务
+        if (transactionType().equals(InvCalculateConstants.TransactionType.DEFAULT_TYPE)) {
+            transactionListMap.values().forEach(e -> e.forEach(this::handler));
+        }
+        // 增量或全量库存事务
+        else if (transactionListMap.containsKey(transactionType())) {
             transactionListMap.get(transactionType()).forEach(this::handler);
+            transactionListMap.remove(transactionType());
         }
         return chainInvoker.proceed(param);
     }
@@ -54,5 +60,12 @@ public abstract class AbstractTransactionHandler implements TransactionHandler {
     }
 
     protected void trigger(List<TransactionTriggerVO> triggers) {
+        redisHelper.setCurrentDataBase(0);
+        try {
+            // 触发服务点库存计算
+            redisHelper.lstRightPush(InvCalculateConstants.RedisKey.TRANSACTION_TRIGGER_POS_KEY, JSONObject.toJSONString(triggers));
+        } finally {
+            redisHelper.clearCurrentDataBase();
+        }
     }
 }
