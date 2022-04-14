@@ -68,7 +68,8 @@ public class IncrementAmountTransactionHandler extends AbstractTransactionHandle
                 } else {
                     StockLevel finalStockLevel = stockLevel;
                     List<InvTransaction> filterTs = value.stream().filter(e -> {
-                        boolean flag = finalStockLevel.getLastFullTime().before(e.getSourceDate());
+                        // 如果增量库存事务时间在最新一次全量库存事务之前，跳过
+                        boolean flag = finalStockLevel.getLastFullTime().after(e.getSourceDate());
                         if (!flag) {
                             e.setProcessingStatusCode(CoreConstants.ProcessStatus.SKIP);
                         }
