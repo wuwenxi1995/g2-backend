@@ -28,11 +28,14 @@ public class ApiResponse<T> {
         return response;
     }
 
-    public static <A> ApiResponse<A> error(InvApiConstants.ResponseInfo responseCode) {
+    public static <A> ApiResponse<A> error(String msg, InvApiConstants.ResponseInfo responseCode) {
         ApiResponse<A> response = new ApiResponse<>();
         response.setSuccess(false);
         response.setCode(responseCode.getCode());
         response.setMsg(responseCode.getMsg());
+        if (msg != null) {
+            response.setMsg(msg);
+        }
         return response;
     }
 }

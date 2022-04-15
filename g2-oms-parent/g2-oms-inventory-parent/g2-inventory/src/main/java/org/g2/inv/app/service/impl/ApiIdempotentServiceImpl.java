@@ -39,14 +39,18 @@ public class ApiIdempotentServiceImpl implements ApiIdempotentService {
     @Override
     public <T> ApiResponse<T> idempotentOperation(String token, Supplier<T> supplier) {
         if (StringUtils.isBlank(token)) {
-            return ApiResponse.error(InvApiConstants.ApiResponseCode.INVALID_PARAM);
+            return ApiResponse.error(null, InvApiConstants.ApiResponseCode.INVALID_PARAM);
         }
         return operation(() -> {
             Boolean success = dynamicRedisHelper.getRedisTemplate().delete(String.format(API_IDEMPOTENT_TOKEN_KEY, token));
             if (success == null || !success) {
-                return ApiResponse.error(InvApiConstants.ApiResponseCode.INVALID_TOKE);
+                return ApiResponse.error(null, InvApiConstants.ApiResponseCode.INVALID_TOKE);
             }
-            return ApiResponse.ok(supplier.get());
+            try {
+                return ApiResponse.ok(supplier.get());
+            } catch (Exception e) {
+                return ApiResponse.error(e.getMessage(), InvApiConstants.ApiResponseCode.ERROR);
+            }
         });
     }
 
