@@ -20,6 +20,11 @@
 
         <dependency>
             <groupId>org.g2</groupId>
+            <artifactId>g2-starter-dynamic-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.g2</groupId>
             <artifactId>g2-starter-mybatis-helper</artifactId>
         </dependency>
 

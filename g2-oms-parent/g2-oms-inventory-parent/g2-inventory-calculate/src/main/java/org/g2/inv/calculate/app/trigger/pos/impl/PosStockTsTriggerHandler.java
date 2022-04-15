@@ -43,6 +43,6 @@ public class PosStockTsTriggerHandler implements PosStockTriggerHandler {
 
     @Override
     public String type() {
-        return InvCalculateConstants.TriggerType.TRANSACTION_TRIGGER;
+        return InvCalculateConstants.TriggerType.POS_TRANSACTION_TRIGGER;
     }
 }

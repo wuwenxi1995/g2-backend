@@ -110,6 +110,13 @@
             <!-- product -->
             <!-- marketing -->
             <!-- customer -->
+
+            <!-- 随机生成UUID github: https://github.com/groupon/locality-uuid.java -->
+            <dependency>
+                <groupId>com.groupon</groupId>
+                <artifactId>locality-uuid</artifactId>
+                <version>1.1.1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

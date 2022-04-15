@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * @author wuwenxi 2022-04-13
  */
 @Component
-public class PosStockTsTriggerTaskHandler extends TaskHandler {
+public class PosStockTriggerTaskHandler extends TaskHandler {
 
     private ScheduledThreadPoolExecutor scheduled;
 
@@ -32,9 +32,9 @@ public class PosStockTsTriggerTaskHandler extends TaskHandler {
     private final RedisHelper redisHelper;
     private final Map<String, PosStockTriggerHandler> triggerHandlerMap;
 
-    public PosStockTsTriggerTaskHandler(@Qualifier("invThreadPool") ThreadPoolTaskExecutor taskExecutor,
-                                        @Qualifier("dynamicRedisHelper") RedisHelper redisHelper,
-                                        List<PosStockTriggerHandler> triggerHandlers) {
+    public PosStockTriggerTaskHandler(@Qualifier("invThreadPool") ThreadPoolTaskExecutor taskExecutor,
+                                      @Qualifier("dynamicRedisHelper") RedisHelper redisHelper,
+                                      List<PosStockTriggerHandler> triggerHandlers) {
         this.taskExecutor = taskExecutor;
         this.redisHelper = redisHelper;
         this.triggerHandlerMap = triggerHandlers.stream().collect(Collectors.toMap(PosStockTriggerHandler::type, Function.identity()));
@@ -44,7 +44,7 @@ public class PosStockTsTriggerTaskHandler extends TaskHandler {
         redisHelper.setCurrentDataBase(0);
         try {
             while (isRunning()) {
-                String tsTriggers = redisHelper.lstLeftPop(InvCalculateConstants.RedisKey.TRANSACTION_TRIGGER_POS_KEY);
+                String tsTriggers = redisHelper.lstLeftPop(InvCalculateConstants.RedisKey.TRIGGER_POS_STOCK_KEY);
                 if (StringUtils.isBlank(tsTriggers)) {
                     return;
                 }

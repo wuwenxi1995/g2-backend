@@ -27,9 +27,12 @@ public class StockLevelRedisRepositoryImpl implements StockLevelRedisRepository 
 
     @Override
     public void sync(StockLevel stockLevel) {
-        Object[] param = new Object[2];
+        Object[] param = new Object[5];
         param[0] = String.valueOf(stockLevel.getOnHand() - stockLevel.getReserved());
         param[1] = String.format(InvCoreConstant.RedisKeyFormat.STOCK_LEVEL_KEY, stockLevel.getPosCode(), stockLevel.getSkuCode());
+        param[2] = InvCoreConstant.InvStockKey.HASH_STOCK_LEVEL;
+        param[3] = InvCoreConstant.InvStockKey.HASH_EXTEND_STOCK_RESERVED;
+        param[4] = InvCoreConstant.InvStockKey.HASH_EXTEND_STOCK_ATS;
         shardingRedisHelper.setShardingName(stockLevel.getPosCode());
         try {
             execute(SYNC_STOCK_LEVEL, null, Boolean.class, param);
