@@ -1,11 +1,11 @@
-package org.g2.inv.calculate.domain.repository;
+package org.g2.inv.core.domain.repository;
 
 import org.g2.inv.core.domain.entity.StockLevel;
 
 /**
  * @author wuwenxi 2022-04-13
  */
-public interface StockLevelRedisRepository {
+public interface StockLevelRedisRepository extends StockRedisRepository {
 
     /**
      * 库存同步缓存

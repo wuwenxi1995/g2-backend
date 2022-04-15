@@ -1,10 +1,10 @@
 package org.g2.inv.calculate.infra.repository.impl;
 
-import org.g2.inv.calculate.domain.repository.StockLevelRedisRepository;
 import org.g2.inv.calculate.domain.repository.TransactionOperationRepository;
 import org.g2.inv.core.domain.entity.InvTransaction;
 import org.g2.inv.core.domain.entity.StockLevel;
 import org.g2.inv.core.domain.repository.InvTransactionRepository;
+import org.g2.inv.core.domain.repository.StockLevelRedisRepository;
 import org.g2.inv.core.domain.repository.StockLevelRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
