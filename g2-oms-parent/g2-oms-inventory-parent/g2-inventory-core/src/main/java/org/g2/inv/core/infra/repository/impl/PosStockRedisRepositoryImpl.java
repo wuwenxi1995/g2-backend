@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -46,21 +47,27 @@ public class PosStockRedisRepositoryImpl extends BaseStockRedisRepository implem
             RedisSerializer<String> serializer = shardingRedisHelper.getRedisTemplate().getStringSerializer();
             byte[] hashKey = serializer.serialize(InvCoreConstant.InvStockKey.HASH_EXTEND_STOCK_ATS);
             // pipeline 执行
+            Map<String, Long> result = new HashMap<>(skuList.size() * 2);
             shardingRedisHelper.getRedisTemplate().executePipelined((RedisCallback<?>) connection -> {
                 skuList.forEach((skuCode, quantity) -> {
                     String stockLevelKey = String.format(InvCoreConstant.RedisKeyFormat.STOCK_LEVEL_KEY, posCode, skuCode);
                     byte[] key = serializer.serialize(stockLevelKey);
                     byte[] bytes = connection.hGet(key, hashKey);
-                    Long ats = 0L;
+                    long ats = 0L;
                     if (bytes != null) {
                         ats = Long.parseLong(Arrays.toString(bytes));
                     }
-                    StockQueryResponseVO responseVO = new StockQueryResponseVO();
-                    responseVO.setSkuCode(skuCode);
-                    responseVO.setAvailable(ats > quantity);
-                    responseList.add(responseVO);
+                    result.put(skuCode, ats);
                 });
                 return null;
+            });
+            skuList.forEach((skuCode, quantity) -> {
+                StockQueryResponseVO responseVO = new StockQueryResponseVO();
+                responseVO.setSkuCode(skuCode);
+                Long ats;
+                ats = (ats = result.get(skuCode)) == null ? 0 : ats;
+                responseVO.setAvailable(ats > quantity);
+                responseList.add(responseVO);
             });
             return responseList;
         });
