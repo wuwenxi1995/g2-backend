@@ -17,8 +17,8 @@ for skuCode,quantity in pairs(platformSkuWithAmounts) do
     data.originAts = tonumber(redis.call('hget', stockLevel, ARGV[3])) or 0;
     local stock = tonumber(redis.call('hget', stockLevel, ARGV[1])) or 0;
     data.onHand = stock;
-    -- 增加保留量
-    local reserved = tonumber(redis.call('hincrby', stockLevel, ARGV[2], quantity)) or 0;
+    -- 减少保留量
+    local reserved = tonumber(redis.call('hincrby', stockLevel, ARGV[2], -quantity)) or 0;
     data.reserved = reserved;
     -- 库存可用量
     local ats = stock - reserved;

@@ -10,8 +10,8 @@ local stockLevel = ARGV[3]
 local extend_reserved = ARGV[4]
 local extend_ats = ARGV[5]
 
-local reserved = tonumber(redis.call('hexists',stockLevelKey,extend_reserved)) or 0;
+local reserved = tonumber(redis.call('hget',stockLevelKey,extend_reserved)) or 0;
 local ats = value - reserved;
 
-redis.call('hmset',stockLevelKey,stockLevel,value,extend_reserved,reserved,extend_ats,ats)
+redis.call('hmset', stockLevelKey, stockLevel, value, extend_ats, ats)
 return true;
