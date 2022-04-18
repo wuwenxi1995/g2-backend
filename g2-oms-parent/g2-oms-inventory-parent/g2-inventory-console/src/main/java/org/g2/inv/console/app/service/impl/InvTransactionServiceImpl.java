@@ -38,6 +38,7 @@ public class InvTransactionServiceImpl implements InvTransactionService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void create(List<InvTransaction> invTransactions) {
+        invTransactions.forEach(InvTransaction::check);
         String invTransactionCode = invTransactionCode();
         for (InvTransaction invTransaction : invTransactions) {
             invTransaction.setTransactionCode(invTransactionCode);

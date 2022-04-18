@@ -3,6 +3,7 @@ package org.g2.inv.core.domain.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.g2.starter.mybatis.entity.AuditDomain;
+import org.springframework.util.Assert;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -77,4 +78,13 @@ public class InvTransaction extends AuditDomain {
      * 处理异常信息
      */
     private String errorMsg;
+
+    public void check() {
+        Assert.hasLength(transactionType, "missing match [transactionType]");
+        Assert.hasLength(transactionSource, "missing match [transactionSource]");
+        Assert.hasLength(skuCode, "missing match [skuCode]");
+        Assert.hasLength(posCode, "missing match [posCode]");
+        Assert.notNull(onHandInv, "missing match [onHandInv]");
+        Assert.notNull(reserveInv, "missing match [reserveInv]");
+    }
 }

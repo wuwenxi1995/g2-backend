@@ -1,7 +1,7 @@
 package org.g2.inv.config;
 
-import org.g2.inv.infra.feign.InventoryFeignClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -9,5 +9,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableFeignClients(basePackages = "org.g2.inv.infra.feign")
+@ComponentScan(basePackages = {"org.g2.inv.app", "org.g2.inv.infra"})
 public class InventoryApiAutoConfiguration {
 }

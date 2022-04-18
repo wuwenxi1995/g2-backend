@@ -17,7 +17,7 @@ public class BaseStockRedisRepository implements StockRedisRepository {
     private final ShardingRedisHelper shardingRedisHelper;
     private final Logger log;
 
-    BaseStockRedisRepository(ShardingRedisHelper shardingRedisHelper, Logger logger) {
+    public BaseStockRedisRepository(ShardingRedisHelper shardingRedisHelper, Logger logger) {
         this.shardingRedisHelper = shardingRedisHelper;
         this.log = logger;
     }

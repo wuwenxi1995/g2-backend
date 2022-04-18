@@ -70,6 +70,10 @@ public class RedisHelper implements InitializingBean {
         logger.warn("Using Default RedisHelper, you'd batter use a dynamic/sharding RedisHelper instead.");
     }
 
+    public byte[] serialize(String s) {
+        return getRedisTemplate().getStringSerializer().serialize(s);
+    }
+
     public static ObjectMapper getObjectMapper() {
         return objectMapper;
     }

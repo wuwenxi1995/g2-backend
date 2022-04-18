@@ -67,7 +67,7 @@ public class DynamicRedisAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "g2.redis", name = "dynamic-database", havingValue = "true", matchIfMissing = true)
-    public RedisHelper dynamicRedisHelper(RedisProperties redisProperties, CustomizerRedisTemplateFactory<String, String> redisTemplateFactory) {
+    public DynamicRedisHelper dynamicRedisHelper(RedisProperties redisProperties, CustomizerRedisTemplateFactory<String, String> redisTemplateFactory) {
         DynamicRedisTemplate<String, String> dynamicRedisTemplate = new DynamicRedisTemplate<>(redisTemplateFactory);
         // 创建默认的redisTemplate
         RedisTemplate<String, String> defaultRedisTemplate = dynamicRedisTemplate.createRedisTemplateOnMissing(redisProperties.getDatabase());
@@ -82,7 +82,7 @@ public class DynamicRedisAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "g2.redis", name = "sharding", havingValue = "true", matchIfMissing = true)
-    public RedisHelper shardingRedisHelper(StringRedisTemplate redisTemplate, CustomizerRedisTemplateFactory<String, String> redisTemplateFactory) {
+    public ShardingRedisHelper shardingRedisHelper(StringRedisTemplate redisTemplate, CustomizerRedisTemplateFactory<String, String> redisTemplateFactory) {
         ShardingRedisTemplate<String, String> shardingRedisTemplate = new ShardingRedisTemplate<>(redisTemplateFactory);
         shardingRedisTemplate.setDefaultRedisTemplate(redisTemplate);
         // 设置template映射关系
