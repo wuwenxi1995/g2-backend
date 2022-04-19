@@ -1,31 +1,37 @@
 package org.g2.starter.redisson.delayed;
 
+import org.g2.core.task.TaskHandler;
+import org.g2.core.util.ThreadFactoryBuilder;
+import org.g2.starter.redisson.delayed.config.properties.DelayedQueueProperties;
+import org.g2.starter.redisson.delayed.infra.RedisDelayedRepository;
 import org.redisson.api.RBlockingDeque;
 import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.PreDestroy;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author wuwenxi 2021-09-15
  */
-public abstract class RedisDelayedQueue<T> implements InitializingBean {
+public abstract class RedisDelayedQueue<T> extends TaskHandler implements RedisDelayedRepository<T> {
 
     private static final Logger log = LoggerFactory.getLogger(RedisDelayedQueue.class);
 
     @Autowired
     private RedissonClient redissonClient;
+
+    @Autowired
+    private DelayedQueueProperties properties;
 
     private RBlockingDeque<T> blockingDeque;
     private RDelayedQueue<T> delayedQueue;
@@ -38,22 +44,13 @@ public abstract class RedisDelayedQueue<T> implements InitializingBean {
      */
     private ExecutorService executorService;
 
-    /**
-     * delayedQueue数据处理的工作状态
-     */
-    private AtomicReference<Status> status;
-
-    /**
-     * 数据入队
-     *
-     * @param data 数据
-     * @return true/false
-     */
+    @Override
     public final boolean add(T data) {
         return add(data, delayedTime(), timeUnit());
     }
 
-    public final boolean add(T data, int delayed, TimeUnit timeUnit) {
+    @Override
+    public boolean add(T data, int delayed, TimeUnit timeUnit) {
         try {
             delayedQueue.offer(data, delayed, timeUnit);
         } catch (Exception e) {
@@ -63,29 +60,20 @@ public abstract class RedisDelayedQueue<T> implements InitializingBean {
         return true;
     }
 
-    /**
-     * 移除延时队列
-     */
-    public final boolean remove(T data) {
+    @Override
+    public boolean remove(T data) {
         try {
             delayedQueue.remove(data);
         } catch (Exception e) {
+            log.error("remove redis delayed queue error , msg :", e);
             return false;
         }
         return true;
     }
 
-    /**
-     * 处理任务
-     */
-    public final void processing() {
-        if (!status.compareAndSet(Status.PENDING, Status.RUNNING)) {
-            throw new IllegalStateException("RedisDelayedQueue processing status is RUNNING");
-        }
-        if (executorService == null) {
-            this.isUseExecutor = false;
-        }
-        while (!Thread.currentThread().isInterrupted()) {
+    @Override
+    protected void run() {
+        while (isRunning()) {
             T take = null;
             try {
                 take = blockingDeque.take();
@@ -119,15 +107,27 @@ public abstract class RedisDelayedQueue<T> implements InitializingBean {
                 log.error("RedisDelayedQueue has error , msg :", t);
             }
         }
-        // gc
-        status = null;
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
+    @Override
+    protected void doStart() {
+        // 先添加一条数据
+        add(null, 0, TimeUnit.SECONDS);
+        boolean isUseExecutor = properties.getExecutor().isEnable();
+        if (isUseExecutor && this.executorService == null) {
+            setExecutorService(createExecutorService(properties.getExecutor()));
+        }
     }
 
-    public final void setExecutorService(ExecutorService executorService) {
+    @Override
+    protected void doStop() {
+        delayedQueue.destroy();
+        if (isUseExecutor && !executorService.isShutdown()) {
+            executorService.shutdown();
+        }
+    }
+
+    protected void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
     }
 
@@ -156,15 +156,6 @@ public abstract class RedisDelayedQueue<T> implements InitializingBean {
         Assert.isTrue(StringUtils.hasText(queue), "delayedQueue require queue not null");
         this.blockingDeque = redissonClient.getBlockingDeque(queue);
         this.delayedQueue = redissonClient.getDelayedQueue(blockingDeque);
-        status = new AtomicReference<>(Status.PENDING);
-    }
-
-    @PreDestroy
-    private void destroy() {
-        delayedQueue.destroy();
-        if (isUseExecutor && !executorService.isShutdown()) {
-            executorService.shutdown();
-        }
     }
 
     /**
@@ -181,11 +172,12 @@ public abstract class RedisDelayedQueue<T> implements InitializingBean {
      */
     protected abstract String queue();
 
-    enum Status {
-        /**
-         * 执行状态
-         */
-        PENDING,
-        RUNNING;
+    private ExecutorService createExecutorService(DelayedQueueProperties.Executor executor) {
+        ThreadPoolExecutor executorService = new ThreadPoolExecutor(executor.getCoreSize(), executor.getMaxSize(), executor.getKeepAliveSecond(),
+                TimeUnit.SECONDS, new LinkedBlockingQueue<>(executor.getQueueCapacity()),
+                new ThreadFactoryBuilder().setNameFormat(String.format("%s-", "delayedQueue")).build(),
+                new ThreadPoolExecutor.AbortPolicy());
+        executorService.allowCoreThreadTimeOut(executor.isAllowCoreThreadTimeOut());
+        return executorService;
     }
 }

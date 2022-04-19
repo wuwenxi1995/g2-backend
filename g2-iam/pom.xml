@@ -51,6 +51,11 @@
             <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
         </dependency>
 
+        <!-- spring cloud 2020.x.x bootstrap.xml文件失效：需要新增spring-cloud-starter-bootstrap依赖来开启bootstrap.xml文件的读取，默认是关闭读取了-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

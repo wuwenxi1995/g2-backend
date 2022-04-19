@@ -1,10 +1,15 @@
 package org.g2.core.config;
 
+import org.g2.core.config.properties.AsyncTaskProperties;
 import org.g2.core.helper.ApplicationContextHelper;
 import org.g2.core.helper.AsyncTaskHelper;
 import org.g2.core.helper.TransactionalHelper;
 import org.g2.core.user.CustomerType;
 import org.g2.core.user.PlatformType;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -17,6 +22,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author wenxi.wu@hand-china.com 2020-11-05
  */
 @Configuration
+@EnableConfigurationProperties(value = {AsyncTaskProperties.class})
 public class G2CoreAutoConfiguration {
 
     @Bean
@@ -35,7 +41,8 @@ public class G2CoreAutoConfiguration {
     }
 
     @Bean
-    public AsyncTaskExecutor asyncTaskExecutor() {
+    @ConditionalOnProperty(prefix = "g2.core.async", value = "enable", havingValue = "true")
+    public AsyncTaskExecutor asyncTaskExecutor(AsyncTaskProperties taskProperties) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         // 最大线程数
         executor.setMaxPoolSize(30);

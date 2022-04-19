@@ -2,7 +2,7 @@ package org.g2.scheduler.domain.process.strategy.impl;
 
 import java.util.List;
 
-import com.netflix.loadbalancer.ILoadBalancer;
+// import com.netflix.loadbalancer.ILoadBalancer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.g2.scheduler.domain.entity.Executor;
@@ -69,7 +69,7 @@ public class RoundStrategy extends AbstractExecutorStrategy {
     /**
      * 自旋锁
      *
-     * @see com.netflix.loadbalancer.RoundRobinRule#choose(ILoadBalancer, Object)
+     * //@see com.netflix.loadbalancer.RoundRobinRule#choose(ILoadBalancer, Object)
      */
     private Integer incrementAndGetModulo(Long executorId, Long jobId) {
         int current, next;

@@ -10,15 +10,26 @@ import java.util.function.Consumer;
 /**
  * 执行异步任务
  * <p>
- *    主线程启动异步线程，如果异步线程操作了主线程中传入的参数，且异步线程在主线程结束前执行完成，
- *    则异步线程修改的内容将影响到主线程中的该对象；否则不会对主线程中对象有影响。此外异步线程中
- *    的异常不会影响到主线程的执行。
- *    因此使用异步线程，最好处理与主线程无关的任务
+ * 主线程启动异步线程，如果异步线程操作了主线程中传入的参数，且异步线程在主线程结束前执行完成，
+ * 则异步线程修改的内容将影响到主线程中的该对象；否则不会对主线程中对象有影响。此外异步线程中
+ * 的异常不会影响到主线程的执行。
+ * 因此使用异步线程，最好处理与主线程无关的任务
  * </p>
+ *
  * @author wenxi.wu@hand-chian.com 2020-12-10
  */
 public class AsyncTaskHelper {
     private static final Logger log = LoggerFactory.getLogger(AsyncTaskHelper.class);
+
+    private static AsyncTaskHelper asyncTaskHelper;
+
+    public AsyncTaskHelper() {
+        asyncTaskHelper = this;
+    }
+
+    public static void staticOperation(Operation operation) {
+        asyncTaskHelper.operation(operation);
+    }
 
     /**
      * 异步操作

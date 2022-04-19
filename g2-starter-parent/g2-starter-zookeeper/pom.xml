@@ -11,6 +11,10 @@
 
     <artifactId>g2-starter-zookeeper</artifactId>
 
+    <properties>
+        <maven.springboot.skip>true</maven.springboot.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.g2</groupId>

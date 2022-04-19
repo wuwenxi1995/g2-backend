@@ -3,57 +3,121 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>org.g2</groupId>
         <artifactId>g2-parent</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>org.g2.oms.parent</groupId>
     <artifactId>g2-oms-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>g2-oms-core</module>
-        <module>g2-oms-product</module>
-        <module>g2-oms-order</module>
-        <module>g2-oms-customer</module>
-        <module>g2-oms-extension</module>
+        <module>g2-oms-trade-parent</module>
+        <module>g2-oms-product-parent</module>
+        <module>g2-oms-inventory-parent</module>
+        <module>g2-oms-marketing-parent</module>
+        <module>g2-oms-customer-parent</module>
     </modules>
 
     <properties>
-        <g2.oms.core.version>0.1.0-SNAPSHOT</g2.oms.core.version>
-        <g2.oms.order.core.version>0.1.0-SNAPSHOT</g2.oms.order.core.version>
-        <g2.oms.product.core.version>0.1.0-SNAPSHOT</g2.oms.product.core.version>
+        <g2.cart.version>0.1.0-SNAPSHOT</g2.cart.version>
+        <g2.order.version>0.1.0-SNAPSHOT</g2.order.version>
+        <g2.order.console.version>0.1.0-SNAPSHOT</g2.order.console.version>
+        <g2.order.core.version>0.1.0-SNAPSHOT</g2.order.core.version>
+        <g2.order.fulfilment.version>0.1.0-SNAPSHOT</g2.order.fulfilment.version>
+        <g2.seckill.version>0.1.0-SNAPSHOT</g2.seckill.version>
+        <g2.settlement.version>0.1.0-SNAPSHOT</g2.settlement.version>
+        <g2.inventory.version>0.1.0-SNAPSHOT</g2.inventory.version>
+        <g2.inventory.console.version>0.1.0-SNAPSHOT</g2.inventory.console.version>
+        <g2.inventory.core.version>0.1.0-SNAPSHOT</g2.inventory.core.version>
+        <g2.inventory.trigger.version>0.1.0-SNAPSHOT</g2.inventory.trigger.version>
+        <g2.inventory.api.version>0.1.0-SNAPSHOT</g2.inventory.api.version>
+        <g2.inventory.calculate.version>0.1.0-SNAPSHOT</g2.inventory.calculate.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- trade -->
             <dependency>
-                <groupId>org.g2</groupId>
-                <artifactId>g2-oms-core</artifactId>
-                <version>${g2.oms.core.version}</version>
+                <groupId>org.g2.oms.trade</groupId>
+                <artifactId>g2-cart</artifactId>
+                <version>${g2.cart.version}</version>
             </dependency>
-
             <dependency>
-                <groupId>org.g2</groupId>
-                <artifactId>g2-oms-start-core</artifactId>
-                <version>${g2.oms.core.version}</version>
+                <groupId>org.g2.oms.trade</groupId>
+                <artifactId>g2-order</artifactId>
+                <version>${g2.order.version}</version>
             </dependency>
-
             <dependency>
-                <groupId>org.g2</groupId>
-                <artifactId>g2-oms-order-core</artifactId>
-                <version>${g2.oms.order.core.version}</version>
+                <groupId>org.g2.oms.trade</groupId>
+                <artifactId>g2-order-core</artifactId>
+                <version>${g2.order.core.version}</version>
             </dependency>
-
             <dependency>
-                <groupId>org.g2</groupId>
-                <artifactId>g2-oms-product-core</artifactId>
-                <version>${g2.oms.product.core.version}</version>
+                <groupId>org.g2.oms.trade</groupId>
+                <artifactId>g2-order-fulfilment</artifactId>
+                <version>${g2.order.fulfilment.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.trade</groupId>
+                <artifactId>g2-seckill</artifactId>
+                <version>${g2.seckill.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.trade</groupId>
+                <artifactId>g2-settlement</artifactId>
+                <version>${g2.settlement.version}</version>
+            </dependency>
+            <!-- inventory -->
+            <dependency>
+                <groupId>org.g2.oms.trade</groupId>
+                <artifactId>g2-order-console</artifactId>
+                <version>${g2.order.console.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.inventory</groupId>
+                <artifactId>g2-inventory</artifactId>
+                <version>${g2.inventory.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.inventory</groupId>
+                <artifactId>g2-inventory-console</artifactId>
+                <version>${g2.inventory.console.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.inventory</groupId>
+                <artifactId>g2-inventory-api</artifactId>
+                <version>${g2.inventory.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.inventory</groupId>
+                <artifactId>g2-inventory-calculate</artifactId>
+                <version>${g2.inventory.calculate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.inventory</groupId>
+                <artifactId>g2-inventory-core</artifactId>
+                <version>${g2.inventory.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.inventory</groupId>
+                <artifactId>g2-inventory-trigger</artifactId>
+                <version>${g2.inventory.trigger.version}</version>
+            </dependency>
+            <!-- product -->
+            <!-- marketing -->
+            <!-- customer -->
+
+            <!-- 随机生成UUID github: https://github.com/groupon/locality-uuid.java -->
+            <dependency>
+                <groupId>com.groupon</groupId>
+                <artifactId>locality-uuid</artifactId>
+                <version>1.1.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 
 </project>

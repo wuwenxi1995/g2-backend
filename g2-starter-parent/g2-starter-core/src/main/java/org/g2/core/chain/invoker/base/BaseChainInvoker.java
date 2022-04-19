@@ -48,6 +48,10 @@ public abstract class BaseChainInvoker implements ChainInvoker {
         return null;
     }
 
+    protected void restCurrentHandlerIndex() {
+        this.currentHandlerIndex = -1;
+    }
+
     /**
      * 返回调用链集合
      *

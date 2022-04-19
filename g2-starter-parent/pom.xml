@@ -21,6 +21,7 @@
         <module>g2-starter-mybatis-helper</module>
         <module>g2-starter-kafka</module>
         <module>g2-starter-zookeeper</module>
+        <module>g2-starter-dynamic-redis</module>
     </modules>
 
 
