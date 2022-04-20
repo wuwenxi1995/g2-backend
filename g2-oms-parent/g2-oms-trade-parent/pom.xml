@@ -21,6 +21,7 @@
         <module>g2-seckill</module>
         <module>g2-order-fulfilment</module>
         <module>g2-order-console</module>
+        <module>g2-order-sourcing</module>
     </modules>
 
 </project>

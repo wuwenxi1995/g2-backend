@@ -30,6 +30,7 @@
         <g2.order.fulfilment.version>0.1.0-SNAPSHOT</g2.order.fulfilment.version>
         <g2.seckill.version>0.1.0-SNAPSHOT</g2.seckill.version>
         <g2.settlement.version>0.1.0-SNAPSHOT</g2.settlement.version>
+        <g2.order.sourcing>0.1.0-SNAPSHOT</g2.order.sourcing>
         <g2.inventory.version>0.1.0-SNAPSHOT</g2.inventory.version>
         <g2.inventory.console.version>0.1.0-SNAPSHOT</g2.inventory.console.version>
         <g2.inventory.core.version>0.1.0-SNAPSHOT</g2.inventory.core.version>
@@ -70,6 +71,11 @@
                 <groupId>org.g2.oms.trade</groupId>
                 <artifactId>g2-settlement</artifactId>
                 <version>${g2.settlement.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.trade</groupId>
+                <artifactId>g2-order-sourcing</artifactId>
+                <version>${g2.order.sourcing}</version>
             </dependency>
             <!-- inventory -->
             <dependency>
