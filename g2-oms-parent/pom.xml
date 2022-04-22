@@ -20,6 +20,7 @@
         <module>g2-oms-inventory-parent</module>
         <module>g2-oms-marketing-parent</module>
         <module>g2-oms-customer-parent</module>
+        <module>g2-oms-metadata-parent</module>
     </modules>
 
     <properties>
@@ -116,6 +117,7 @@
             <!-- product -->
             <!-- marketing -->
             <!-- customer -->
+            <!-- metadata -->
 
             <!-- 随机生成UUID github: https://github.com/groupon/locality-uuid.java -->
             <dependency>
