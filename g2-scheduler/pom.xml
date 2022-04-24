@@ -67,9 +67,14 @@
             <artifactId>g2-starter-redis</artifactId>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>org.g2</groupId>-->
+<!--            <artifactId>g2-starter-mybatis-helper</artifactId>-->
+<!--        </dependency>-->
+
         <dependency>
-            <groupId>org.g2</groupId>
-            <artifactId>g2-starter-mybatis-helper</artifactId>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-mybatis-mapper</artifactId>
         </dependency>
 
         <dependency>

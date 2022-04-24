@@ -2,7 +2,7 @@ package org.g2.scheduler.infra.repository.impl;
 
 import org.g2.scheduler.domain.entity.Executor;
 import org.g2.scheduler.domain.repositoty.ExecutorRepository;
-import org.g2.starter.mybatis.base.impl.BaseRepositoryImpl;
+import org.hzero.mybatis.base.impl.BaseRepositoryImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

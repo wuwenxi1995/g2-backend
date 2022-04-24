@@ -9,25 +9,25 @@ public class CommonException extends RuntimeException {
     private final transient Object[] parameters;
 
     public CommonException(String code, Object... param) {
-        super(code, null, true, false);
+        super(code, null, true, true);
         this.code = code;
         this.parameters = param;
     }
 
     public CommonException(String code, Throwable cause, Object... param) {
-        super(code, cause, true, false);
+        super(code, cause, true, true);
         this.code = code;
         this.parameters = param;
     }
 
     public CommonException(String code, Throwable cause) {
-        super(code, cause, true, false);
+        super(code, cause, true, true);
         this.code = code;
         this.parameters = new Object[]{0};
     }
 
     public CommonException(Throwable cause, Object... param) {
-        super(null, cause, true, false);
+        super(null, cause, true, true);
         this.parameters = param;
     }
 

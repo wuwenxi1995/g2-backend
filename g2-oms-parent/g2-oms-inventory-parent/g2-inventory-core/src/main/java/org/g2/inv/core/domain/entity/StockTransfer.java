@@ -7,21 +7,20 @@ import io.choerodon.mybatis.domain.AuditDomain;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.math.BigDecimal;
 
 /**
  * 库存调拨规则
  *
  * @author wuwenxi 2022-04-22
  */
-@Table(name = "inv_stock_transfer_rule")
+@Table(name = "inv_stock_transfer")
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class StockTransferRuler extends AuditDomain {
+public class StockTransfer extends AuditDomain {
 
     @Id
     @GeneratedValue
-    private Long stockTransferRulerId;
+    private Long stockTransferId;
     /**
      * 服务点编码
      */
@@ -33,13 +32,5 @@ public class StockTransferRuler extends AuditDomain {
     /**
      * 库存安全值
      */
-    private Long safetyQuantity;
-    /**
-     * 是否允许调拨库存
-     */
-    private Integer enableTransfer;
-    /**
-     * 调拨规则状态
-     */
-    private String transferStatusCode;
+    private Long quantity;
 }

@@ -1,8 +1,8 @@
 package org.g2.inv.core.domain.entity;
 
+import io.choerodon.mybatis.domain.AuditDomain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.g2.starter.mybatis.entity.AuditDomain;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -15,6 +15,12 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class StockReportEntry extends AuditDomain {
+
+    public static final String FIELD_STOCK_REPORT_ENTRY_ID = "stockReportEntryId";
+    public static final String FIELD_REPORT_CODE = "reportCode";
+    public static final String FIELD_SKU_CODE = "skuCode";
+    public static final String FIELD_POS_CODE = "posCode";
+    public static final String FIELD_QUANTITY = "quantity";
 
     @Id
     @GeneratedValue
