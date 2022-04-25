@@ -40,6 +40,14 @@ public class ElasticsearchProperties {
      * 是否开启嗅探器
      */
     private boolean enableSniff = false;
+    /**
+     * 允许重建索引次数
+     */
+    private int retry;
+    /**
+     * 是否进行重建索引
+     */
+    private boolean reIndex;
 
     public String getClusterNodes() {
         return clusterNodes;
@@ -95,6 +103,22 @@ public class ElasticsearchProperties {
 
     public void setEnableSniff(boolean enableSniff) {
         this.enableSniff = enableSniff;
+    }
+
+    public int getRetry() {
+        return retry;
+    }
+
+    public void setRetry(int retry) {
+        this.retry = retry;
+    }
+
+    public boolean isReIndex() {
+        return reIndex;
+    }
+
+    public void setReIndex(boolean reIndex) {
+        this.reIndex = reIndex;
     }
 
     public static class Monitor {
