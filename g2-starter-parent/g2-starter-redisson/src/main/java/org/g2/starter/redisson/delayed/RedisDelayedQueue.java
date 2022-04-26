@@ -19,6 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * @author wuwenxi 2021-09-15
@@ -34,7 +35,6 @@ public abstract class RedisDelayedQueue<T> extends TaskHandler implements RedisD
     private DelayedQueueProperties properties;
 
     private RBlockingDeque<T> blockingDeque;
-    private RDelayedQueue<T> delayedQueue;
     private boolean isUseExecutor = true;
 
     /**
@@ -51,24 +51,37 @@ public abstract class RedisDelayedQueue<T> extends TaskHandler implements RedisD
 
     @Override
     public boolean add(T data, int delayed, TimeUnit timeUnit) {
-        try {
-            delayedQueue.offer(data, delayed, timeUnit);
-        } catch (Exception e) {
-            log.error("add redis delayed queue error , msg :", e);
-            return false;
-        }
-        return true;
+        return operation((delayedQueue) -> {
+            try {
+                delayedQueue.offer(data, delayed, timeUnit);
+            } catch (Exception e) {
+                log.error("add redis delayed queue error , msg :", e);
+                return false;
+            }
+            return true;
+        });
     }
 
     @Override
     public boolean remove(T data) {
+        return operation((delayedQueue) -> {
+            try {
+                delayedQueue.remove(data);
+            } catch (Exception e) {
+                log.error("remove redis delayed queue error , msg :", e);
+                return false;
+            }
+            return true;
+        });
+    }
+
+    private boolean operation(Function<RDelayedQueue<T>, Boolean> function) {
+        RDelayedQueue<T> delayedQueue = this.redissonClient.getDelayedQueue(blockingDeque);
         try {
-            delayedQueue.remove(data);
-        } catch (Exception e) {
-            log.error("remove redis delayed queue error , msg :", e);
-            return false;
+            return function.apply(delayedQueue);
+        } finally {
+            delayedQueue.destroy();
         }
-        return true;
     }
 
     @Override
@@ -76,18 +89,19 @@ public abstract class RedisDelayedQueue<T> extends TaskHandler implements RedisD
         while (isRunning()) {
             T take = null;
             try {
-                take = blockingDeque.take();
-                // 如果线程中断，说明服务不可用，将数据重新放入阻塞队列
-                if (Thread.currentThread().isInterrupted()) {
-                    delayedQueue.offer(take, 0, timeUnit());
-                    break;
-                } else if (Objects.isNull(take)) {
+                take = blockingDeque.poll(300, TimeUnit.SECONDS);
+                if (Objects.isNull(take)) {
                     continue;
+                }
+                // 如果线程中断，说明服务不可用，将数据重新放入阻塞队列
+                if (!isRunning() || Thread.currentThread().isInterrupted()) {
+                    add(take, 0, timeUnit());
+                    break;
                 }
                 // 处理数据
                 if (isUseExecutor) {
                     if (executorService.isShutdown()) {
-                        delayedQueue.offer(take, 0, timeUnit());
+                        add(take, 0, timeUnit());
                         break;
                     }
                     T submit = take;
@@ -100,7 +114,7 @@ public abstract class RedisDelayedQueue<T> extends TaskHandler implements RedisD
                 log.error("take delayedQueue Interrupted, msg :", e);
             } catch (RejectedExecutionException e) {
                 // 提交线程池被拒绝，重新放入阻塞队列
-                delayedQueue.offer(take, 0, timeUnit());
+                add(take, 0, timeUnit());
                 log.error("delayedQueue submit task rejected, msg : ", e);
             } catch (Throwable t) {
                 // 如果发生异常，记录错误日志
@@ -113,7 +127,7 @@ public abstract class RedisDelayedQueue<T> extends TaskHandler implements RedisD
     protected void doStart() {
         // 先添加一条数据
         add(null, 0, TimeUnit.SECONDS);
-        boolean isUseExecutor = properties.getExecutor().isEnable();
+        this.isUseExecutor = properties.getExecutor().isEnable();
         if (isUseExecutor && this.executorService == null) {
             setExecutorService(createExecutorService(properties.getExecutor()));
         }
@@ -121,7 +135,6 @@ public abstract class RedisDelayedQueue<T> extends TaskHandler implements RedisD
 
     @Override
     protected void doStop() {
-        delayedQueue.destroy();
         if (isUseExecutor && !executorService.isShutdown()) {
             executorService.shutdown();
         }
@@ -155,7 +168,6 @@ public abstract class RedisDelayedQueue<T> extends TaskHandler implements RedisD
         String queue = queue();
         Assert.isTrue(StringUtils.hasText(queue), "delayedQueue require queue not null");
         this.blockingDeque = redissonClient.getBlockingDeque(queue);
-        this.delayedQueue = redissonClient.getDelayedQueue(blockingDeque);
     }
 
     /**

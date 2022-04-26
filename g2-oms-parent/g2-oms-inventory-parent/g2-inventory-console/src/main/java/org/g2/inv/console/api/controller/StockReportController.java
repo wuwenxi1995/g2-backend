@@ -1,5 +1,6 @@
 package org.g2.inv.console.api.controller;
 
+import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.g2.core.util.Result;
 import org.g2.core.util.Results;
@@ -31,7 +32,7 @@ public class StockReportController {
 
     @GetMapping("/list")
     public ResponseEntity<?> list(StockReportDTO stockReport, PageRequest pageRequest) {
-        return Results.success(stockReportService.list(stockReport));
+        return Results.success(PageHelper.doPage(pageRequest, () -> stockReportService.list(stockReport)));
     }
 
     @GetMapping

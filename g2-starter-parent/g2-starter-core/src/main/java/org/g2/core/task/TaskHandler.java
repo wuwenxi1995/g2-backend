@@ -7,6 +7,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.lang.NonNull;
 
+import java.util.concurrent.Executors;
+
 /**
  * @author wuwenxi 2022-03-09
  */
@@ -16,6 +18,11 @@ public abstract class TaskHandler
     private volatile boolean running = false;
     private ApplicationContext applicationContext;
 
+    /**
+     * 工作线程
+     */
+    private Thread worker;
+
     @Override
     public void afterPropertiesSet() throws Exception {
     }
@@ -24,7 +31,7 @@ public abstract class TaskHandler
     public final void onApplicationEvent(@NonNull ApplicationReadyEvent event) {
         this.applicationContext = event.getApplicationContext();
         // 启动任务
-        run();
+        this.worker.start();
     }
 
     public ApplicationContext getApplicationContext() {
@@ -40,6 +47,7 @@ public abstract class TaskHandler
             this.running = true;
         }
         doStart();
+        this.worker = Executors.defaultThreadFactory().newThread(this::run);
     }
 
     @Override
@@ -51,6 +59,9 @@ public abstract class TaskHandler
             this.running = false;
         }
         doStop();
+        if (worker.isAlive()) {
+            worker.interrupt();
+        }
     }
 
     @Override
