@@ -12,7 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
  */
 public class ShardingRedisTemplate<K, V> extends AbstractRoutingRedisTemplate<K, V> {
 
-    private final Cache<K, V> redisTemplates = new Cache<>();
+    private final Cache<RedisTemplate<K, V>> redisTemplates = new Cache<>();
 
     private final CustomizerRedisTemplateFactory<K, V> customizerRedisTemplateFactory;
 
@@ -22,7 +22,7 @@ public class ShardingRedisTemplate<K, V> extends AbstractRoutingRedisTemplate<K,
 
     @Override
     protected RedisTemplate<K, V> determineTargetRedisTemplate() {
-        K lookupKey = (K) determineCurrentLookupKey();
+        Object lookupKey = determineCurrentLookupKey();
         if (lookupKey == null) {
             return getDefaultRedisTemplate();
         }

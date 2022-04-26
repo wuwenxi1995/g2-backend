@@ -1,18 +1,16 @@
 package org.g2.dynamic.redis.hepler.sharding.cache;
 
-import org.springframework.data.redis.core.RedisTemplate;
-
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  * @author wuwenxi 2022-04-19
  */
-public class Cache<K, V> {
+public class Cache<T> {
 
     private static final int DEFAULT_INITIAL_CAPACITY = 16;
     private static final int MAXIMUM_CAPACITY = 1 << 30;
 
-    private AtomicReferenceArray<RedisTemplate<K, V>> table = null;
+    private AtomicReferenceArray<T> table = null;
     private final int tableSize;
 
     public Cache() {
@@ -29,15 +27,15 @@ public class Cache<K, V> {
         this.tableSize = tableSizeFor(initialCapacity);
     }
 
-    public RedisTemplate<K, V> put(K key, RedisTemplate<K, V> redisTemplate) {
+    public T put(Object key, T data) {
         if (table == null) {
             initTable();
         }
         int i, hash = hash(key);
-        RedisTemplate<K, V> p;
+        T p;
         if ((p = table.get((i = (table.length() - 1) & hash))) == null) {
             while (table.get(i) == null) {
-                if (table.compareAndSet(i, null, redisTemplate)) {
+                if (table.compareAndSet(i, null, data)) {
                     break;
                 }
             }
@@ -46,15 +44,15 @@ public class Cache<K, V> {
         return p;
     }
 
-    public RedisTemplate<K, V> get(K key) {
+    public T get(Object key) {
         if (table == null) {
             return null;
         }
-        RedisTemplate<K, V> p;
+        T p;
         return (p = table.get((table.length() - 1) & hash(key))) == null ? null : p;
     }
 
-    private int hash(K key) {
+    private int hash(Object key) {
         int h;
         return key == null ? 0 : (h = key.hashCode()) ^ (h >>> 16);
     }
