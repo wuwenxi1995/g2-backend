@@ -4,7 +4,7 @@ import org.g2.inv.core.api.dto.StockReportDTO;
 import org.g2.inv.core.domain.entity.StockReport;
 import org.g2.inv.core.domain.repository.StockReportRepository;
 import org.g2.inv.core.infra.mapper.StockReportMapper;
-import org.hzero.mybatis.base.impl.BaseRepositoryImpl;
+import org.g2.starter.mybatis.base.impl.BaseRepositoryImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,5 +24,10 @@ public class StockReportRepositoryImpl extends BaseRepositoryImpl<StockReport> i
     @Override
     public List<StockReport> list(StockReportDTO stockReport) {
         return stockReportMapper.list(stockReport);
+    }
+
+    @Override
+    public List<StockReport> selectCreateReportEntry(List<String> reportCodes) {
+        return null;
     }
 }

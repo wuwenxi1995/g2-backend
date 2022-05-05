@@ -1,7 +1,7 @@
 package org.g2.scheduler.domain.repositoty;
 
 import org.g2.scheduler.domain.entity.Executor;
-import org.hzero.mybatis.base.BaseRepository;
+import org.g2.starter.mybatis.base.BaseRepository;
 
 /**
  * @author wenxi.wu@hand-china.com 2020-11-09

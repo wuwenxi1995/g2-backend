@@ -14,8 +14,6 @@ import org.g2.inv.core.domain.repository.InvTransactionRepository;
 import org.g2.inv.core.domain.repository.StockReportEntryRepository;
 import org.g2.inv.core.domain.repository.StockReportRepository;
 import org.g2.inv.core.infra.constant.InvCoreConstants;
-import org.hzero.mybatis.domian.Condition;
-import org.hzero.mybatis.util.Sqls;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,14 +68,13 @@ public class StockReportServiceImpl implements StockReportService {
         if (CollectionUtils.isEmpty(reportCodes)) {
             throw new CommonException("request reportCodes nonNull");
         }
-        String transactionCode = generateCode(Constants.RuleCode.TRANSACTION_CODE);
-        List<StockReport> stockReports = stockReportRepository.selectByCondition(Condition.builder(StockReport.class)
-                .where(Sqls.custom().andIn(StockReport.FIELD_REPORT_CODE, reportCodes)
-                        .andEqualTo(StockReport.FIELD_REPORT_STATUS_CODE, Constants.StockReportStatusCode.CREATE)).build());
+        List<StockReport> stockReports = stockReportRepository.selectCreateReportEntry(reportCodes);
         if (CollectionUtils.isNotEmpty(stockReports)) {
-            List<String> filterCodes = stockReports.stream().map(StockReport::getReportCode).collect(Collectors.toList());
-            List<StockReportEntry> stockReportEntries = stockReportEntryRepository.selectByCondition(Condition.builder(StockReportEntry.class)
-                    .where(Sqls.custom().andIn(StockReportEntry.FIELD_REPORT_CODE, filterCodes)).build());
+            List<StockReportEntry> stockReportEntries = new ArrayList<>();
+            for (StockReport stockReport : stockReports) {
+                stockReportEntries.addAll(stockReport.getStockReportEntryList());
+            }
+            String transactionCode = generateCode("");
             List<InvTransaction> invTransactions = new ArrayList<>(stockReportEntries.size());
             for (StockReportEntry stockReportEntry : stockReportEntries) {
                 InvTransaction invTransaction = new InvTransaction();

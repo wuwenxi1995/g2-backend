@@ -3,7 +3,7 @@ package org.g2.inv.core.infra.repository.impl;
 import org.g2.inv.core.domain.entity.StockReportEntry;
 import org.g2.inv.core.domain.repository.StockReportEntryRepository;
 import org.g2.inv.core.infra.mapper.StockReportEntryMapper;
-import org.hzero.mybatis.base.impl.BaseRepositoryImpl;
+import org.g2.starter.mybatis.base.impl.BaseRepositoryImpl;
 import org.springframework.stereotype.Repository;
 
 /**

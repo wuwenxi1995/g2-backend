@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.g2.inv.trigger.config.InventoryTriggerAutoConfiguration
+org.g2.inv.trigger.config.InvTriggerAutoConfiguration

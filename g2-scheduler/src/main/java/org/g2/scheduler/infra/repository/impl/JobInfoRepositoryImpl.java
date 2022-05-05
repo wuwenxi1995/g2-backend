@@ -2,7 +2,7 @@ package org.g2.scheduler.infra.repository.impl;
 
 import org.g2.scheduler.domain.entity.JobInfo;
 import org.g2.scheduler.domain.repositoty.JobInfoRepository;
-import org.hzero.mybatis.base.impl.BaseRepositoryImpl;
+import org.g2.starter.mybatis.base.impl.BaseRepositoryImpl;
 import org.springframework.stereotype.Component;
 
 /**

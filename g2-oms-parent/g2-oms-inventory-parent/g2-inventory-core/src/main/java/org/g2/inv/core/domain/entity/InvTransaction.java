@@ -2,7 +2,8 @@ package org.g2.inv.core.domain.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import io.choerodon.mybatis.domain.AuditDomain;
+import org.g2.starter.mybatis.entity.AuditDomain;
+import org.g2.starter.mybatis.entity.AuditDomain;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;

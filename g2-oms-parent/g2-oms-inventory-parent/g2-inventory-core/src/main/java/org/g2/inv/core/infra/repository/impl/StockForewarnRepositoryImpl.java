@@ -2,7 +2,7 @@ package org.g2.inv.core.infra.repository.impl;
 
 import org.g2.inv.core.domain.entity.StockForewarn;
 import org.g2.inv.core.domain.repository.StockForewarnRepository;
-import org.hzero.mybatis.base.impl.BaseRepositoryImpl;
+import org.g2.starter.mybatis.base.impl.BaseRepositoryImpl;
 import org.springframework.stereotype.Repository;
 
 /**

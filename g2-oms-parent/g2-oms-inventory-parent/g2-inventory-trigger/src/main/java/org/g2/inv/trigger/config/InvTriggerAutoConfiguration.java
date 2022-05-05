@@ -6,5 +6,5 @@ import org.springframework.context.annotation.Configuration;
  * @author wuwenxi 2022-04-08
  */
 @Configuration
-public class InventoryTriggerAutoConfiguration {
+public class InvTriggerAutoConfiguration {
 }

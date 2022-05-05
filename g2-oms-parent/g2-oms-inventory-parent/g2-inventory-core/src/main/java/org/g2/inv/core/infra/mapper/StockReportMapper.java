@@ -2,7 +2,7 @@ package org.g2.inv.core.infra.mapper;
 
 import org.g2.inv.core.api.dto.StockReportDTO;
 import org.g2.inv.core.domain.entity.StockReport;
-import io.choerodon.mybatis.common.BaseMapper;
+import org.g2.starter.mybatis.common.BaseMapper;
 
 import java.util.List;
 

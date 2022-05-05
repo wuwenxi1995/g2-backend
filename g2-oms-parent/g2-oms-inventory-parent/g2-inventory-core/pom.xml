@@ -34,15 +34,10 @@
         </dependency>
 
         <dependency>
-            <groupId>org.hzero.starter</groupId>
-            <artifactId>hzero-starter-mybatis-mapper</artifactId>
+            <groupId>org.g2</groupId>
+            <artifactId>g2-starter-mybatis-helper</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.1-api</artifactId>
-            <version>1.0.0.Final</version>
-        </dependency>
     </dependencies>
 
 

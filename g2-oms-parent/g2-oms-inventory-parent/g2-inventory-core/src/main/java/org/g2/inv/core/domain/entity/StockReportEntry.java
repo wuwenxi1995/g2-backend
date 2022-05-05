@@ -1,6 +1,6 @@
 package org.g2.inv.core.domain.entity;
 
-import io.choerodon.mybatis.domain.AuditDomain;
+import org.g2.starter.mybatis.entity.AuditDomain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

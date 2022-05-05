@@ -1,15 +1,15 @@
 package org.g2.inv.core.domain.entity;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import org.g2.starter.mybatis.entity.AuditDomain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 库存上报
@@ -19,8 +19,6 @@ import java.util.Date;
 @Table(name = "inv_stock_report")
 @EqualsAndHashCode(callSuper = true)
 @Data
-@ModifyAudit
-@VersionAudit
 public class StockReport extends AuditDomain {
 
     public static final String FIELD_INV_STOCK_REPORT_ID = "invStockReportId";
@@ -58,4 +56,7 @@ public class StockReport extends AuditDomain {
      * 库存上报提交时间
      */
     private Date submitDate;
+
+    @Transient
+    private List<StockReportEntry> stockReportEntryList;
 }
