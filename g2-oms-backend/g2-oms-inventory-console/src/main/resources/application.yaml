@@ -19,11 +19,11 @@ spring:
     # 生产者
     producer:
       # 发生错误后，消息重发的次数。
-      retries: 3
+      retries: ${INV_KAFKA_PRODUCER_RETIES:3}
       #当有多个消息需要被发送到同一个分区时，生产者会把它们放在同一个批次里。该参数指定了一个批次可以使用的内存大小，按照字节数计算。
-      batch-size: 16384
+      batch-size: ${INV_KAFKA_PRODUCER_BATCH_SIZE:16KB}
       # 设置生产者内存缓冲区的大小。默认大小32mb
-      buffer-memory: 33554432
+      buffer-memory: ${INV_KAFKA_PRODUCER_BUFFER_MEMORY:32MB}
       # 键的序列化方式
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       # 值的序列化方式
@@ -31,7 +31,7 @@ spring:
       # acks=0 ： 生产者在成功写入消息之前不会等待任何来自服务器的响应。
       # acks=1 ： 只要集群的首领节点收到消息，生产者就会收到一个来自服务器成功响应。
       # acks=all ：只有当所有参与复制的节点全部收到消息时，生产者才会收到一个来自服务器的成功响应。
-      acks: 1
+      acks: ${INV_KAFKA_PRODUCER_ACKS:-1}
       properties:
         # 重试间隔时间，默认100ms
         retry:
@@ -40,10 +40,13 @@ spring:
         # 设置消息最大可达大小，默认1mb，设置为10mb
         max:
           request:
-            size: 10485760
+            size: ${INV_KAFKA_PRODUCER_MAX_REQUEST_SIEZ:10485760}
         # 设置batch强制发送时间
         linger:
-          ms: 100
+          ms: ${INV_KAFKA_PRODUCER_LINGER_MS:100}
+          # 数据压缩类型
+        compression:
+          type: ${INV_KAFKA_PRODUCER_COMPRESSION_TYPE:snappy}
       transaction-id-prefix: inv-kafka-ts-
       # 消费者
     consumer:
@@ -66,12 +69,12 @@ spring:
         # 会话时间超过(服务宕机),节点将从消费者组中移除,数据重平衡,默认10s
         session:
           timeout:
-            ms: ${INV_KAFKA_SESSION_TIMEOUT:10000ms}
+            ms: ${INV_KAFKA_SESSION_TIMEOUT:10000}
         # 服务消费超时,将进行数据重平衡,默认5分钟
         max:
           poll:
             interval:
-              ms: ${INV_KAFAK_MAX_POLL_INTERVAL:300000ms}
+              ms: ${INV_KAFAK_MAX_POLL_INTERVAL:300000}
         fetch:
           max:
             # 每次拉取最大数据量,默认50m
