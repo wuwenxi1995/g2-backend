@@ -60,7 +60,7 @@ public class InvTransaction extends AuditDomain {
     /**
      * 库存事务处理状态
      */
-    private String processStatusCode;
+    private String processingStatusCode;
     /**
      * 库存事务处理信息
      */

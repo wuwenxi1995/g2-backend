@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import java.util.Date;
 
 /**
- *  服务点库存明细
+ * 服务点库存明细
  *
  * @author wuwenxi 2022-04-22
  */
@@ -58,5 +58,9 @@ public class StockLevel extends AuditDomain {
      * 最近一次更新时间
      */
     private Date latsModifyDate;
+    /**
+     * 最近一次全量同步时间
+     */
+    private Date lastFullDate;
 
 }

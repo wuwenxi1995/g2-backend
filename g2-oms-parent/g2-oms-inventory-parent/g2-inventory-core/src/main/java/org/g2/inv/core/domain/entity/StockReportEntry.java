@@ -45,4 +45,9 @@ public class StockReportEntry extends AuditDomain {
      * 上报数量
      */
     private Long quantity;
+
+    /**
+     * 上报类型, 增量/全量
+     */
+    private String reportType;
 }

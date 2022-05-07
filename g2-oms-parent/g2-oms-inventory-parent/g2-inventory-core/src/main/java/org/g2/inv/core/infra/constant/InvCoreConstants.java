@@ -6,6 +6,7 @@ package org.g2.inv.core.infra.constant;
 public interface InvCoreConstants {
 
     interface TransactionTypeCode {
+        String FULL = "FULL";
         String INCREMENT = "INCREMENT";
         String OCCUPY = "OCCUPY";
         String CONSIGNMENT = "CONSIGNMENT";
@@ -21,5 +22,16 @@ public interface InvCoreConstants {
         String POS = "POS";
         String OMS = "OMS";
         String DEFAULT = TransactionSource.MANUAL;
+    }
+
+    interface TriggerTopic {
+        /**
+         * 触发库存事务消费
+         */
+        String TRANSACTION_CONSUMER = "TRANSACTION";
+    }
+
+    interface TriggerType {
+        String TRANSACTION_TRIGGER = "TRIGGER_TRANSACTION";
     }
 }
