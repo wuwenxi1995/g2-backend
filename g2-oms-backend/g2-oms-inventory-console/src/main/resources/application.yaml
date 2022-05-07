@@ -1,0 +1,125 @@
+spring:
+  application:
+    name: oms-inventory-console
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3307/g2_inventory?useUnicode=true&characterEncoding=utf-8&useSSL=false&zeroDateTimeBehavior=convertToNull&useTimezone=true&serverTimezone=GMT%2B8}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${SPRING_DATASOURCE_USERNAME:}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    hikari:
+      # 连接池最小空闲连接数
+      minimum-idle: ${SPRING_DATASOURCE_MINIMUM_IDLE:10}
+      # 连接池允许的最大连接数
+      maximum-pool-size: ${SPRING_DATASOURCE_MAXIMUM_POOL_SIZE:90}
+      # 等待连接池分配连接的最大时长（毫秒）
+      connection-timeout: ${SPRING_DATASOURCE_CONNECTION_TIMEOUT:30000}
+  kafka:
+    # kafka集群地址
+    bootstrap-servers: ${INV_KAFKA_CLUSTER:[192.168.0.11,192.168.0.12,192.168.0.13]}
+    # 生产者
+    producer:
+      # 发生错误后，消息重发的次数。
+      retries: 3
+      #当有多个消息需要被发送到同一个分区时，生产者会把它们放在同一个批次里。该参数指定了一个批次可以使用的内存大小，按照字节数计算。
+      batch-size: 16384
+      # 设置生产者内存缓冲区的大小。默认大小32mb
+      buffer-memory: 33554432
+      # 键的序列化方式
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # 值的序列化方式
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # acks=0 ： 生产者在成功写入消息之前不会等待任何来自服务器的响应。
+      # acks=1 ： 只要集群的首领节点收到消息，生产者就会收到一个来自服务器成功响应。
+      # acks=all ：只有当所有参与复制的节点全部收到消息时，生产者才会收到一个来自服务器的成功响应。
+      acks: 1
+      properties:
+        # 重试间隔时间，默认100ms
+        retry:
+          backoff:
+            ms: 500
+        # 设置消息最大可达大小，默认1mb，设置为10mb
+        max:
+          request:
+            size: 10485760
+        # 设置batch强制发送时间
+        linger:
+          ms: 100
+      transaction-id-prefix: inv-kafka-ts-
+      # 消费者
+    consumer:
+      # 关闭自动提交offset
+      enable-auto-commit: false
+      # 设置offset开始位置
+      # earliest:当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，从头开始消费
+      # latest:当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，消费新该分区下产生的数据
+      # none:topic各分区都存在已提交的offset时，从offset后开始消费；只要有一个分区不存在已提交的offset，则抛出异常
+      auto-offset-reset: ${INV_KAFKA_AUTO_OFFSET_RESET:earliest}
+      # 消费者组id
+      group-id: inventory
+      # 心跳检测时间，默认3s
+      heartbeat-interval: ${INV_KAFKA_HEARTBEAT_INTERVAL:3000ms}
+      # 最大拉取数据条数
+      max-poll-records: ${INV_CONSUMER_MAX_POLL_RECORDS:100}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        # 会话时间超过(服务宕机),节点将从消费者组中移除,数据重平衡,默认10s
+        session:
+          timeout:
+            ms: ${INV_KAFKA_SESSION_TIMEOUT:10000ms}
+        # 服务消费超时,将进行数据重平衡,默认5分钟
+        max:
+          poll:
+            interval:
+              ms: ${INV_KAFAK_MAX_POLL_INTERVAL:300000ms}
+        fetch:
+          max:
+            # 每次拉取最大数据量,默认50m
+            bytes: ${INV_KAFKA_FETCH_MAX_BYTES:50*1024*1024}
+            # 每次拉取数据等待最大时间,默认500ms
+            wait:
+              ms: ${INV_KAFKA_FETCH_MAX_WAIT:500}
+          # 每次拉取最小数据量,默认1b
+          min:
+            bytes: ${INV_KAFKA_FETCH_MIN_BYTES:1}
+    listener:
+      # 处理ConsumerRecord模式，可以分为single(单条)和batch(批次)两种方式
+      type: batch
+      # 在关闭自动提交offset模式时,设置ackMode来决定在那个环节手动提交offset
+      ack-mode: manual_immediate
+      # 消费者拉取数据超时时间，默认5s
+      poll-timeout: ${INV_CONSUMER_POLL_TIMEOUT:5000ms}
+
+feign:
+  hystrix:
+    enabled: true
+
+hystrix:
+  threadpool:
+    default:
+      # 执行命令线程池的核心线程数，也是命令执行的最大并发量
+      # 默认10
+      coreSize: ${HYSTRIX_THREAD_POOL_CORE_SIZE:500}
+      # 最大执行线程数
+      maximumSize: ${HYSTRIX_THREAD_POOL_MAXMUM_SIZE:1000}
+      # 允许核心线程数和最大线程数不一样
+      allowMaximumSizeToDivergeFromCoreSize: true
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            # HystrixCommand 执行的超时时间，超时后进入降级处理逻辑。一个接口，理论的最佳响应速度应该在200ms以内，或者慢点的接口就几百毫秒。
+            # 默认 1000 毫秒，最高设置 2000足矣。如果超时，首先看能不能优化接口相关业务、SQL查询等，不要盲目加大超时时间，否则会导致线程堆积过多，hystrix 线程池卡死，最终服务不可用。
+            timeoutInMilliseconds: ${HYSTRIX_COMMAND_TIMEOUT_IN_MILLISECONDS:40000}
+  shareSecurityContext: true
+
+ribbon:
+  # 客户端读取超时时间，超时时间要小于Hystrix的超时时间，否则重试机制就无意义了
+  ReadTimeout: ${RIBBON_READ_TIMEOUT:30000}
+  # 客户端连接超时时间
+  ConnectTimeout: ${RIBBON_CONNECT_TIMEOUT:3000}
+  # 访问实例失败(超时)，允许自动重试，设置重试次数，失败后会更换实例访问，请一定确保接口的幂等性，否则重试可能导致数据异常。
+  OkToRetryOnAllOperations: true
+  MaxAutoRetries: 1
+  MaxAutoRetriesNextServer: 1

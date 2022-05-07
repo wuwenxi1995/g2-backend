@@ -35,10 +35,9 @@ public class InvTriggerMessageListener {
      * @param ack             当ackMode为manual或manual_immediate时不为空，否则为空；用于手动提交offset
      */
     @KafkaListener(topics = {InvCoreConstants.TriggerTopic.TRANSACTION_CONSUMER}, groupId = "transaction")
-    public void transactionListener(List<ConsumerRecord<?, ?>> consumerRecords, Acknowledgment ack) {
+    public void transactionListener(List<ConsumerRecord<String, String>> consumerRecords, Acknowledgment ack) {
         List<TriggerMessage> triggerMessages = consumerRecords.stream()
-                .filter(e -> Objects.nonNull(e.value()))
-                .map(record -> JSONObject.parseObject((String) record.value(), TriggerMessage.class))
+                .map(record -> JSONObject.parseObject(record.value(), TriggerMessage.class))
                 .collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(triggerMessages)) {
             this.messageHandler.handler(triggerMessages);

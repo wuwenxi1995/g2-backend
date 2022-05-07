@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.g2.inv.console.config.InventoryConsoleAutoConfiguration
+org.g2.starter.kafka.config.KafkaAutoConfiguration

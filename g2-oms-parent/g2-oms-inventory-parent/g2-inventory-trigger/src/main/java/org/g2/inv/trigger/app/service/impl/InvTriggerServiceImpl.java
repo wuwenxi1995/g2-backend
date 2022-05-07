@@ -27,9 +27,9 @@ public class InvTriggerServiceImpl implements InvTriggerService {
 
     private static final Logger log = LoggerFactory.getLogger(InvTriggerServiceImpl.class);
 
-    private final KafkaTemplate<Object, Object> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public InvTriggerServiceImpl(KafkaTemplate<Object, Object> kafkaTemplate) {
+    public InvTriggerServiceImpl(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -49,11 +49,11 @@ public class InvTriggerServiceImpl implements InvTriggerService {
 
     @Override
     public <T> void trigger(TriggerMessage<T> tTriggerMessage, String topic, Integer partition, String key) {
-        ProducerRecord<Object, Object> producerRecord = new ProducerRecord<>(topic, partition, key, JSONObject.toJSONString(tTriggerMessage));
-        ListenableFuture<SendResult<Object, Object>> future = kafkaTemplate.send(producerRecord);
-        future.addCallback(new ListenableFutureCallback<SendResult<Object, Object>>() {
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, partition, key, JSONObject.toJSONString(tTriggerMessage));
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(producerRecord);
+        future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
             @Override
-            public void onSuccess(SendResult<Object, Object> result) {
+            public void onSuccess(SendResult<String, String> result) {
                 log.info("kafka推送数据成功, 推送topic:{}, 消息类型：{}", topic, tTriggerMessage.getTriggerType());
             }
 
