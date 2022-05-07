@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author wuwenxi 2022-05-07
  */
-public interface TransactionTriggerHandler {
+public interface TriggerHandler {
 
     /**
      * 处理数据

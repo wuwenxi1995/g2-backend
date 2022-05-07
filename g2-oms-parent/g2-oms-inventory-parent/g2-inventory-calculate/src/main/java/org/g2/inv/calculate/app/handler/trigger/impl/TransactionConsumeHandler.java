@@ -2,7 +2,7 @@ package org.g2.inv.calculate.app.handler.trigger.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.g2.inv.calculate.app.handler.transaction.TransactionHandlerChain;
-import org.g2.inv.calculate.app.handler.trigger.TransactionTriggerHandler;
+import org.g2.inv.calculate.app.handler.trigger.TriggerHandler;
 import org.g2.inv.core.domain.entity.InvTransaction;
 import org.g2.inv.core.domain.repository.InvTransactionRepository;
 import org.g2.inv.core.domain.vo.TriggerMessage;
@@ -20,14 +20,14 @@ import java.util.stream.Collectors;
  * @author wuwenxi 2022-05-07
  */
 @Component
-public class DefaultTransactionTriggerHandler implements TransactionTriggerHandler {
+public class TransactionConsumeHandler implements TriggerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultTransactionTriggerHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(TransactionConsumeHandler.class);
 
     private final InvTransactionRepository transactionRepository;
     private final TransactionHandlerChain transactionHandlerChain;
 
-    public DefaultTransactionTriggerHandler(InvTransactionRepository transactionRepository, TransactionHandlerChain transactionHandlerChain) {
+    public TransactionConsumeHandler(InvTransactionRepository transactionRepository, TransactionHandlerChain transactionHandlerChain) {
         this.transactionRepository = transactionRepository;
         this.transactionHandlerChain = transactionHandlerChain;
     }

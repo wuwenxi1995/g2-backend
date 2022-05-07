@@ -2,6 +2,7 @@ package org.g2.inv.calculate.infra.message.listener;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.g2.core.util.CollectionUtils;
 import org.g2.inv.calculate.infra.message.handler.MessageHandler;
 import org.g2.inv.core.domain.vo.TriggerMessage;
 import org.g2.inv.core.infra.constant.InvCoreConstants;
@@ -21,10 +22,10 @@ import java.util.stream.Collectors;
 @Component
 public class InvTriggerMessageListener {
 
-    private final Map<String, MessageHandler> messageHandlerMap;
+    private final MessageHandler messageHandler;
 
-    public InvTriggerMessageListener(List<MessageHandler> messageHandlers) {
-        this.messageHandlerMap = messageHandlers.stream().collect(Collectors.toMap(MessageHandler::topic, Function.identity()));
+    public InvTriggerMessageListener(MessageHandler messageHandler) {
+        this.messageHandler = messageHandler;
     }
 
     /**
@@ -35,9 +36,13 @@ public class InvTriggerMessageListener {
      */
     @KafkaListener(topics = {InvCoreConstants.TriggerTopic.TRANSACTION_CONSUMER}, groupId = "transaction")
     public void transactionListener(List<ConsumerRecord<?, ?>> consumerRecords, Acknowledgment ack) {
-        MessageHandler messageHandler = messageHandlerMap.get(consumerRecords.get(0).topic());
-        List<TriggerMessage> triggerMessages = consumerRecords.stream().map(record -> JSONObject.parseObject((String) record.value(), TriggerMessage.class)).collect(Collectors.toList());
-        messageHandler.handler(triggerMessages);
+        List<TriggerMessage> triggerMessages = consumerRecords.stream()
+                .filter(e -> Objects.nonNull(e.value()))
+                .map(record -> JSONObject.parseObject((String) record.value(), TriggerMessage.class))
+                .collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(triggerMessages)) {
+            this.messageHandler.handler(triggerMessages);
+        }
         ack.acknowledge();
     }
 }
