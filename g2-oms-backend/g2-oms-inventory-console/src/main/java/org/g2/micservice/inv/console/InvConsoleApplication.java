@@ -1,7 +1,7 @@
 package org.g2.micservice.inv.console;
 
 import org.g2.core.util.StringUtil;
-import org.g2.inv.console.config.EnableInvConsole;
+import org.g2.inv.console.config.annotation.EnableInvConsole;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;

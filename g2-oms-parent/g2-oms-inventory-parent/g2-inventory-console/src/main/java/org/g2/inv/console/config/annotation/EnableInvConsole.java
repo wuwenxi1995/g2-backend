@@ -1,5 +1,6 @@
-package org.g2.inv.console.config;
+package org.g2.inv.console.config.annotation;
 
+import org.g2.inv.console.config.InvConsoleAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
