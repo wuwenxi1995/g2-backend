@@ -126,8 +126,10 @@ public class ElasticsearchIndexServiceImpl implements ElasticsearchIndexService 
                 .put("index.max_result_window", document.maxResult()));
         //封装属性 类似于json格式
         Map<String, Object> jsonMap = new HashMap<>(fields.length << 1);
-        // 关闭动态mapping
-        jsonMap.put("dynamic", false);
+        if (!document.dynamic()) {
+            // 关闭动态mapping
+            jsonMap.put("dynamic", document.dynamic());
+        }
         // 创建mapping
         createMapping(jsonMap, fields, indexName);
         createIndexRequest.mapping(jsonMap);
@@ -147,7 +149,18 @@ public class ElasticsearchIndexServiceImpl implements ElasticsearchIndexService 
         });
     }
 
-    private void createMapping(Map<String, Object> jsonMap, java.lang.reflect.Field[] fields, String indexName) {
+    @Override
+    public Object getDocument(String indexName) {
+        Map<String, Object> beans = ApplicationContextHelper.getApplicationContext().getBeansWithAnnotation(Document.class);
+        Map<String, Object> indexMaps = beans.values().stream().collect(Collectors.toMap(e -> e.getClass().getAnnotation(Document.class).indexName(), e -> e));
+        if (!indexMaps.containsKey(indexName)) {
+            throw new CommonException("");
+        }
+        return indexMaps.get(indexName);
+    }
+
+    @Override
+    public void createMapping(Map<String, Object> jsonMap, java.lang.reflect.Field[] fields, String indexName) {
         Map<String, Object> properties = new HashMap<>(16);
         for (java.lang.reflect.Field field : fields) {
             Field fieldAnnotation = field.getAnnotation(Field.class);

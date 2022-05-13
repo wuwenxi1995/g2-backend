@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
  */
 public class BaseEntity {
 
+    public static final String UID = "_id";
+
     @Id
     @Field(type = FieldType.TEXT)
     private String id;

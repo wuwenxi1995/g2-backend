@@ -40,4 +40,12 @@ public class Page<T extends BaseEntity> {
      * 数据
      */
     private List<T> data;
+    /**
+     * 分页id
+     */
+    private String scrollId;
+    /**
+     * 当前页最后一条数据的排序结果，search_after使用
+     */
+    private Object[] sortSource;
 }

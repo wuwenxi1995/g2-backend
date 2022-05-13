@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSON;
@@ -21,17 +23,16 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.AnalyzeRequest;
 import org.elasticsearch.client.indices.AnalyzeResponse;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.GetFieldMappingsRequest;
 import org.elasticsearch.client.indices.GetFieldMappingsResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.client.indices.GetIndexResponse;
 import org.elasticsearch.client.indices.GetMappingsRequest;
 import org.elasticsearch.client.indices.GetMappingsResponse;
 import org.elasticsearch.client.indices.PutMappingRequest;
@@ -44,19 +45,18 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
 import org.g2.boot.elasticsearch.domain.entity.Page;
 import org.g2.boot.elasticsearch.domain.repository.BaseRepository;
 import org.g2.boot.elasticsearch.infra.uitl.ElasticsearchPageUtil;
 import org.g2.core.helper.FastJsonHelper;
 import org.g2.core.util.Reflections;
 import org.g2.core.util.StringUtil;
+import org.g2.starter.elasticsearch.app.serivce.ElasticsearchIndexService;
 import org.g2.starter.elasticsearch.config.spring.builder.RestClientBuildFactory;
-import org.g2.starter.elasticsearch.config.spring.init.DocumentInitProcessor;
 import org.g2.starter.elasticsearch.domain.entity.BaseEntity;
 import org.g2.starter.elasticsearch.infra.annotation.Document;
-import org.g2.starter.elasticsearch.infra.constants.OmsElasticsearchConstants;
 import org.g2.starter.elasticsearch.infra.enums.Analyzer;
-import org.g2.starter.elasticsearch.infra.enums.FieldType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,15 +65,15 @@ import org.springframework.util.Assert;
 /**
  * @author wenxi.wu@hand-china.com 2020-11-18
  */
-public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<T> {
+public class BaseSearchRepositoryImpl<T extends BaseEntity> implements BaseRepository<T> {
 
-    private static final Logger log = LoggerFactory.getLogger(BaseRepositoryImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(BaseSearchRepositoryImpl.class);
 
     @Autowired
     private RestClientBuildFactory restClientBuildFactory;
 
     @Autowired
-    private DocumentInitProcessor documentInitProcessor;
+    private ElasticsearchIndexService elasticsearchIndexService;
 
     private String indexName;
     private Class<T> tClass;
@@ -139,10 +139,11 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
 
     @Override
     public boolean createMapping(String indexName) throws IOException {
-        Object document = documentInitProcessor.getDocument(indexName);
+        Object document = elasticsearchIndexService.getDocument(indexName);
         Assert.notNull(document, String.format("not found index : %s", indexName));
         Field[] fields = document.getClass().getDeclaredFields();
-        Map<String, Object> mapping = documentInitProcessor.createMapping(fields, indexName);
+        Map<String, Object> mapping = new HashMap<>(fields.length << 1);
+        elasticsearchIndexService.createMapping(mapping, fields, indexName);
         // 创建映射
         PutMappingRequest putMappingRequest = new PutMappingRequest(indexName);
         putMappingRequest.source(mapping);
@@ -373,19 +374,69 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
     public Page<T> search(SearchSourceBuilder searchSourceBuilder, int page, int size) {
         Page<T> result = new Page<>(page, size);
         ElasticsearchPageUtil.page(searchSourceBuilder, result);
-
-        SearchResponse searchResponse;
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(indexName);
         searchRequest.source(searchSourceBuilder);
-        try {
-            searchResponse = restClientBuildFactory.restHighLevelClient().search(searchRequest, RequestOptions.DEFAULT);
-        } catch (IOException e) {
-            log.error("elasticsearch search error : {}", StringUtil.exceptionString(e));
+        return requestAndHandler(result, () -> {
+            try {
+                return restClientBuildFactory.restHighLevelClient().search(searchRequest, RequestOptions.DEFAULT);
+            } catch (IOException e) {
+                log.error("elasticsearch search error : {}", StringUtil.exceptionString(e));
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public Page<T> searchScroll(SearchSourceBuilder sourceBuilder, String scrollId) {
+        SearchScrollRequest request = new SearchScrollRequest(indexName);
+        request.scroll("1m");
+        request.scrollId(scrollId);
+        return requestAndHandler(new Page<>(), () -> {
+            try {
+                return restClientBuildFactory.restHighLevelClient().scroll(request, RequestOptions.DEFAULT);
+            } catch (IOException e) {
+                log.error("elasticsearch search error : {}", StringUtil.exceptionString(e));
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public Page<T> searchAfter(SearchSourceBuilder sourceBuilder, Object[] sortSources, int size) throws Exception {
+        // 查询数量
+        sourceBuilder.size(size);
+        // 确保存在排序规则
+        if (sourceBuilder.sorts().size() < 1) {
+            sourceBuilder.sort(SortBuilders.fieldSort(BaseEntity.UID));
+        }
+        // 设置查询下一页起始参数
+        sourceBuilder.searchAfter(sortSources);
+        // 构建请求
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.indices(indexName);
+        searchRequest.source(sourceBuilder);
+        return requestAndHandler(new Page<>(), () -> {
+            try {
+                return restClientBuildFactory.restHighLevelClient().search(searchRequest, RequestOptions.DEFAULT);
+            } catch (IOException e) {
+                log.error("elasticsearch search error : {}", StringUtil.exceptionString(e));
+                return null;
+            }
+        });
+    }
+
+    private Page<T> requestAndHandler(Page<T> result, Supplier<SearchResponse> supplier) {
+        SearchResponse searchResponse = supplier.get();
+        if (searchResponse == null) {
             return result;
         }
         SearchHits hits = searchResponse.getHits();
+        // 聚合结果
         result.setAggregations(searchResponse.getAggregations());
+        // scroll分页ID
+        result.setScrollId(searchResponse.getScrollId());
+        // 查询总数
         long total = hits.getTotalHits().value;
         result.setTotal(total);
         if (total == 0) {
@@ -399,6 +450,8 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
             tList.add(entity);
         }
         result.setData(tList);
+        // 当前页最后一条数据的排序结果
+        result.setSortSource(hits.getHits()[hits.getHits().length - 1].getSortValues());
         return result;
     }
 }
