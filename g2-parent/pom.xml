@@ -221,12 +221,6 @@
 
             <dependency>
                 <groupId>org.g2</groupId>
-                <artifactId>g2-boot-elasticsearch</artifactId>
-                <version>${g2.boot.elasticsearch.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.g2</groupId>
                 <artifactId>g2-boot-message</artifactId>
                 <version>${g2.boot.message.version}</version>
             </dependency>

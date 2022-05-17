@@ -1,6 +1,7 @@
 package org.g2.starter.elasticsearch.config;
 
-import org.g2.starter.elasticsearch.config.spring.builder.RestClientBuildFactory;
+import org.g2.starter.elasticsearch.config.properties.ElasticsearchProperties;
+import org.g2.starter.elasticsearch.infra.factory.RestClientBuildFactory;
 import org.g2.starter.elasticsearch.infra.monitor.RestClientUnavailableMonitor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -16,11 +17,6 @@ import org.springframework.context.annotation.Configuration;
         "org.g2.starter.elasticsearch.app",
         "org.g2.starter.elasticsearch.infra"})
 public class EnableElasticsearchAutoConfiguration {
-
-    @Bean(initMethod = "init", destroyMethod = "close")
-    public RestClientBuildFactory restClientBuildFactory(ElasticsearchProperties properties) {
-        return new RestClientBuildFactory(properties);
-    }
 
     @Bean
     public RestClientUnavailableMonitor restClientUnavailableMonitor(RestClientBuildFactory restClientBuildFactory) {
