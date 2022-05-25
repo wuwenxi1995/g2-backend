@@ -50,7 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
-import org.springframework.util.unit.DataSize;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -368,6 +367,8 @@ public class BaseSearchRepositoryImpl<T extends BaseEntity> implements BaseRepos
         Page<T> result = new Page<>(page, size);
         searchSourceBuilder.from(page <= 0 ? 0 : page * size);
         searchSourceBuilder.size(size <= 0 ? 20 : size);
+        // 解除es深度分页查询保护机制
+        searchSourceBuilder.trackTotalHits(true);
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(indexName);
         searchRequest.source(searchSourceBuilder);
@@ -383,17 +384,36 @@ public class BaseSearchRepositoryImpl<T extends BaseEntity> implements BaseRepos
 
     @Override
     public Page<T> searchScroll(SearchSourceBuilder sourceBuilder, String scrollId) {
-        SearchScrollRequest request = new SearchScrollRequest(indexName);
-        request.scroll("1m");
-        request.scrollId(scrollId);
-        return requestAndHandler(new Page<>(), () -> {
-            try {
-                return restClientBuildFactory.restHighLevelClient().scroll(request, RequestOptions.DEFAULT);
-            } catch (IOException e) {
-                log.error("elasticsearch search error : {}", StringUtil.exceptionString(e));
-                return null;
-            }
-        });
+        Supplier<SearchResponse> supplier;
+        if (StringUtils.isBlank(scrollId)) {
+            Objects.requireNonNull(sourceBuilder, "require [SearchSourceBuilder] nonNull");
+            SearchRequest searchRequest = new SearchRequest(indexName);
+            sourceBuilder.size(1000);
+            // 解除es深度分页查询保护机制
+            sourceBuilder.trackTotalHits(true);
+            searchRequest.source(sourceBuilder);
+            supplier = () -> {
+                try {
+                    return restClientBuildFactory.restHighLevelClient().search(searchRequest, RequestOptions.DEFAULT);
+                } catch (IOException e) {
+                    log.error("elasticsearch search error : {}", StringUtil.exceptionString(e));
+                    return null;
+                }
+            };
+        } else {
+            SearchScrollRequest request = new SearchScrollRequest(indexName);
+            request.scroll(TimeValue.timeValueMinutes(1));
+            request.scrollId(scrollId);
+            supplier = () -> {
+                try {
+                    return restClientBuildFactory.restHighLevelClient().scroll(request, RequestOptions.DEFAULT);
+                } catch (IOException e) {
+                    log.error("elasticsearch search error : {}", StringUtil.exceptionString(e));
+                    return null;
+                }
+            };
+        }
+        return requestAndHandler(new Page<>(), supplier);
     }
 
     @Override
@@ -410,6 +430,8 @@ public class BaseSearchRepositoryImpl<T extends BaseEntity> implements BaseRepos
             // 设置查询下一页起始参数
             sourceBuilder.searchAfter(sortSources);
         }
+        // 解除es深度分页查询保护机制
+        sourceBuilder.trackTotalHits(true);
         // 构建请求
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(indexName);
