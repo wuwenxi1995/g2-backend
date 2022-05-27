@@ -54,7 +54,7 @@ public class DelayedQueueHandler extends TaskHandler {
         for (DelayedMessageListener<?> messageListener : beans.values()) {
             String queueName = StringUtils.defaultIfBlank(messageListener.queue(), messageListener.getClass().getSimpleName());
             Thread thread = Executors.defaultThreadFactory().newThread(new DelayedQueueTask<>(messageListener, queueName));
-            thread.setName("delayed-queue-" + queueName);
+            thread.setName("delayed-worker-" + queueName);
             this.workers.add(thread);
         }
         this.executor = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),
@@ -76,13 +76,9 @@ public class DelayedQueueHandler extends TaskHandler {
             }
         }
         if (executor != null && !executor.isShutdown()) {
-            executor.shutdown();
-            while (true) {
-                if (executor.getActiveCount() == 0) {
-                    break;
-                }
-            }
+            this.executor.shutdown();
         }
+        redisDelayedQueue.destroy();
     }
 
     private class DelayedQueueTask<T> implements Runnable {
@@ -95,6 +91,8 @@ public class DelayedQueueHandler extends TaskHandler {
             this.delayedMessageListener = delayedMessageListener;
             this.queueName = queueName;
             this.blockingDeque = redissonClient.getBlockingDeque(queueName);
+            //
+            redisDelayedQueue.register(redissonClient.getDelayedQueue(blockingDeque));
         }
 
         @Override
