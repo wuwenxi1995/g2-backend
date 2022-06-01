@@ -10,7 +10,6 @@ import org.redisson.api.RBlockingDeque;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author wuwenxi 2022-05-10
  */
-@Component
 public class DelayedQueueHandler extends TaskHandler {
     private static final Logger log = LoggerFactory.getLogger(DelayedQueueHandler.class);
 

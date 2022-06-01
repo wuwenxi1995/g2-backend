@@ -1,4 +1,4 @@
-package org.g2.starter.redisson.lock.infra.responsibility;
+package org.g2.starter.redisson.config.responsibility;
 
 import org.g2.starter.redisson.lock.config.RedissonConfigureProperties;
 import org.redisson.config.BaseMasterSlaveServersConfig;

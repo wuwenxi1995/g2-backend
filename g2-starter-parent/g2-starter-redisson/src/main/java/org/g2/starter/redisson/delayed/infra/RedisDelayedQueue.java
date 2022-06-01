@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author wuwenxi 2022-05-10
  */
-@Component
 public class RedisDelayedQueue {
 
     private static final Logger log = LoggerFactory.getLogger(RedisDelayedQueue.class);

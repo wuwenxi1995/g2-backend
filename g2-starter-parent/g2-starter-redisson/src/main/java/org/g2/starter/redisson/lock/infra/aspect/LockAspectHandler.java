@@ -1,14 +1,11 @@
 package org.g2.starter.redisson.lock.infra.aspect;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.g2.starter.redisson.lock.config.factory.LockStrategyFactory;
 import org.g2.starter.redisson.lock.domain.LockInfo;
 import org.g2.starter.redisson.lock.infra.annotation.Lock;
-import org.g2.starter.redisson.lock.infra.annotation.Mutex;
 import org.g2.starter.redisson.lock.infra.exception.LockException;
 import org.g2.starter.redisson.lock.infra.provider.LockInfoProvider;
 import org.g2.starter.redisson.lock.infra.service.LockStrategy;
@@ -27,12 +24,10 @@ public class LockAspectHandler {
 
     private final LockStrategyFactory lockStrategyFactory;
     private final LockInfoProvider lockInfoProvider;
-    private final CuratorFramework curator;
 
-    public LockAspectHandler(LockStrategyFactory lockStrategyFactory, LockInfoProvider lockInfoProvider, CuratorFramework curator) {
+    public LockAspectHandler(LockStrategyFactory lockStrategyFactory, LockInfoProvider lockInfoProvider) {
         this.lockStrategyFactory = lockStrategyFactory;
         this.lockInfoProvider = lockInfoProvider;
-        this.curator = curator;
     }
 
     @Around(value = "@annotation(lock)")
@@ -45,37 +40,15 @@ public class LockAspectHandler {
             return joinPoint.proceed();
         }
         lockStrategy.setLockInfo(lockInfo);
-        boolean lockFlag = false;
+        boolean success = lockStrategy.lock();
+        if (!success) {
+            throw new LockException("Get Lock failed");
+        }
         // 加锁
         try {
-            boolean success = lockStrategy.lock();
-            if (!success) {
-                throw new LockException("Get Lock failed");
-            }
-            lockFlag = true;
             return joinPoint.proceed();
         } finally {
-            if (lockFlag) {
-                lockStrategy.unLock();
-            }
-        }
-    }
-
-    @Around(value = "@annotation(mutex)")
-    public Object around(ProceedingJoinPoint joinPoint, Mutex mutex) throws Throwable {
-        InterProcessMutex lock = new InterProcessMutex(curator, lockInfoProvider.buildPath(mutex));
-        boolean lockFlag = false;
-        try {
-            boolean success = lock.acquire(mutex.waitTime(), mutex.timeUnit());
-            if (!success) {
-                throw new LockException("Get Lock failed");
-            }
-            lockFlag = true;
-            return joinPoint.proceed();
-        } finally {
-            if (lockFlag) {
-                lock.release();
-            }
+            lockStrategy.unLock();
         }
     }
 }

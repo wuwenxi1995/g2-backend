@@ -4,12 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.g2.core.base.BaseConstants;
 import org.g2.starter.redisson.lock.config.RedissonConfigureProperties;
 import org.g2.starter.redisson.lock.domain.LockInfo;
 import org.g2.starter.redisson.lock.infra.annotation.Lock;
-import org.g2.starter.redisson.lock.infra.annotation.Mutex;
-import org.g2.starter.redisson.lock.infra.constants.LockConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
@@ -70,14 +67,6 @@ public class LockInfoProvider {
         // 获得锁后，自动释放锁的时间 可通过g2.lock.pattern.lease-time配置
         long leaseTime = getLeaseTime(lock);
         return new LockInfo(lockName, waitTime, leaseTime, lock.timeUnit());
-    }
-
-    public String buildPath(Mutex mutex) {
-        String path;
-        if (!(path = mutex.path()).startsWith(BaseConstants.Symbol.SLASH)) {
-            path = BaseConstants.Symbol.SLASH + path;
-        }
-        return LockConstants.ZK_LOCK_NAME_SPACE + path;
     }
 
     private Method getMethod(JoinPoint joinPoint) {

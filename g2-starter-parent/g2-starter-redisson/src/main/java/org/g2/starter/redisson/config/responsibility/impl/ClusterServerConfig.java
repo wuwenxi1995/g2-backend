@@ -1,11 +1,11 @@
-package org.g2.starter.redisson.lock.infra.responsibility.impl;
+package org.g2.starter.redisson.config.responsibility.impl;
 
 import org.g2.core.base.BaseConstants;
 import org.g2.core.chain.invoker.ChainInvoker;
-import org.g2.starter.redisson.lock.autoconfigure.RedissonBuildFactory;
+import org.g2.starter.redisson.config.RedissonBuildFactory;
+import org.g2.starter.redisson.config.responsibility.AbstractServerConfig;
 import org.g2.starter.redisson.lock.config.RedissonConfigureProperties;
 import org.g2.starter.redisson.lock.infra.enums.ServerPattern;
-import org.g2.starter.redisson.lock.infra.responsibility.AbstractServerConfig;
 import org.redisson.config.ClusterServersConfig;
 import org.springframework.stereotype.Component;
 
