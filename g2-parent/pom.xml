@@ -63,6 +63,7 @@
         <mysql.version>8.0.16</mysql.version>
         <spring.mybatis.version>2.1.2</spring.mybatis.version>
         <commons.langs.version>3.9</commons.langs.version>
+        <commons.codec.version>1.15</commons.codec.version>
         <commons.collections.version>4.4</commons.collections.version>
         <fastjson.version>1.2.68</fastjson.version>
         <lombok.version>1.18.10</lombok.version>
@@ -284,6 +285,13 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons.langs.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons.codec.version}</version>
+            </dependency>
+
 
             <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
             <dependency>
