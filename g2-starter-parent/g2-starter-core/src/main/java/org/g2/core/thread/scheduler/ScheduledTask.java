@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.util.TimerTask;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -22,7 +22,7 @@ public class ScheduledTask extends TimerTask {
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTask.class);
 
     private final String name;
-    private final ScheduledThreadPoolExecutor scheduler;
+    private final ScheduledExecutorService scheduler;
     private final ThreadPoolExecutor executor;
     private final Runnable task;
     private final long delay;
@@ -34,7 +34,7 @@ public class ScheduledTask extends TimerTask {
     private final AtomicInteger throwableCounter;
     private final AtomicInteger timeoutCounter;
 
-    public ScheduledTask(String name, ScheduledThreadPoolExecutor scheduler, ThreadPoolExecutor executor, Runnable task, int delay, TimeUnit timeUnit, boolean timeout) {
+    public ScheduledTask(String name, ScheduledExecutorService scheduler, ThreadPoolExecutor executor, Runnable task, int delay, TimeUnit timeUnit, boolean timeout) {
         this.name = name;
         this.scheduler = scheduler;
         this.executor = executor;
