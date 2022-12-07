@@ -57,7 +57,7 @@ public class RedisMessageListenerFactory extends TaskHandler {
             messageListenerMap.forEach((beanName, redisMessageListener) -> {
                 Listener listener = redisMessageListener.getClass().getAnnotation(Listener.class);
                 if (listener != null) {
-                    RedisMessageListenerTask<?> listenerTask = new RedisMessageListenerTask<>(listener.queue(), redisMessageListener, listener.db());
+                    RedisMessageListenerTask<?> listenerTask = new RedisMessageListenerTask<>(listener.queue(), redisMessageListener, listener);
                     ScheduledTask scheduledTask = new ScheduledTask(beanName, taskScheduler.getScheduledExecutor(), taskExecutor.getThreadPoolExecutor(),
                             listenerTask, listener.delayed(), listener.timeUnit(), false);
                     this.scheduledTasks.add(scheduledTask);
@@ -76,13 +76,13 @@ public class RedisMessageListenerFactory extends TaskHandler {
 
         private final String queue;
         private final RedisMessageListener<T> redisMessageListener;
-        private final int db;
+        private final Listener listener;
         private final Class<T> type;
 
-        RedisMessageListenerTask(String queue, RedisMessageListener<T> redisMessageListener, int db) {
+        RedisMessageListenerTask(String queue, RedisMessageListener<T> redisMessageListener, Listener listener) {
             this.queue = queue;
             this.redisMessageListener = redisMessageListener;
-            this.db = db;
+            this.listener = listener;
             ParameterizedType parameterizedType = (ParameterizedType) this.getClass().getGenericSuperclass();
             this.type = (Class) parameterizedType.getActualTypeArguments()[0];
         }
@@ -92,7 +92,7 @@ public class RedisMessageListenerFactory extends TaskHandler {
             RedisQueueRepository redisQueueRepository = getApplicationContext().getBean(RedisQueueRepository.class);
             while (isRunning()) {
                 Calendar now = Calendar.getInstance();
-                String json = redisQueueRepository.pop(db, queue, now.getTimeInMillis(), expireTime(now));
+                String json = redisQueueRepository.pop(listener.db(), queue, now.getTimeInMillis(), expireTime(now));
                 if (StringUtils.isEmpty(json)) {
                     break;
                 }
@@ -102,18 +102,25 @@ public class RedisMessageListenerFactory extends TaskHandler {
                 } else {
                     message = FastJsonHelper.stringConvertObject(json, type);
                 }
+                boolean success = true;
                 try {
                     this.redisMessageListener.onMessage(message);
-                    redisQueueRepository.commit(db, queue, json);
                 } catch (Exception e) {
                     log.error("redis message listener has error, listener: {}. errMsg: {}", this.getClass().getSimpleName(), StringUtil.exceptionString(e));
-                    redisQueueRepository.rollback(db, queue, json);
+                    success = false;
+                } finally {
+                    if (listener.isAutoCommit() && success) {
+                        redisQueueRepository.commit(listener.db(), queue, json);
+                    } else if (!success) {
+                        // 重试
+                        redisQueueRepository.rollback(listener.db(), queue, json);
+                    }
                 }
             }
         }
 
         private long expireTime(Calendar now) {
-            now.set(Calendar.MINUTE, now.get(Calendar.MINUTE) + 5);
+            now.set(Calendar.MINUTE, now.get(Calendar.MINUTE) + listener.rollbackTimeM() < 0 ? 5 : listener.rollbackTimeM());
             return now.getTimeInMillis();
         }
     }

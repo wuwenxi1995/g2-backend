@@ -49,7 +49,7 @@ public class RedisQueueRepositoryImpl implements RedisQueueRepository {
 
     @Override
     public void commit(int db, String key, String data) {
-        execute(db, REDIS_QUEUE_COMMIT_SCRIP, Arrays.asList(key, String.format(ACK, key), String.format(ACK_EXPIRE, key)), data);
+        execute(db, REDIS_QUEUE_COMMIT_SCRIP, Arrays.asList(String.format(ACK, key), String.format(ACK_EXPIRE, key)), data);
     }
 
     @Override
