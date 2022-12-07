@@ -8,6 +8,7 @@ import org.g2.core.util.StringUtil;
 import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
 import org.g2.message.listener.RedisMessageListener;
 import org.g2.message.listener.annotation.Listener;
+import org.g2.message.listener.repository.RedisQueueRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -16,6 +17,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import javax.annotation.Resource;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -87,28 +89,32 @@ public class RedisMessageListenerFactory extends TaskHandler {
 
         @Override
         public void run() {
-            DynamicRedisHelper redisHelper = getApplicationContext().getBean(DynamicRedisHelper.class);
-            redisHelper.setCurrentDataBase(db);
-            try {
-                while (isRunning()) {
-                    String json = redisHelper.lstLeftPop(queue);
-                    if (StringUtils.isNotEmpty(json)) {
-                        T message;
-                        if (type.isAssignableFrom(String.class)) {
-                            message = (T) json;
-                        } else {
-                            message = FastJsonHelper.stringConvertObject(json, type);
-                        }
-                        try {
-                            this.redisMessageListener.onMessage(message);
-                        } catch (Exception e) {
-                            log.error("redis message listener has error, listener: {}. errMsg: {}", this.getClass().getSimpleName(), StringUtil.exceptionString(e));
-                        }
-                    }
+            RedisQueueRepository redisQueueRepository = getApplicationContext().getBean(RedisQueueRepository.class);
+            while (isRunning()) {
+                Calendar now = Calendar.getInstance();
+                String json = redisQueueRepository.pop(db, queue, now.getTimeInMillis(), expireTime(now));
+                if (StringUtils.isEmpty(json)) {
+                    break;
                 }
-            } finally {
-                redisHelper.clearCurrentDataBase();
+                T message;
+                if (type.isAssignableFrom(String.class)) {
+                    message = (T) json;
+                } else {
+                    message = FastJsonHelper.stringConvertObject(json, type);
+                }
+                try {
+                    this.redisMessageListener.onMessage(message);
+                    redisQueueRepository.commit(db, queue, json);
+                } catch (Exception e) {
+                    log.error("redis message listener has error, listener: {}. errMsg: {}", this.getClass().getSimpleName(), StringUtil.exceptionString(e));
+                    redisQueueRepository.rollback(db, queue, json);
+                }
             }
+        }
+
+        private long expireTime(Calendar now) {
+            now.set(Calendar.MINUTE, now.get(Calendar.MINUTE) + 5);
+            return now.getTimeInMillis();
         }
     }
 }

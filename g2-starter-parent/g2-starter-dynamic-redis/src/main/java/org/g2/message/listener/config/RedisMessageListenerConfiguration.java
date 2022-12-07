@@ -1,8 +1,11 @@
 package org.g2.message.listener.config;
 
+import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
 import org.g2.message.listener.config.processor.RedisMessageListenerBeanProcessor;
 import org.g2.message.listener.config.properties.RedisMessageListenerProperties;
 import org.g2.message.listener.factory.RedisMessageListenerFactory;
+import org.g2.message.listener.repository.RedisQueueRepository;
+import org.g2.message.listener.repository.impl.RedisQueueRepositoryImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +31,11 @@ public class RedisMessageListenerConfiguration {
     @Bean
     public RedisMessageListenerFactory redisMessageListenerFactory() {
         return new RedisMessageListenerFactory();
+    }
+
+    @Bean
+    public RedisQueueRepository redisQueueRepository(DynamicRedisHelper dynamicRedisHelper) {
+        return new RedisQueueRepositoryImpl(dynamicRedisHelper);
     }
 
     @Bean
