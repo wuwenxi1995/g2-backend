@@ -45,9 +45,10 @@ public interface RedisQueueRepository {
     /**
      * 数据处理失败, 数据回滚
      *
-     * @param db   redis库
-     * @param key  key
-     * @param data 回滚数据
+     * @param db    redis库
+     * @param key   key
+     * @param data  回滚数据
+     * @param retry 重试次数
      */
-    void rollback(int db, String key, String data);
+    void rollback(int db, String key, String data, int retry);
 }

@@ -34,7 +34,7 @@ public class ScheduledTask extends TimerTask {
     private final AtomicInteger throwableCounter;
     private final AtomicInteger timeoutCounter;
 
-    public ScheduledTask(String name, ScheduledExecutorService scheduler, ThreadPoolExecutor executor, Runnable task, int delay, TimeUnit timeUnit, boolean timeout) {
+    public ScheduledTask(String name, ScheduledExecutorService scheduler, ThreadPoolExecutor executor, Runnable task, long delay, TimeUnit timeUnit, boolean timeout) {
         this.name = name;
         this.scheduler = scheduler;
         this.executor = executor;

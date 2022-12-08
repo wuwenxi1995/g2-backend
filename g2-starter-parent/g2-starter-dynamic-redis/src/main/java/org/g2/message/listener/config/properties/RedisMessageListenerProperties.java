@@ -2,6 +2,8 @@ package org.g2.message.listener.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.time.Duration;
+
 /**
  * @author wuwenxi 2022-12-06
  */
@@ -10,10 +12,22 @@ public class RedisMessageListenerProperties {
 
     private boolean enable;
 
+    private Duration delayed;
+
+    private boolean isAutoCommit;
+
+    private Duration autoRollbackTime;
+
+    private int retry;
+
     private ThreadProperties thread;
 
     public RedisMessageListenerProperties() {
         this.enable = false;
+        this.delayed = Duration.ofSeconds(1);
+        this.isAutoCommit = true;
+        this.autoRollbackTime = Duration.ofMinutes(5);
+        this.retry = 5;
         this.thread = new ThreadProperties();
     }
 
@@ -23,6 +37,38 @@ public class RedisMessageListenerProperties {
 
     public void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+    public Duration getDelayed() {
+        return delayed;
+    }
+
+    public void setDelayed(Duration delayed) {
+        this.delayed = delayed;
+    }
+
+    public boolean isAutoCommit() {
+        return isAutoCommit;
+    }
+
+    public void setAutoCommit(boolean autoCommit) {
+        isAutoCommit = autoCommit;
+    }
+
+    public Duration getAutoRollbackTime() {
+        return autoRollbackTime;
+    }
+
+    public void setAutoRollbackTime(Duration autoRollbackTime) {
+        this.autoRollbackTime = autoRollbackTime;
+    }
+
+    public int getRetry() {
+        return retry;
+    }
+
+    public void setRetry(int retry) {
+        this.retry = retry;
     }
 
     public ThreadProperties getThread() {

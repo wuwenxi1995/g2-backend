@@ -1,5 +1,6 @@
 package org.g2.message.listener.repository.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
 import org.g2.message.listener.repository.RedisQueueRepository;
 import org.springframework.core.io.ClassPathResource;
@@ -9,6 +10,7 @@ import org.springframework.scripting.support.ResourceScriptSource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * @author wuwenxi 2022-12-07
@@ -17,6 +19,8 @@ public class RedisQueueRepositoryImpl implements RedisQueueRepository {
 
     private static final String ACK = "%s:ack";
     private static final String ACK_EXPIRE = "%s:ack_expire";
+    private static final String RETRY_TIMES = "message:queue:hash:retry_times";
+    private static final String RETRY_ERROR = "message:queue:retry_error:%s";
     private static final DefaultRedisScript<String> REDIS_QUEUE_POP_SCRIP;
     private static final DefaultRedisScript<Void> REDIS_QUEUE_COMMIT_SCRIP;
     private static final DefaultRedisScript<Void> REDIS_QUEUE_ROLLBACK_SCRIP;
@@ -53,14 +57,26 @@ public class RedisQueueRepositoryImpl implements RedisQueueRepository {
     }
 
     @Override
-    public void rollback(int db, String key, String data) {
-        execute(db, REDIS_QUEUE_ROLLBACK_SCRIP, Arrays.asList(key, String.format(ACK, key), String.format(ACK_EXPIRE, key)), data);
+    public void rollback(int db, String key, String data, int retry) {
+        String times;
+        if (retry < 0 ||
+                (StringUtils.isNotEmpty(times = operation(db, () -> dynamicRedisHelper.hshGet(RETRY_TIMES, key)))
+                        && Integer.parseInt(times) > retry)) {
+            dynamicRedisHelper.hshDelete(RETRY_TIMES, key);
+            dynamicRedisHelper.lstRightPush(String.format(RETRY_ERROR, key), data);
+            return;
+        }
+        execute(db, REDIS_QUEUE_ROLLBACK_SCRIP, Arrays.asList(key, String.format(ACK, key), String.format(ACK_EXPIRE, key), RETRY_TIMES), data);
     }
 
     private <T> T execute(int db, RedisScript<T> script, List<String> keys, Object... args) {
+        return operation(db, () -> dynamicRedisHelper.getRedisTemplate().execute(script, keys, args));
+    }
+
+    private <T> T operation(int db, Supplier<T> supplier) {
         dynamicRedisHelper.setCurrentDataBase(db);
         try {
-            return dynamicRedisHelper.getRedisTemplate().execute(script, keys, args);
+            return supplier.get();
         } finally {
             dynamicRedisHelper.clearCurrentDataBase();
         }
