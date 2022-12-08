@@ -5,8 +5,7 @@ import org.g2.core.helper.FastJsonHelper;
 import org.g2.core.task.TaskHandler;
 import org.g2.core.thread.scheduler.ScheduledTask;
 import org.g2.core.util.StringUtil;
-import org.g2.message.listener.RedisMessageListener;
-import org.g2.message.listener.annotation.Listener;
+import org.g2.message.listener.annotation.RedisMessageListener;
 import org.g2.message.listener.config.properties.RedisMessageListenerProperties;
 import org.g2.message.listener.repository.RedisQueueRepository;
 import org.slf4j.Logger;
@@ -31,7 +30,7 @@ public class RedisMessageListenerFactory extends TaskHandler {
 
     private static final Logger log = LoggerFactory.getLogger(RedisMessageListenerFactory.class);
 
-    private final Map<String, RedisMessageListener<?>> messageListenerMap;
+    private final Map<String, org.g2.message.listener.RedisMessageListener> messageListenerMap;
     private List<ScheduledTask> scheduledTasks = new ArrayList<>();
 
     @Resource(name = "redisMessageListenerScheduler")
@@ -47,7 +46,7 @@ public class RedisMessageListenerFactory extends TaskHandler {
         this.messageListenerMap = new ConcurrentHashMap<>();
     }
 
-    public void add(String beanName, RedisMessageListener<?> redisMessageListener) {
+    public void add(String beanName, org.g2.message.listener.RedisMessageListener redisMessageListener) {
         messageListenerMap.put(beanName, redisMessageListener);
     }
 
@@ -60,7 +59,7 @@ public class RedisMessageListenerFactory extends TaskHandler {
     protected void doStart() {
         if (!messageListenerMap.isEmpty()) {
             messageListenerMap.forEach((beanName, redisMessageListener) -> {
-                Listener listener = redisMessageListener.getClass().getAnnotation(Listener.class);
+                RedisMessageListener listener = redisMessageListener.getClass().getAnnotation(RedisMessageListener.class);
                 if (listener != null) {
                     RedisMessageListenerTask<?> listenerTask = new RedisMessageListenerTask<>(listener, redisMessageListener);
                     ScheduledTask scheduledTask = new ScheduledTask(beanName, taskScheduler.getScheduledExecutor(), taskExecutor.getThreadPoolExecutor(),
@@ -80,11 +79,11 @@ public class RedisMessageListenerFactory extends TaskHandler {
     private class RedisMessageListenerTask<T> implements Runnable {
 
         private final String queue;
-        private final RedisMessageListener<T> redisMessageListener;
+        private final org.g2.message.listener.RedisMessageListener redisMessageListener;
         private final int db;
         private final Class<T> type;
 
-        RedisMessageListenerTask(Listener listener, RedisMessageListener<T> redisMessageListener) {
+        RedisMessageListenerTask(RedisMessageListener listener, org.g2.message.listener.RedisMessageListener redisMessageListener) {
             this.queue = listener.queue();
             this.redisMessageListener = redisMessageListener;
             this.db = listener.db();

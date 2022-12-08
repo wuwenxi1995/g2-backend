@@ -1,7 +1,5 @@
 package org.g2.message.listener.annotation;
 
-import org.springframework.stereotype.Component;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,11 +9,10 @@ import java.lang.annotation.Target;
 /**
  * @author wuwenxi 2022-12-06
  */
-@Target(value = ElementType.TYPE)
+@Target(value = ElementType.METHOD)
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
-@Component
-public @interface Listener {
+public @interface RedisMessageListener {
 
     /**
      * 队列名

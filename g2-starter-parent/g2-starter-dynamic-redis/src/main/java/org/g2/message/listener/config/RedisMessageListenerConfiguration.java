@@ -1,7 +1,7 @@
 package org.g2.message.listener.config;
 
 import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
-import org.g2.message.listener.config.processor.RedisMessageListenerBeanProcessor;
+import org.g2.message.listener.config.processor.RedisMessageListenerBeanPostProcessor;
 import org.g2.message.listener.config.properties.RedisMessageListenerProperties;
 import org.g2.message.listener.factory.RedisMessageListenerFactory;
 import org.g2.message.listener.repository.RedisQueueRepository;
@@ -24,8 +24,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class RedisMessageListenerConfiguration {
 
     @Bean
-    public RedisMessageListenerBeanProcessor messageListenerBeanProcessor(RedisMessageListenerFactory redisMessageListenerFactory) {
-        return new RedisMessageListenerBeanProcessor(redisMessageListenerFactory);
+    public RedisMessageListenerBeanPostProcessor messageListenerBeanProcessor() {
+        return new RedisMessageListenerBeanPostProcessor();
     }
 
     @Bean
