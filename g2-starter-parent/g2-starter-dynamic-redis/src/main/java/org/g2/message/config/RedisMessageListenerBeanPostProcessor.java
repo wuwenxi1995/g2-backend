@@ -1,10 +1,9 @@
-package org.g2.message.listener.config.processor;
+package org.g2.message.config;
 
-import org.g2.message.listener.annotation.RedisMessageListener;
-import org.g2.message.listener.config.MethodRedisMessageListenerEndpoint;
-import org.g2.message.listener.config.RedisMessageListenerContainerFactory;
-import org.g2.message.listener.config.RedisMessageListenerEndpointRegistrar;
-import org.g2.message.listener.config.RedisMessageListenerEndpointRegistry;
+import org.g2.message.annotation.RedisMessageListener;
+import org.g2.message.endpoint.MethodRedisMessageListenerEndpoint;
+import org.g2.message.endpoint.RedisMessageListenerEndpointRegistrar;
+import org.g2.message.endpoint.RedisMessageListenerEndpointRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
@@ -34,11 +33,9 @@ public class RedisMessageListenerBeanPostProcessor implements BeanPostProcessor,
     private RedisMessageListenerEndpointRegistrar registrar = new RedisMessageListenerEndpointRegistrar();
 
     private RedisMessageListenerEndpointRegistry registry;
-    private RedisMessageListenerContainerFactory containerFactory;
 
-    public RedisMessageListenerBeanPostProcessor(RedisMessageListenerEndpointRegistry registry, RedisMessageListenerContainerFactory containerFactory) {
+    public RedisMessageListenerBeanPostProcessor(RedisMessageListenerEndpointRegistry registry) {
         this.registry = registry;
-        this.containerFactory = containerFactory;
     }
 
     @Override
@@ -46,7 +43,6 @@ public class RedisMessageListenerBeanPostProcessor implements BeanPostProcessor,
         this.registrar.setEndpointRegistry(registry);
         // 创建监听器
         this.registrar.afterPropertiesSet();
-        // todo: 监听事件 org.springframework.kafka.listener.ContainerGroupSequencer
     }
 
     @Override
@@ -73,12 +69,19 @@ public class RedisMessageListenerBeanPostProcessor implements BeanPostProcessor,
 
     private void processRedisMessageListener(RedisMessageListener listener, Method method, Object bean, String beanName) {
         Method methodToUse = checkProxy(method, bean);
+        if (methodToUse.getParameters().length != 1) {
+            throw new IllegalArgumentException(String.format(
+                    "@RedisMessageListener method '%s' found on bean target class '%s', " +
+                            "and at least one parameter at most, but found parameter '%s'",
+                    method.getName(), bean.getClass().getSimpleName(), methodToUse.getParameters().length));
+        }
         MethodRedisMessageListenerEndpoint listenerEndpoint = new MethodRedisMessageListenerEndpoint();
         listenerEndpoint.setMethod(methodToUse);
+        listenerEndpoint.setType(methodToUse.getParameters()[0].getType());
         listenerEndpoint.setBean(bean);
         listenerEndpoint.setDb(listener.db());
         listenerEndpoint.setQueueName(listener.queue());
-        this.registrar.registerEndpoint(listenerEndpoint, this.containerFactory);
+        this.registrar.registerEndpoint(listenerEndpoint);
     }
 
     private Method checkProxy(Method methodArg, Object bean) {

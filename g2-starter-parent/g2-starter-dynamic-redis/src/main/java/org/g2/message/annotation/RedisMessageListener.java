@@ -1,4 +1,4 @@
-package org.g2.message.listener.annotation;
+package org.g2.message.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

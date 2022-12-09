@@ -1,4 +1,4 @@
-package org.g2.message.listener.config;
+package org.g2.message.endpoint;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -10,6 +10,7 @@ public class MethodRedisMessageListenerEndpoint {
 
     private Object bean;
     private Method method;
+    private Class<?> type;
     private int db;
     private String queueName;
 
@@ -27,6 +28,14 @@ public class MethodRedisMessageListenerEndpoint {
 
     public void setMethod(Method method) {
         this.method = method;
+    }
+
+    public Class<?> getType() {
+        return type;
+    }
+
+    public void setType(Class<?> type) {
+        this.type = type;
     }
 
     public int getDb() {

@@ -1,8 +1,8 @@
-package org.g2.message.listener.repository.impl;
+package org.g2.message.repository.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
-import org.g2.message.listener.repository.RedisQueueRepository;
+import org.g2.message.repository.RedisQueueRepository;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
@@ -38,12 +38,7 @@ public class RedisQueueRepositoryImpl implements RedisQueueRepository {
 
     @Override
     public void push(int db, String key, String data) {
-        dynamicRedisHelper.setCurrentDataBase(db);
-        try {
-            dynamicRedisHelper.lstRightPush(key, data);
-        } finally {
-            dynamicRedisHelper.clearCurrentDataBase();
-        }
+        operation(db, () -> dynamicRedisHelper.lstRightPush(key, data));
     }
 
     @Override

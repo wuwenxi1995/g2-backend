@@ -1,4 +1,4 @@
-package org.g2.message.listener.repository;
+package org.g2.message.repository;
 
 /**
  * @author wuwenxi 2022-12-07

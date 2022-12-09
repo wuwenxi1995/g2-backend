@@ -1,11 +1,10 @@
-package org.g2.message.listener.config;
+package org.g2.message.config;
 
 import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
-import org.g2.message.listener.config.processor.RedisMessageListenerBeanPostProcessor;
-import org.g2.message.listener.config.properties.RedisMessageListenerProperties;
-import org.g2.message.listener.factory.RedisMessageListenerFactory;
-import org.g2.message.listener.repository.RedisQueueRepository;
-import org.g2.message.listener.repository.impl.RedisQueueRepositoryImpl;
+import org.g2.message.config.properties.RedisMessageListenerProperties;
+import org.g2.message.endpoint.RedisMessageListenerEndpointRegistry;
+import org.g2.message.repository.RedisQueueRepository;
+import org.g2.message.repository.impl.RedisQueueRepositoryImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -24,18 +23,18 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class RedisMessageListenerConfiguration {
 
     @Bean
-    public RedisMessageListenerBeanPostProcessor messageListenerBeanProcessor() {
-        return new RedisMessageListenerBeanPostProcessor();
-    }
-
-    @Bean
-    public RedisMessageListenerFactory redisMessageListenerFactory() {
-        return new RedisMessageListenerFactory();
+    public RedisMessageListenerBeanPostProcessor messageListenerBeanProcessor(RedisMessageListenerEndpointRegistry registry) {
+        return new RedisMessageListenerBeanPostProcessor(registry);
     }
 
     @Bean
     public RedisQueueRepository redisQueueRepository(DynamicRedisHelper dynamicRedisHelper) {
         return new RedisQueueRepositoryImpl(dynamicRedisHelper);
+    }
+
+    @Bean
+    public RedisMessageListenerEndpointRegistry redisMessageListenerEndpointRegistry() {
+        return new RedisMessageListenerEndpointRegistry();
     }
 
     @Bean

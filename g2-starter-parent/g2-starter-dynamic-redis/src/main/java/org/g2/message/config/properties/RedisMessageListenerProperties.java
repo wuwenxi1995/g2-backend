@@ -1,4 +1,4 @@
-package org.g2.message.listener.config.properties;
+package org.g2.message.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -20,6 +20,8 @@ public class RedisMessageListenerProperties {
 
     private int retry;
 
+    private Duration shutdownTimeout;
+
     private ThreadProperties thread;
 
     public RedisMessageListenerProperties() {
@@ -28,6 +30,7 @@ public class RedisMessageListenerProperties {
         this.isAutoCommit = true;
         this.autoRollbackTime = Duration.ofMinutes(5);
         this.retry = 5;
+        this.shutdownTimeout = Duration.ofMillis(1000);
         this.thread = new ThreadProperties();
     }
 
@@ -69,6 +72,14 @@ public class RedisMessageListenerProperties {
 
     public void setRetry(int retry) {
         this.retry = retry;
+    }
+
+    public Duration getShutdownTimeout() {
+        return shutdownTimeout;
+    }
+
+    public void setShutdownTimeout(Duration shutdownTimeout) {
+        this.shutdownTimeout = shutdownTimeout;
     }
 
     public ThreadProperties getThread() {
