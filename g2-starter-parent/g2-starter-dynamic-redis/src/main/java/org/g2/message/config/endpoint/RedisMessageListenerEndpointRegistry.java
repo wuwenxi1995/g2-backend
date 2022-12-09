@@ -98,10 +98,6 @@ public class RedisMessageListenerEndpointRegistry implements SmartLifecycle,
 
     @Override
     public void stop() {
-    }
-
-    @Override
-    public void stop(Runnable callback) {
         for (RedisMessageListenerContainer listenerContainer : getListenerContainers()) {
             CountDownLatch latch = new CountDownLatch(1);
             listenerContainer.stop(latch::countDown);
