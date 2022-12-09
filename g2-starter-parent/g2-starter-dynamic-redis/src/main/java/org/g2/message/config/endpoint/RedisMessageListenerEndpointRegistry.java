@@ -1,4 +1,4 @@
-package org.g2.message.endpoint;
+package org.g2.message.config.endpoint;
 
 import org.g2.message.listener.RedisMessageListenerContainer;
 import org.g2.message.config.properties.RedisMessageListenerProperties;
@@ -116,14 +116,5 @@ public class RedisMessageListenerEndpointRegistry implements SmartLifecycle,
     @Override
     public boolean isRunning() {
         return false;
-    }
-
-    private static class StopCallback implements Runnable {
-
-
-        @Override
-        public void run() {
-
-        }
     }
 }

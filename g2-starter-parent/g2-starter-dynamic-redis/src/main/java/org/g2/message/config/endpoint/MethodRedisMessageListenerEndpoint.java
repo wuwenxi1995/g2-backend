@@ -1,4 +1,4 @@
-package org.g2.message.endpoint;
+package org.g2.message.config.endpoint;
 
 import java.lang.reflect.Method;
 import java.util.Objects;

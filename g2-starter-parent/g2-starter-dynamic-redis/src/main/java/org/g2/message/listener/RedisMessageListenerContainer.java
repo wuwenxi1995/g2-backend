@@ -29,7 +29,6 @@ public class RedisMessageListenerContainer implements SmartLifecycle, Runnable {
     private final String queue;
     private MessageHandler messageHandler;
     private ApplicationContext applicationContext;
-    private RedisQueueRepository redisQueueRepository;
     private RedisMessageListenerProperties properties;
 
     private volatile boolean isRunning;
@@ -53,6 +52,7 @@ public class RedisMessageListenerContainer implements SmartLifecycle, Runnable {
 
     @Override
     public void run() {
+        RedisQueueRepository redisQueueRepository = applicationContext.getBean(RedisQueueRepository.class);
         while (isRunning()) {
             Calendar now = Calendar.getInstance();
             String json = redisQueueRepository.pop(db, queue, now.getTimeInMillis(), expireTime(now));
@@ -80,12 +80,11 @@ public class RedisMessageListenerContainer implements SmartLifecycle, Runnable {
     @Override
     public void start() {
         this.isRunning = true;
-        this.redisQueueRepository = applicationContext.getBean(RedisQueueRepository.class);
         ThreadPoolTaskScheduler scheduler = applicationContext.getBean("redisMessageListenerScheduler", ThreadPoolTaskScheduler.class);
         ThreadPoolTaskExecutor taskExecutor = applicationContext.getBean("redisMessageListenerExecutor", ThreadPoolTaskExecutor.class);
         ScheduledTask listenerConsumer = new ScheduledTask(messageHandler.getBean().getClass().getSimpleName(), scheduler.getScheduledExecutor(),
                 taskExecutor.getThreadPoolExecutor(), this, properties.getDelayed().toMillis(), TimeUnit.MILLISECONDS, false);
-        scheduler.schedule(listenerConsumer, new Date());
+        scheduler.getScheduledExecutor().schedule(listenerConsumer, 0, TimeUnit.MILLISECONDS);
     }
 
     @Override

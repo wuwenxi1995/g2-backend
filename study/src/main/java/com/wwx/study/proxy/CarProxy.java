@@ -39,7 +39,17 @@ public class CarProxy implements InvocationHandler {
     }
 
     public static void main(String[] args) {
-        Car car = (Car) Proxy.newProxyInstance(CarProxy.class.getClassLoader(), new Class[]{Car.class}, new CarProxy());
+        Car car = newProxyInstance(Car.class, CarProxy.class);
         car.buildCar().run();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T newProxyInstance(Class<T> interfaceClass, Class<? extends InvocationHandler> proxyClass) {
+        try {
+            return (T) Proxy.newProxyInstance(CarProxy.class.getClassLoader(), new Class[]{interfaceClass}, proxyClass.newInstance());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

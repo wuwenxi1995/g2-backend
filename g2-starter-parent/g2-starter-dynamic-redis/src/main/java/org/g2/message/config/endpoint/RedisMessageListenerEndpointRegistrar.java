@@ -1,4 +1,4 @@
-package org.g2.message.endpoint;
+package org.g2.message.config.endpoint;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;

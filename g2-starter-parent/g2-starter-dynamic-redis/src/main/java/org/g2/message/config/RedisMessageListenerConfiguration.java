@@ -2,7 +2,7 @@ package org.g2.message.config;
 
 import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
 import org.g2.message.config.properties.RedisMessageListenerProperties;
-import org.g2.message.endpoint.RedisMessageListenerEndpointRegistry;
+import org.g2.message.config.endpoint.RedisMessageListenerEndpointRegistry;
 import org.g2.message.repository.RedisQueueRepository;
 import org.g2.message.repository.impl.RedisQueueRepositoryImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

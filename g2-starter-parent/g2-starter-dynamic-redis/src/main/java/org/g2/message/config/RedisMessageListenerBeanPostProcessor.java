@@ -1,9 +1,9 @@
 package org.g2.message.config;
 
 import org.g2.message.annotation.RedisMessageListener;
-import org.g2.message.endpoint.MethodRedisMessageListenerEndpoint;
-import org.g2.message.endpoint.RedisMessageListenerEndpointRegistrar;
-import org.g2.message.endpoint.RedisMessageListenerEndpointRegistry;
+import org.g2.message.config.endpoint.MethodRedisMessageListenerEndpoint;
+import org.g2.message.config.endpoint.RedisMessageListenerEndpointRegistrar;
+import org.g2.message.config.endpoint.RedisMessageListenerEndpointRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
