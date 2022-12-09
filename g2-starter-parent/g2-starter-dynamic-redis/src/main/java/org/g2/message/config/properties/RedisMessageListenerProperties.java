@@ -12,8 +12,6 @@ public class RedisMessageListenerProperties {
 
     private boolean enable;
 
-    private Duration delayed;
-
     private boolean isAutoCommit;
 
     private Duration autoRollbackTime;
@@ -26,7 +24,6 @@ public class RedisMessageListenerProperties {
 
     public RedisMessageListenerProperties() {
         this.enable = false;
-        this.delayed = Duration.ofSeconds(1);
         this.isAutoCommit = true;
         this.autoRollbackTime = Duration.ofMinutes(5);
         this.retry = 5;
@@ -40,14 +37,6 @@ public class RedisMessageListenerProperties {
 
     public void setEnable(boolean enable) {
         this.enable = enable;
-    }
-
-    public Duration getDelayed() {
-        return delayed;
-    }
-
-    public void setDelayed(Duration delayed) {
-        this.delayed = delayed;
     }
 
     public boolean isAutoCommit() {

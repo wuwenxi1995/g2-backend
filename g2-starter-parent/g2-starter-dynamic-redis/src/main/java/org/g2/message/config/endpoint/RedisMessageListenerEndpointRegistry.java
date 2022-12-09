@@ -12,8 +12,10 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.lang.NonNull;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.Assert;
 
+import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -34,8 +36,13 @@ public class RedisMessageListenerEndpointRegistry implements SmartLifecycle,
 
     private boolean contextRefreshed;
 
+    private final Object lifecycleMonitor = new Object();
+
     @Autowired
     private RedisMessageListenerProperties properties;
+
+    @Resource(name = "redisMessageListenerExecutor")
+    private ThreadPoolTaskExecutor taskExecutor;
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
@@ -79,6 +86,7 @@ public class RedisMessageListenerEndpointRegistry implements SmartLifecycle,
         listenerContainer.setMessageHandler(messageHandler);
         listenerContainer.setApplicationContext(applicationContext);
         listenerContainer.setProperties(properties);
+        listenerContainer.setTaskExecutor(taskExecutor);
         return listenerContainer;
     }
 
@@ -98,13 +106,17 @@ public class RedisMessageListenerEndpointRegistry implements SmartLifecycle,
 
     @Override
     public void stop() {
-        for (RedisMessageListenerContainer listenerContainer : getListenerContainers()) {
-            CountDownLatch latch = new CountDownLatch(1);
-            listenerContainer.stop(latch::countDown);
-            try {
-                latch.await(properties.getShutdownTimeout().toMillis(), TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+        synchronized (this.lifecycleMonitor) {
+            if (isRunning()) {
+                for (RedisMessageListenerContainer listenerContainer : getListenerContainers()) {
+                    CountDownLatch latch = new CountDownLatch(1);
+                    listenerContainer.stop(latch::countDown);
+                    try {
+                        latch.await(properties.getShutdownTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
             }
         }
     }

@@ -2,7 +2,7 @@
 ---- KEY[2]: key:ack
 ---- KEY[3]: key:ack_expire
 ---- ARGV[1]: now
----- ARGV[1]: expire_time
+---- ARGV[2]: expire_time
 
 -- 处理未回滚数据的
 local rollbacks = redis.call('zremrangebyscore', KEY[3], 0, ARGV[1])
@@ -18,5 +18,5 @@ if data == nil
 end
 
 redis.call('rpush', KEY[2], data);
-redis.call('zadd', KEY[3], expire_time, data);
+redis.call('zadd', KEY[3], ARGV[2], data);
 return data;

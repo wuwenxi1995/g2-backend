@@ -31,7 +31,7 @@ public interface RedisQueueRepository {
      * @param expire 过期时间
      * @return 数据
      */
-    String pop(int db, String key, long now, long expire);
+    String poll(int db, String key, long now, long expire);
 
     /**
      * 数据处理成功, 提交数据

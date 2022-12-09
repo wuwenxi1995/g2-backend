@@ -10,7 +10,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -49,15 +48,5 @@ public class RedisMessageListenerConfiguration {
         taskExecutor.setThreadNamePrefix("redisMessageLister-");
         taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
         return taskExecutor;
-    }
-
-    @Bean
-    public ThreadPoolTaskScheduler redisMessageListenerScheduler(RedisMessageListenerProperties properties) {
-        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(properties.getThread().getCoreSize());
-        taskScheduler.setDaemon(true);
-        taskScheduler.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        taskScheduler.setWaitForTasksToCompleteOnShutdown(true);
-        return taskScheduler;
     }
 }

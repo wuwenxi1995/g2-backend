@@ -42,7 +42,7 @@ public class RedisQueueRepositoryImpl implements RedisQueueRepository {
     }
 
     @Override
-    public String pop(int db, String key, long now, long expire) {
+    public String poll(int db, String key, long now, long expire) {
         return execute(db, REDIS_QUEUE_POP_SCRIP, Arrays.asList(key, String.format(ACK, key), String.format(ACK_EXPIRE, key)), now, expire);
     }
 
