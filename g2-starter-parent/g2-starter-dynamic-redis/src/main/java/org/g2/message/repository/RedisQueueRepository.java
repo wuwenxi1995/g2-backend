@@ -61,5 +61,5 @@ public interface RedisQueueRepository {
      * @param ackTimeout ack超时时间
      * @return true/false
      */
-    boolean rollback(int db, String key, Duration ackTimeout);
+    boolean ackTimeout(int db, String key, Duration ackTimeout);
 }

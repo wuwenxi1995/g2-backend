@@ -2,7 +2,6 @@ package org.g2.message.listener;
 
 import org.apache.commons.lang3.StringUtils;
 import org.g2.core.util.StringUtil;
-import org.g2.message.config.endpoint.RedisMessageListenerEndpointRegistry;
 import org.g2.message.config.properties.RedisMessageListenerProperties;
 import org.g2.message.handler.MessageHandler;
 import org.g2.message.repository.RedisQueueRepository;
@@ -148,8 +147,8 @@ public class RedisMessageListenerContainer implements SmartLifecycle, Runnable {
         public void run() {
             RedisQueueRepository redisQueueRepository = applicationContext.getBean(RedisQueueRepository.class);
             while (isRunning()) {
-                boolean process = redisQueueRepository.rollback(db, queue, properties.getAckTimeout());
-                if (!process) {
+                boolean process = redisQueueRepository.ackTimeout(db, queue, properties.getAckTimeout());
+                if (process) {
                     try {
                         TimeUnit.MILLISECONDS.sleep(properties.getPollTimeout().toMillis());
                     } catch (InterruptedException e) {

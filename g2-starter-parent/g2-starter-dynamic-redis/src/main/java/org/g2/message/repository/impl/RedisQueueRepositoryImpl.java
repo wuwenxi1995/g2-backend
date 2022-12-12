@@ -73,7 +73,7 @@ public class RedisQueueRepositoryImpl implements RedisQueueRepository {
     }
 
     @Override
-    public boolean rollback(int db, String key, Duration ackTimeout) {
+    public boolean ackTimeout(int db, String key, Duration ackTimeout) {
         return execute(db, REDIS_QUEUE_ACK_TIMEOUT_SCRIP, Arrays.asList(key, String.format(ACK, key)), System.currentTimeMillis() - ackTimeout.toMillis());
     }
 

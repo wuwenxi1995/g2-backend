@@ -11,6 +11,8 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.lang.NonNull;
@@ -24,22 +26,19 @@ import java.util.Set;
 /**
  * @author wuwenxi 2022-12-06
  */
-public class RedisMessageListenerBeanPostProcessor implements BeanPostProcessor, SmartInitializingSingleton {
+public class RedisMessageListenerBeanPostProcessor implements BeanPostProcessor, SmartInitializingSingleton, ApplicationContextAware {
 
     private static final Logger log = LoggerFactory.getLogger(RedisMessageListenerBeanPostProcessor.class);
+
+    private ApplicationContext applicationContext;
 
     private Set<Class<?>> nonAnnotatedClasses = new HashSet<>();
 
     private RedisMessageListenerEndpointRegistrar registrar = new RedisMessageListenerEndpointRegistrar();
 
-    private RedisMessageListenerEndpointRegistry registry;
-
-    public RedisMessageListenerBeanPostProcessor(RedisMessageListenerEndpointRegistry registry) {
-        this.registry = registry;
-    }
-
     @Override
     public void afterSingletonsInstantiated() {
+        RedisMessageListenerEndpointRegistry registry = this.applicationContext.getBean(RedisMessageListenerEndpointRegistry.class);
         this.registrar.setEndpointRegistry(registry);
         // 创建监听器
         this.registrar.afterPropertiesSet();
@@ -113,5 +112,10 @@ public class RedisMessageListenerBeanPostProcessor implements BeanPostProcessor,
             }
         }
         return method;
+    }
+
+    @Override
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }
