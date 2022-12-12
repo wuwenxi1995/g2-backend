@@ -38,6 +38,8 @@ public class RedisMessageListenerEndpointRegistry implements SmartLifecycle,
 
     private final Object lifecycleMonitor = new Object();
 
+    private volatile boolean running;
+
     @Autowired
     private RedisMessageListenerProperties properties;
 
@@ -102,15 +104,28 @@ public class RedisMessageListenerEndpointRegistry implements SmartLifecycle,
 
     @Override
     public void start() {
+        if (isRunning()) {
+            return;
+        }
+        this.running = true;
     }
 
     @Override
     public void stop() {
+        if (!isRunning()) {
+            return;
+        }
+        this.running = false;
+    }
+
+    @Override
+    public void stop(Runnable callback) {
         synchronized (this.lifecycleMonitor) {
             if (isRunning()) {
+                stop();
                 for (RedisMessageListenerContainer listenerContainer : getListenerContainers()) {
                     CountDownLatch latch = new CountDownLatch(1);
-                    listenerContainer.stop(latch::countDown);
+                    listenerContainer.stop(new StopCallback(latch, callback));
                     try {
                         latch.await(properties.getShutdownTimeout().toMillis(), TimeUnit.MILLISECONDS);
                     } catch (InterruptedException e) {
@@ -123,6 +138,22 @@ public class RedisMessageListenerEndpointRegistry implements SmartLifecycle,
 
     @Override
     public boolean isRunning() {
-        return false;
+        return running;
+    }
+
+    private static class StopCallback implements Runnable {
+        private final CountDownLatch latch;
+        private final Runnable callback;
+
+        StopCallback(CountDownLatch latch, Runnable callback) {
+            this.latch = latch;
+            this.callback = callback;
+        }
+
+        @Override
+        public void run() {
+            latch.countDown();
+            callback.run();
+        }
     }
 }

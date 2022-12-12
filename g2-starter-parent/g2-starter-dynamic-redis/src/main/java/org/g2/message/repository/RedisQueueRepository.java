@@ -1,5 +1,7 @@
 package org.g2.message.repository;
 
+import java.time.Duration;
+
 /**
  * @author wuwenxi 2022-12-07
  */
@@ -25,13 +27,12 @@ public interface RedisQueueRepository {
     /**
      * 获取数据
      *
-     * @param db     redis库
-     * @param key    key
-     * @param now    当前时间
-     * @param expire 过期时间
+     * @param db          redis库
+     * @param key         key
+     * @param pollTimeout 拉取超时时间
      * @return 数据
      */
-    String poll(int db, String key, long now, long expire);
+    String poll(int db, String key, Duration pollTimeout);
 
     /**
      * 数据处理成功, 提交数据
@@ -51,4 +52,14 @@ public interface RedisQueueRepository {
      * @param retry 重试次数
      */
     void rollback(int db, String key, String data, int retry);
+
+    /**
+     * 未自动提交
+     *
+     * @param db         redis库
+     * @param key        key
+     * @param ackTimeout ack超时时间
+     * @return true/false
+     */
+    boolean rollback(int db, String key, Duration ackTimeout);
 }

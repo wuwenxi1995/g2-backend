@@ -12,9 +12,20 @@ public class RedisMessageListenerProperties {
 
     private boolean enable;
 
+    /**
+     * 自动提交
+     */
     private boolean isAutoCommit;
 
-    private Duration autoRollbackTime;
+    /**
+     * 自动提交 - 未提交超时时间
+     */
+    private Duration ackTimeout;
+
+    /**
+     * 拉取数据超时时间
+     */
+    private Duration pollTimeout;
 
     private int retry;
 
@@ -25,9 +36,10 @@ public class RedisMessageListenerProperties {
     public RedisMessageListenerProperties() {
         this.enable = false;
         this.isAutoCommit = true;
-        this.autoRollbackTime = Duration.ofMinutes(5);
+        this.ackTimeout = Duration.ofMinutes(5);
         this.retry = 5;
         this.shutdownTimeout = Duration.ofMillis(1000);
+        this.pollTimeout = Duration.ofSeconds(5);
         this.thread = new ThreadProperties();
     }
 
@@ -47,12 +59,12 @@ public class RedisMessageListenerProperties {
         isAutoCommit = autoCommit;
     }
 
-    public Duration getAutoRollbackTime() {
-        return autoRollbackTime;
+    public Duration getAckTimeout() {
+        return ackTimeout;
     }
 
-    public void setAutoRollbackTime(Duration autoRollbackTime) {
-        this.autoRollbackTime = autoRollbackTime;
+    public void setAckTimeout(Duration ackTimeout) {
+        this.ackTimeout = ackTimeout;
     }
 
     public int getRetry() {
@@ -69,6 +81,14 @@ public class RedisMessageListenerProperties {
 
     public void setShutdownTimeout(Duration shutdownTimeout) {
         this.shutdownTimeout = shutdownTimeout;
+    }
+
+    public Duration getPollTimeout() {
+        return pollTimeout;
+    }
+
+    public void setPollTimeout(Duration pollTimeout) {
+        this.pollTimeout = pollTimeout;
     }
 
     public ThreadProperties getThread() {

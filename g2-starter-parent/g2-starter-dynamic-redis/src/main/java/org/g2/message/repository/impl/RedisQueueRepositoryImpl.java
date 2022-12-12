@@ -8,8 +8,11 @@ import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.scripting.support.ResourceScriptSource;
 
+import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -21,9 +24,8 @@ public class RedisQueueRepositoryImpl implements RedisQueueRepository {
     private static final String ACK_EXPIRE = "%s:ack_expire";
     private static final String RETRY_TIMES = "message:queue:hash:retry_times";
     private static final String RETRY_ERROR = "message:queue:retry_error:%s";
-    private static final DefaultRedisScript<String> REDIS_QUEUE_POP_SCRIP;
-    private static final DefaultRedisScript<Void> REDIS_QUEUE_COMMIT_SCRIP;
     private static final DefaultRedisScript<Void> REDIS_QUEUE_ROLLBACK_SCRIP;
+    private static final DefaultRedisScript<Boolean> REDIS_QUEUE_ACK_TIMEOUT_SCRIP;
 
     private final DynamicRedisHelper dynamicRedisHelper;
 
@@ -42,13 +44,19 @@ public class RedisQueueRepositoryImpl implements RedisQueueRepository {
     }
 
     @Override
-    public String poll(int db, String key, long now, long expire) {
-        return execute(db, REDIS_QUEUE_POP_SCRIP, Arrays.asList(key, String.format(ACK, key), String.format(ACK_EXPIRE, key)), now, expire);
+    public String poll(int db, String key, Duration pollTimeout) {
+        return operation(db, () -> {
+            String data = dynamicRedisHelper.lstLeftPop(key, pollTimeout.toMillis(), TimeUnit.MILLISECONDS);
+            if (StringUtils.isNotEmpty(data)) {
+                dynamicRedisHelper.zSetAdd(String.format(ACK, key), data, System.currentTimeMillis());
+            }
+            return data;
+        });
     }
 
     @Override
     public void commit(int db, String key, String data) {
-        execute(db, REDIS_QUEUE_COMMIT_SCRIP, Arrays.asList(String.format(ACK, key), String.format(ACK_EXPIRE, key)), data);
+        operation(db, () -> dynamicRedisHelper.lstRemove(String.format(ACK, key), 0, data));
     }
 
     @Override
@@ -61,7 +69,12 @@ public class RedisQueueRepositoryImpl implements RedisQueueRepository {
             dynamicRedisHelper.lstRightPush(String.format(RETRY_ERROR, key), data);
             return;
         }
-        execute(db, REDIS_QUEUE_ROLLBACK_SCRIP, Arrays.asList(key, String.format(ACK, key), String.format(ACK_EXPIRE, key), RETRY_TIMES), data);
+        execute(db, REDIS_QUEUE_ROLLBACK_SCRIP, Arrays.asList(key, String.format(ACK, key), RETRY_TIMES), data);
+    }
+
+    @Override
+    public boolean rollback(int db, String key, Duration ackTimeout) {
+        return execute(db, REDIS_QUEUE_ACK_TIMEOUT_SCRIP, Arrays.asList(key, String.format(ACK, key)), System.currentTimeMillis() - ackTimeout.toMillis());
     }
 
     private <T> T execute(int db, RedisScript<T> script, List<String> keys, Object... args) {
@@ -78,16 +91,14 @@ public class RedisQueueRepositoryImpl implements RedisQueueRepository {
     }
 
     static {
-        REDIS_QUEUE_POP_SCRIP = new DefaultRedisScript<>();
-        REDIS_QUEUE_POP_SCRIP.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/lua/redis_queue_pop.lua")));
-        REDIS_QUEUE_POP_SCRIP.setResultType(String.class);
-
-        REDIS_QUEUE_COMMIT_SCRIP = new DefaultRedisScript<>();
-        REDIS_QUEUE_COMMIT_SCRIP.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/lua/redis_queue_commit.lua")));
-        REDIS_QUEUE_COMMIT_SCRIP.setResultType(Void.class);
 
         REDIS_QUEUE_ROLLBACK_SCRIP = new DefaultRedisScript<>();
         REDIS_QUEUE_ROLLBACK_SCRIP.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/lua/redis_queue_rollback.lua")));
         REDIS_QUEUE_ROLLBACK_SCRIP.setResultType(Void.class);
+
+
+        REDIS_QUEUE_ACK_TIMEOUT_SCRIP = new DefaultRedisScript<>();
+        REDIS_QUEUE_ACK_TIMEOUT_SCRIP.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/lua/redis_queue_ack_timeout.lua")));
+        REDIS_QUEUE_ACK_TIMEOUT_SCRIP.setResultType(Boolean.class);
     }
 }
