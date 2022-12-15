@@ -21,7 +21,6 @@ import java.util.function.Supplier;
 public class RedisQueueRepositoryImpl implements RedisQueueRepository {
 
     private static final String ACK = "%s:ack";
-    private static final String ACK_EXPIRE = "%s:ack_expire";
     private static final String RETRY_TIMES = "message:queue:hash:retry_times";
     private static final String RETRY_ERROR = "message:queue:retry_error:%s";
     private static final DefaultRedisScript<Void> REDIS_QUEUE_ROLLBACK_SCRIP;
@@ -56,7 +55,7 @@ public class RedisQueueRepositoryImpl implements RedisQueueRepository {
 
     @Override
     public void commit(int db, String key, String data) {
-        operation(db, () -> dynamicRedisHelper.lstRemove(String.format(ACK, key), 0, data));
+        operation(db, () -> dynamicRedisHelper.zSetRemove(String.format(ACK, key), data));
     }
 
     @Override

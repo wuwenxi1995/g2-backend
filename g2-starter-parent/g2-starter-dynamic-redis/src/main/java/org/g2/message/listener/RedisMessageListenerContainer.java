@@ -67,7 +67,7 @@ public class RedisMessageListenerContainer implements SmartLifecycle, Runnable {
             try {
                 this.polling.set(true);
                 String json = redisQueueRepository.poll(db, queue, properties.getPollTimeout());
-                // 如果在poll的时候
+                // 如果在poll的时候, 可能出现竞争, 如果竞争失败且数据不为空, 则不处理该数据
                 if (this.polling.compareAndSet(true, false) && StringUtils.isNotEmpty(json)) {
                     boolean success = true;
                     try {
@@ -118,21 +118,22 @@ public class RedisMessageListenerContainer implements SmartLifecycle, Runnable {
 
     @Override
     public void stop(Runnable callback) {
-        if (isRunning()) {
-            listenerConsumer.addCallback(new StopCallback(callback));
-            stop();
-            ackListener.addCallback(new ListenableFutureCallback<Object>() {
-                @Override
-                public void onFailure(Throwable ex) {
-                    log.error("Error while stopping the Ack Listener", ex);
-                }
-
-                @Override
-                public void onSuccess(Object result) {
-                    log.debug("Ack Listener stopped normal");
-                }
-            });
+        if (!isRunning()) {
+            return;
         }
+        stop();
+        listenerConsumer.addCallback(new StopCallback(callback));
+        ackListener.addCallback(new ListenableFutureCallback<Object>() {
+            @Override
+            public void onFailure(Throwable ex) {
+                log.error("Error while stopping the Ack Listener", ex);
+            }
+
+            @Override
+            public void onSuccess(Object result) {
+                log.debug("Ack Listener stopped normal");
+            }
+        });
     }
 
     @Override

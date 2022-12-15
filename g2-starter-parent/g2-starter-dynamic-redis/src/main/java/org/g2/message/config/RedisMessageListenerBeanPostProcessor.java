@@ -57,16 +57,16 @@ public class RedisMessageListenerBeanPostProcessor implements BeanPostProcessor,
                 for (Map.Entry<Method, RedisMessageListener> entry : annotatedMethods.entrySet()) {
                     Method method = entry.getKey();
                     RedisMessageListener listener = entry.getValue();
-                    processRedisMessageListener(listener, method, bean, beanName);
+                    processRedisMessageListener(listener, method, bean);
                 }
-                log.debug(annotatedMethods.size() + " @KafkaListener methods processed on bean '"
+                log.debug(annotatedMethods.size() + " @RedisMessageListener methods processed on bean '"
                         + beanName + "': " + annotatedMethods);
             }
         }
         return bean;
     }
 
-    private void processRedisMessageListener(RedisMessageListener listener, Method method, Object bean, String beanName) {
+    private void processRedisMessageListener(RedisMessageListener listener, Method method, Object bean) {
         Method methodToUse = checkProxy(method, bean);
         if (methodToUse.getParameters().length != 1) {
             throw new IllegalArgumentException(String.format(
