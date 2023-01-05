@@ -29,7 +29,7 @@ public class DataUniqueUtil {
         if (CollectionUtils.isEmpty(operationDataList)) {
             return null;
         }
-        Map<K, T> result = new HashMap<>();
+        Map<K, T> result = new ConcurrentHashMap<>(operationDataList.size() >> 1);
         operationDataList.parallelStream()
                 .filter(handler::filter)
                 .collect(Collectors.groupingBy(handler::mapKey))
