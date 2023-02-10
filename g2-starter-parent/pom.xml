@@ -10,6 +10,7 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>org.g2.starter</groupId>
     <artifactId>g2-starter-parent</artifactId>
     <packaging>pom</packaging>
 
@@ -22,6 +23,7 @@
         <module>g2-starter-kafka</module>
         <module>g2-starter-zookeeper</module>
         <module>g2-starter-dynamic-redis</module>
+        <module>g2-starter-dynamic-jdbc</module>
     </modules>
 
 
