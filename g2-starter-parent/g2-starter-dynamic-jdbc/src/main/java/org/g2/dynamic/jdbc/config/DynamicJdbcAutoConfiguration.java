@@ -1,9 +1,9 @@
 package org.g2.dynamic.jdbc.config;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.g2.dynamic.jdbc.DataSourceConfigRepository;
 import org.g2.dynamic.jdbc.DynamicRoutDataSource;
 import org.g2.dynamic.jdbc.DynamicRoutResolver;
+import org.g2.dynamic.jdbc.aop.aspect.DataRoutInterceptor;
 import org.g2.dynamic.jdbc.config.properties.DynamicJdbcProperties;
 import org.g2.dynamic.jdbc.factory.MemoryDataSourceKeyFactory;
 import org.g2.dynamic.jdbc.factory.RedisDatasourceFactory;
@@ -21,6 +21,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +39,7 @@ import java.util.List;
 @Configuration
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(DynamicJdbcProperties.class)
+@ConditionalOnProperty(prefix = "g2.dynamic.jdbc", name = "enable", havingValue = "true")
 public class DynamicJdbcAutoConfiguration {
 
     @Bean
@@ -84,11 +86,6 @@ public class DynamicJdbcAutoConfiguration {
         return new DataSourceFactoryWrapper(dataSourceFactory, dataSourceProcessors);
     }
 
-    @Bean
-    public DataSourceConfigRepository dataSourceConfigRepository() {
-        return new DataSourceConfigRepository();
-    }
-
     @Primary
     @Bean
     public DataSource dynamicRoutDataSource(@Qualifier("dataSource") DataSource dataSource, DataSourceFactory dataSourceFactory, DynamicJdbcProperties properties, MemoryDataSourceKeyFactory memoryDataSourceKeyFactory) {
@@ -104,5 +101,10 @@ public class DynamicJdbcAutoConfiguration {
     @ConditionalOnMissingBean(value = LoadBalanceBuildFactory.class)
     public LoadBalanceBuildFactory loadBalanceBuildFactory() {
         return RoundRobinLoadBalancer::new;
+    }
+
+    @Bean
+    public DataRoutInterceptor dataRoutInterceptor() {
+        return new DataRoutInterceptor();
     }
 }

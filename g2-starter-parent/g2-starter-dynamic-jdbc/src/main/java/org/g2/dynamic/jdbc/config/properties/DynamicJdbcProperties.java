@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 public class DynamicJdbcProperties {
 
+    private boolean enable;
     private String dsPrefix;
     private String driverClassName;
     private String jdbcUrl;
