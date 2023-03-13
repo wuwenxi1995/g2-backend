@@ -9,6 +9,7 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>org.g2.oms.marketing</groupId>
     <artifactId>g2-oms-marketing-parent</artifactId>
 
 
