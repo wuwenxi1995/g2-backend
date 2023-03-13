@@ -53,22 +53,17 @@
         </dependency>
 
         <dependency>
-            <groupId>org.g2</groupId>
+            <groupId>org.g2.boot</groupId>
             <artifactId>g2-boot-scheduler</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.g2</groupId>
-            <artifactId>g2-starter-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.g2</groupId>
+            <groupId>org.g2.starter</groupId>
             <artifactId>g2-starter-redis</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.g2</groupId>
+            <groupId>org.g2.starter</groupId>
             <artifactId>g2-starter-mybatis-helper</artifactId>
         </dependency>
 

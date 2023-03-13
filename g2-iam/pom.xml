@@ -63,12 +63,12 @@
         </dependency>
 
         <dependency>
-            <groupId>org.g2</groupId>
+            <groupId>org.g2.starter</groupId>
             <artifactId>g2-starter-redis</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.g2</groupId>
+            <groupId>org.g2.boot</groupId>
             <artifactId>g2-boot-message</artifactId>
         </dependency>
 

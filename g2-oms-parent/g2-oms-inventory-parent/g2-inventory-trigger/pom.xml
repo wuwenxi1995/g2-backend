@@ -21,7 +21,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.g2</groupId>
+            <groupId>org.g2.starter</groupId>
             <artifactId>g2-starter-kafka</artifactId>
         </dependency>
     </dependencies>

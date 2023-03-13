@@ -10,6 +10,7 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>org.g2.boot</groupId>
     <artifactId>g2-boot-parent</artifactId>
     <packaging>pom</packaging>
 
@@ -18,6 +19,7 @@
         <module>g2-boot-scheduler</module>
         <module>g2-boot-message</module>
         <module>g2-boot-interface</module>
+        <module>g2-boot-executor</module>
     </modules>
 
 </project>

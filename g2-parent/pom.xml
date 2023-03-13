@@ -53,11 +53,9 @@
         <!-- boot version -->
         <g2.boot.pipeline.version>0.1.0-SNAPSHOT</g2.boot.pipeline.version>
         <g2.boot.scheduler.version>0.1.0-SNAPSHOT</g2.boot.scheduler.version>
-        <g2.boot.file.version>0.1.0-SNAPSHOT</g2.boot.file.version>
-        <g2.boot.message.version>0.1.0-SNAPSHOT</g2.boot.message.version>
-        <g2.boot.elasticsearch.version>0.1.0-SNAPSHOT</g2.boot.elasticsearch.version>
         <g2.boot.message.version>0.1.0-SNAPSHOT</g2.boot.message.version>
         <g2.boot.interface.version>0.1.0-SNAPSHOT</g2.boot.interface.version>
+        <g2.boot.exectutor.version>0.1.0-SNAPSHOT</g2.boot.exectutor.version>
         <g2.boot.core.version>0.1.0-SNAPSHOT</g2.boot.core.version>
 
         <!-- other -->
@@ -216,33 +214,39 @@
 
             <!-- g2 boot -->
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.boot</groupId>
                 <artifactId>g2-boot-parent</artifactId>
                 <version>${g2.boot.core.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.boot</groupId>
                 <artifactId>g2-boot-pipeline</artifactId>
                 <version>${g2.boot.pipeline.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.boot</groupId>
                 <artifactId>g2-boot-scheduler</artifactId>
                 <version>${g2.boot.scheduler.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.boot</groupId>
                 <artifactId>g2-boot-message</artifactId>
                 <version>${g2.boot.message.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.boot</groupId>
                 <artifactId>g2-boot-interface</artifactId>
                 <version>${g2.boot.interface.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2.boot</groupId>
+                <artifactId>g2-boot-executor</artifactId>
+                <version>${g2.boot.exectutor.version}</version>
             </dependency>
 
             <!-- other -->

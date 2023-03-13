@@ -19,7 +19,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>org.g2</groupId>
+            <groupId>org.g2.starter</groupId>
             <artifactId>g2-starter-core</artifactId>
             <optional>true</optional>
         </dependency>

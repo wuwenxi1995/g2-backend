@@ -14,12 +14,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.g2</groupId>
-            <artifactId>g2-starter-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.g2</groupId>
+            <groupId>org.g2.starter</groupId>
             <artifactId>g2-starter-dynamic-redis</artifactId>
         </dependency>
 
@@ -34,7 +29,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.g2</groupId>
+            <groupId>org.g2.starter</groupId>
             <artifactId>g2-starter-mybatis-helper</artifactId>
         </dependency>
 
