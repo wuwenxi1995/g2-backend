@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -104,7 +105,7 @@ public class DynamicJdbcAutoConfiguration {
     }
 
     @Bean
-    public DataRoutInterceptor dataRoutInterceptor() {
-        return new DataRoutInterceptor();
+    public DataRoutInterceptor dataRoutInterceptor(DataSourceTransactionManager transactionManager) {
+        return new DataRoutInterceptor(transactionManager);
     }
 }
