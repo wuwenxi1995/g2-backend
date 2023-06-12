@@ -32,6 +32,9 @@
         <g2.seckill.version>0.1.0-SNAPSHOT</g2.seckill.version>
         <g2.settlement.version>0.1.0-SNAPSHOT</g2.settlement.version>
         <g2.order.sourcing>0.1.0-SNAPSHOT</g2.order.sourcing>
+        <g2.refund.core>0.1.0-SNAPSHOT</g2.refund.core>
+        <g2.refund>0.1.0-SNAPSHOT</g2.refund>
+        <g2.refund.console>0.1.0-SNAPSHOT</g2.refund.console>
         <g2.inventory.version>0.1.0-SNAPSHOT</g2.inventory.version>
         <g2.inventory.console.version>0.1.0-SNAPSHOT</g2.inventory.console.version>
         <g2.inventory.core.version>0.1.0-SNAPSHOT</g2.inventory.core.version>
@@ -77,6 +80,21 @@
                 <groupId>org.g2.oms.trade</groupId>
                 <artifactId>g2-order-sourcing</artifactId>
                 <version>${g2.order.sourcing}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.trade</groupId>
+                <artifactId>g2-refund-core</artifactId>
+                <version>${g2.refund.core}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.trade</groupId>
+                <artifactId>g2-refund</artifactId>
+                <version>${g2.refund}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.g2.oms.trade</groupId>
+                <artifactId>g2-refund-console</artifactId>
+                <version>${g2.refund.console}</version>
             </dependency>
             <!-- inventory -->
             <dependency>

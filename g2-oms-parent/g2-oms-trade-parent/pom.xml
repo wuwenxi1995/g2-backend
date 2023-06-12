@@ -22,6 +22,9 @@
         <module>g2-order-fulfilment</module>
         <module>g2-order-console</module>
         <module>g2-order-sourcing</module>
+        <module>g2-refund-core</module>
+        <module>g2-refund</module>
+        <module>g2-refund-console</module>
     </modules>
 
 </project>
