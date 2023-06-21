@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author wenxi.wu@hand-china.com 2020-11-05
  */
 @EnableConfigurationProperties(value = {AsyncTaskProperties.class})
-@ComponentScan(basePackages = "org.g2.core")
+@ComponentScan(basePackages = "org.g2.starter.core")
 public class G2CoreAutoConfiguration {
 
     @Bean
