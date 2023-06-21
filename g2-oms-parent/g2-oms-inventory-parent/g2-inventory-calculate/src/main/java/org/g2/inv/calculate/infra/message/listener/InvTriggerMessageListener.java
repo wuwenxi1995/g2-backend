@@ -2,7 +2,7 @@ package org.g2.inv.calculate.infra.message.listener;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.g2.core.util.CollectionUtils;
+import org.g2.starter.core.util.CollectionUtils;
 import org.g2.inv.calculate.infra.message.handler.MessageHandler;
 import org.g2.inv.core.domain.vo.TriggerMessage;
 import org.g2.inv.core.infra.constant.InvCoreConstants;
@@ -11,9 +11,6 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**

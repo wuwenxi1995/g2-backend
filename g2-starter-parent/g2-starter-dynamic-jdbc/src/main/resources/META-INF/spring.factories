@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
- org.g2.dynamic.jdbc.config.DynamicJdbcAutoConfiguration
+ org.g2.starter.dynamic.jdbc.config.DynamicJdbcAutoConfiguration

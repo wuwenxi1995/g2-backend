@@ -1,6 +1,6 @@
 package org.g2.starter.elasticsearch.api.controller;
 
-import org.g2.core.util.Results;
+import org.g2.starter.core.util.Results;
 import org.g2.starter.elasticsearch.app.serivce.ElasticsearchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

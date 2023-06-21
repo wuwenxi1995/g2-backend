@@ -1,7 +1,7 @@
 package org.g2.inv.console.api.controller;
 
-import org.g2.core.util.Result;
-import org.g2.core.util.Results;
+import org.g2.starter.core.util.Result;
+import org.g2.starter.core.util.Results;
 import org.g2.inv.console.app.service.StockReportService;
 import org.g2.inv.core.api.dto.StockReportDTO;
 import org.g2.inv.core.domain.entity.StockReport;

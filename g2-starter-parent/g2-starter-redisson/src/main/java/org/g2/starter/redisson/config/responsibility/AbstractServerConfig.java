@@ -1,8 +1,8 @@
 package org.g2.starter.redisson.config.responsibility;
 
 import org.apache.commons.lang3.StringUtils;
-import org.g2.core.base.BaseConstants;
-import org.g2.core.chain.handler.ChainInvocationHandler;
+import org.g2.starter.core.base.BaseConstants;
+import org.g2.starter.core.chain.handler.ChainInvocationHandler;
 import org.g2.starter.redisson.lock.config.RedissonConfigureProperties;
 import org.g2.starter.redisson.lock.infra.constants.LockConstants;
 import org.redisson.config.BaseMasterSlaveServersConfig;

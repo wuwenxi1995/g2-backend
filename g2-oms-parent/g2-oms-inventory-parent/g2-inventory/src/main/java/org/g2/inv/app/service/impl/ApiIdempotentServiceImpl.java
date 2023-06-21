@@ -2,8 +2,7 @@ package org.g2.inv.app.service.impl;
 
 import com.groupon.uuid.UUID;
 import org.apache.commons.lang3.StringUtils;
-import org.g2.core.util.Operation;
-import org.g2.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
+import org.g2.starter.dynamic.redis.hepler.dynamic.DynamicRedisHelper;
 import org.g2.inv.api.dto.ApiResponse;
 import org.g2.inv.app.service.ApiIdempotentService;
 import org.g2.inv.infra.InvApiConstants;

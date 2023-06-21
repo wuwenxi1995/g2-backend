@@ -2,8 +2,8 @@ package org.g2.core.captcha;
 
 import cn.hutool.core.util.PhoneUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.g2.core.base.BaseConstants;
-import org.g2.core.user.UserType;
+import org.g2.starter.core.base.BaseConstants;
+import org.g2.starter.core.user.UserType;
 import org.g2.core.captcha.config.properties.CaptchaProperties;
 import org.g2.starter.redis.client.RedisCacheClient;
 

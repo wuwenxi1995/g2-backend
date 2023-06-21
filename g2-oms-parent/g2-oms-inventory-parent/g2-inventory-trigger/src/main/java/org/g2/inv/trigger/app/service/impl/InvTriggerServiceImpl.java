@@ -3,7 +3,7 @@ package org.g2.inv.trigger.app.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.g2.core.util.StringUtil;
+import org.g2.starter.core.util.StringUtil;
 import org.g2.inv.core.domain.vo.TriggerMessage;
 import org.g2.inv.core.infra.constant.InvCoreConstants;
 import org.g2.inv.trigger.app.service.InvTriggerService;

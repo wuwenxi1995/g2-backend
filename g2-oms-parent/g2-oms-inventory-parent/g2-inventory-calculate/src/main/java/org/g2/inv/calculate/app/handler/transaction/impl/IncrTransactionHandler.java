@@ -1,7 +1,7 @@
 package org.g2.inv.calculate.app.handler.transaction.impl;
 
-import org.g2.core.CoreConstants;
-import org.g2.core.util.StringUtil;
+import org.g2.starter.core.CoreConstants;
+import org.g2.starter.core.util.StringUtil;
 import org.g2.inv.calculate.app.handler.transaction.AbstractTransactionHandler;
 import org.g2.inv.calculate.infra.constant.InvCalculateConstants;
 import org.g2.inv.core.domain.entity.InvTransaction;

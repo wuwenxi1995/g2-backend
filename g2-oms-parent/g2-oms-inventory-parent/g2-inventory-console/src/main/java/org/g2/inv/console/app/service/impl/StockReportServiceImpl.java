@@ -2,8 +2,8 @@ package org.g2.inv.console.app.service.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.g2.core.CoreConstants;
-import org.g2.core.exception.CommonException;
+import org.g2.starter.core.CoreConstants;
+import org.g2.starter.core.exception.CommonException;
 import org.g2.inv.console.app.service.StockReportService;
 import org.g2.inv.console.infra.constant.Constants;
 import org.g2.inv.core.api.dto.StockReportDTO;

@@ -1,9 +1,9 @@
 package org.g2.starter.redisson.config;
 
-import org.g2.core.chain.Chain;
-import org.g2.core.chain.invoker.base.BaseChainInvoker;
-import org.g2.core.exception.CommonException;
-import org.g2.core.helper.ApplicationContextHelper;
+import org.g2.starter.core.chain.Chain;
+import org.g2.starter.core.chain.invoker.base.BaseChainInvoker;
+import org.g2.starter.core.exception.CommonException;
+import org.g2.starter.core.helper.ApplicationContextHelper;
 import org.g2.starter.redisson.config.responsibility.AbstractServerConfig;
 import org.g2.starter.redisson.lock.config.RedissonConfigureProperties;
 import org.g2.starter.redisson.lock.infra.constants.LockConstants;

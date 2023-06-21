@@ -1,6 +1,6 @@
 package org.g2.inv.calculate.app.handler.transaction;
 
-import org.g2.core.chain.invoker.ChainInvoker;
+import org.g2.starter.core.chain.invoker.ChainInvoker;
 import org.g2.inv.core.domain.entity.InvTransaction;
 import org.g2.inv.core.domain.entity.StockLevel;
 import org.g2.inv.core.domain.repository.StockLevelRepository;

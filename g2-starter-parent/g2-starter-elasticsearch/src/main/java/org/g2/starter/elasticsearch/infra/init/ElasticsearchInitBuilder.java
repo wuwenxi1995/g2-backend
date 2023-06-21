@@ -1,6 +1,6 @@
 package org.g2.starter.elasticsearch.infra.init;
 
-import org.g2.core.helper.ApplicationContextHelper;
+import org.g2.starter.core.helper.ApplicationContextHelper;
 import org.g2.starter.elasticsearch.app.serivce.ElasticsearchService;
 import org.g2.starter.elasticsearch.infra.annotation.Document;
 import org.slf4j.Logger;

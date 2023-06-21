@@ -1,7 +1,7 @@
 package org.g2.boot.inf.data;
 
 import lombok.Data;
-import org.g2.core.helper.FastJsonHelper;
+import org.g2.starter.core.helper.FastJsonHelper;
 
 /**
  * @author wenxi.wu@hand-chian.com 2021-03-17

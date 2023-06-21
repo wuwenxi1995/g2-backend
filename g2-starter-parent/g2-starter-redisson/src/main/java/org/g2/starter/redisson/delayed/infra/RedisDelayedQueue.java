@@ -1,13 +1,12 @@
 package org.g2.starter.redisson.delayed.infra;
 
 import org.apache.commons.lang3.StringUtils;
-import org.g2.core.util.StringUtil;
+import org.g2.starter.core.util.StringUtil;
 import org.g2.starter.redisson.delayed.infra.listener.DelayedMessageListener;
 import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RDestroyable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Objects;

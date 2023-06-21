@@ -1,8 +1,7 @@
 package org.g2.inv.calculate.app.handler.transaction;
 
-import org.g2.core.chain.handler.ParamChainInvocationHandler;
+import org.g2.starter.core.chain.handler.ParamChainInvocationHandler;
 import org.g2.inv.core.domain.entity.InvTransaction;
-import org.g2.inv.core.domain.vo.TriggerMessage;
 import org.g2.inv.core.infra.constant.InvCoreConstants;
 
 import java.util.List;

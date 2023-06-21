@@ -2,7 +2,7 @@ package org.g2.boot.inf.config.spring.bean;
 
 import org.g2.boot.inf.infra.exception.InfClientException;
 import org.g2.boot.inf.infra.proxy.InfClientProxy;
-import org.g2.core.base.CheckFactoryBean;
+import org.g2.starter.core.base.CheckFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;

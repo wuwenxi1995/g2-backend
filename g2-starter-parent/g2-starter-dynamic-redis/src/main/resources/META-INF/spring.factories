@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.g2.dynamic.redis.config.DynamicRedisAutoConfiguration
+org.g2.starter.dynamic.redis.config.DynamicRedisAutoConfiguration

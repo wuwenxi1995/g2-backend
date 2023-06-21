@@ -8,7 +8,7 @@ import org.g2.boot.inf.infra.exception.InfClientException;
 import org.g2.boot.inf.infra.executor.InfClientExecutor;
 import org.g2.boot.inf.infra.metadata.MethodMetadata;
 import org.g2.boot.inf.infra.resolver.InfClientClassResolver;
-import org.g2.core.base.BaseConstants;
+import org.g2.starter.core.base.BaseConstants;
 import org.g2.starter.redis.client.RedisCacheClient;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.InvocationHandler;
