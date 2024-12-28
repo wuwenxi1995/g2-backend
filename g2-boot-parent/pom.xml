@@ -20,6 +20,7 @@
         <module>g2-boot-message</module>
         <module>g2-boot-interface</module>
         <module>g2-boot-executor</module>
+        <module>g2-boot-drools</module>
     </modules>
 
 </project>

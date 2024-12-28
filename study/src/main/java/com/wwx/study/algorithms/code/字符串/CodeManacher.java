@@ -32,7 +32,7 @@ public class CodeManacher {
         }
         char[] manacher = manacher(original);
         // 回文半径数组
-        int[] pArr = new int[original.length()];
+        int[] pArr = new int[manacher.length];
         // 回文右边界再往右一个位置, 回文有效区域R-1
         int R = -1,
                 // 回文字符中心
