@@ -10,27 +10,15 @@ import javax.persistence.Table;
 import java.util.Date;
 
 /**
- * 库存明细
+ * 服务点库存明细
  *
- * @author wuwenxi 2022-04-09
+ * @author wuwenxi 2022-04-22
  */
+@Table(name = "inv_stock_level")
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Table(name = "g2inv_stock_level")
 public class StockLevel extends AuditDomain {
 
-    private static final String FILED_STOCK_LEVEL_ID = "stockLevelId";
-    private static final String FILED_SKU_CODE = "skuCode";
-    private static final String FILED_POS_CODE = "posCode";
-    private static final String FILED_INITIAL_ATS = "initialAts";
-    private static final String FILED_ON_HAND = "onHand";
-    private static final String FILED_RESERVED = "reserved";
-    private static final String FILED_LAST_MODIFIED_TIME = "lastModifiedTime";
-    private static final String FILED_LAST_FULL_TIME = "lastFullTime";
-
-    /**
-     * 库存明细id
-     */
     @Id
     @GeneratedValue
     private Long stockLevelId;
@@ -39,27 +27,40 @@ public class StockLevel extends AuditDomain {
      */
     private String skuCode;
     /**
-     * 门店编码
+     * 服务点编码
      */
     private String posCode;
     /**
-     * 初始库存量
-     */
-    private Long initialAts;
-    /**
-     * 现有量
+     * 现有库存
      */
     private Long onHand;
     /**
-     * 保留量
+     * 配货库存
+     */
+    private Long consignment;
+    /**
+     * 服务点调拨库存
+     */
+    private Long transfer;
+    /**
+     * 服务点预留库存
      */
     private Long reserved;
     /**
-     * 最后一次更新时间
+     * 服务点不可售库存
      */
-    private Date lastModifiedTime;
+    private Long unmerchantable;
     /**
-     * 最后一个全量时间
+     * 虚拟库存(不计入总库存)
      */
-    private Date lastFullTime;
+    private Long virtual;
+    /**
+     * 最近一次更新时间
+     */
+    private Date latsModifyDate;
+    /**
+     * 最近一次全量同步时间
+     */
+    private Date lastFullDate;
+
 }

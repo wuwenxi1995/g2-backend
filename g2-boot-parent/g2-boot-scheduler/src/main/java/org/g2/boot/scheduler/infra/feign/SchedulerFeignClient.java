@@ -1,7 +1,7 @@
 package org.g2.boot.scheduler.infra.feign;
 
 import org.g2.boot.scheduler.infra.feign.fallback.SchedulerFeignClientFallback;
-import org.g2.common.G2Service;
+import org.g2.starter.common.G2Service;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,6 +1,6 @@
 package org.g2.starter.redis.config.handler.impl;
 
-import org.g2.core.chain.invoker.ChainInvoker;
+import org.g2.starter.core.chain.invoker.ChainInvoker;
 import org.g2.starter.redis.config.handler.RedisConfiguration;
 import org.g2.starter.redis.config.properties.RedisCacheProperties;
 import org.g2.starter.redis.infra.enums.RedisServerPattern;

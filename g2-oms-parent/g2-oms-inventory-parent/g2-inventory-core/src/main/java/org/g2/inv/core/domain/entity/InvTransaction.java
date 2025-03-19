@@ -3,7 +3,7 @@ package org.g2.inv.core.domain.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.g2.starter.mybatis.entity.AuditDomain;
-import org.springframework.util.Assert;
+import org.g2.starter.mybatis.entity.AuditDomain;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -11,80 +11,58 @@ import javax.persistence.Table;
 import java.util.Date;
 
 /**
- * 库存事务明细
- *
- * @author wuwenxi 2022-04-09
+ * @author wuwenxi 2022-04-22
  */
+@Table(name = "inv_transaction")
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Table(name = "g2inv_transaction")
 public class InvTransaction extends AuditDomain {
 
-    public static final String FILED_INV_TRANSACTION_ID = "invTransactionId";
-    public static final String FILED_TRANSACTION_CODE = "transactionCode";
-    public static final String FILED_TRANSACTION_TYPE = "transactionType";
-    public static final String FILED_TRANSACTION_SOURCE = "transactionSource";
-    public static final String FILED_SOURCE_DATE = "sourceDate";
-    public static final String FILED_PROCESSING_STATUS_CODE = "processingStatusCode";
-    public static final String FILED_SKU_CODE = "skuCode";
-    public static final String FILED_POS_CODE = "posCode";
-    public static final String FILED_ON_HAND_INV = "onHandInv";
-    public static final String FILED_RESERVE_INV = "reserveInv";
-    public static final String FILED_ERROR_MSG = "errorMsg";
-
-    /**
-     * 库存事务id
-     */
     @Id
     @GeneratedValue
     private Long invTransactionId;
-    /**
-     * 库存事务编码
-     */
-    private String transactionCode;
-    /**
-     * 库存事务类型
-     */
-    private String transactionType;
-    /**
-     * 库存事务来源
-     */
-    private String transactionSource;
-    /**
-     * 创建时间
-     */
-    private Date sourceDate;
-    /**
-     * 处理状态
-     */
-    private String processingStatusCode;
     /**
      * sku编码
      */
     private String skuCode;
     /**
-     * 门店编码
+     * 服务点编码
      */
     private String posCode;
     /**
-     * 现有量增量
+     * 事务类型
      */
-    private Long onHandInv;
+    private String transactionType;
     /**
-     * 保留量增量
+     * 事务来源
      */
-    private Long reserveInv;
+    private String transactionSource;
     /**
-     * 处理异常信息
+     * 事务编码
+     */
+    private String transactionCode;
+    /**
+     * 来源类型
+     */
+    private String sourceType;
+    /**
+     * 事务创建时间
+     */
+    private Date sourceDate;
+    /**
+     * 库存增量
+     */
+    private Long onHandInc;
+    /**
+     * 库存保留量
+     */
+    private Long reservedInc;
+    /**
+     * 库存事务处理状态
+     */
+    private String processingStatusCode;
+    /**
+     * 库存事务处理信息
      */
     private String errorMsg;
-
-    public void check() {
-        Assert.hasLength(transactionType, "missing match [transactionType]");
-        Assert.hasLength(transactionSource, "missing match [transactionSource]");
-        Assert.hasLength(skuCode, "missing match [skuCode]");
-        Assert.hasLength(posCode, "missing match [posCode]");
-        Assert.notNull(onHandInv, "missing match [onHandInv]");
-        Assert.notNull(reserveInv, "missing match [reserveInv]");
-    }
 }

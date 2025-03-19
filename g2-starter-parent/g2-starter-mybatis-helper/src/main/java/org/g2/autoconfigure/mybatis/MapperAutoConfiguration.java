@@ -1,5 +1,6 @@
 package org.g2.autoconfigure.mybatis;
 
+import org.g2.starter.mybatis.common.Marker;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ public class MapperAutoConfiguration {
     public MapperScannerConfigurer mapperScannerConfigurer() {
         MapperScannerConfigurer scanner = new MapperScannerConfigurer();
         scanner.setBasePackage("*.**.mapper");
+        scanner.setMarkerInterface(Marker.class);
         return scanner;
     }
 }

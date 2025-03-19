@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @author wuwenxi 2022-04-08
  */
 @SpringBootApplication
-@ComponentScan(basePackages = "org.g2")
+@ComponentScan(basePackages = "org.g2.oms.micservice")
 public class OrderApplication {
 
     public static void main(String[] args) {

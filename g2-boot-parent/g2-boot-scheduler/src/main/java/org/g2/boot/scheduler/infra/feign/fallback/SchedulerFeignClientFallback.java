@@ -1,7 +1,7 @@
 package org.g2.boot.scheduler.infra.feign.fallback;
 
-import feign.hystrix.FallbackFactory;
 import org.g2.boot.scheduler.infra.feign.SchedulerFeignClient;
+import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
 /**

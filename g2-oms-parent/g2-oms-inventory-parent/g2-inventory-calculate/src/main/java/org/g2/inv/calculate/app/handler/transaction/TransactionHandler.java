@@ -1,28 +1,28 @@
 package org.g2.inv.calculate.app.handler.transaction;
 
-import org.g2.core.chain.handler.ParamChainInvocationHandler;
+import org.g2.starter.core.chain.handler.ParamChainInvocationHandler;
 import org.g2.inv.core.domain.entity.InvTransaction;
-import org.springframework.core.Ordered;
+import org.g2.inv.core.infra.constant.InvCoreConstants;
 
 import java.util.List;
 
 /**
- * @author wuwenxi 2022-04-11
+ * @author wuwenxi 2022-05-07
  */
 public interface TransactionHandler extends ParamChainInvocationHandler {
 
     /**
-     * 库存事务类型
+     * 根据服务点编码处理库存事务
      *
-     * @return 事务类型
+     * @param posCode         服务点拜纳姆
+     * @param invTransactions 库存事务
      */
-    String transactionType();
+    void handler(String posCode, List<InvTransaction> invTransactions);
 
     /**
-     * 事务库存处理
+     * 库存事务类型{@link InvCoreConstants.TransactionTypeCode}
      *
-     * @param posCode      门店编码
-     * @param transactions 库存事务
+     * @return 库存事务类型
      */
-    void handler(String posCode, List<InvTransaction> transactions);
+    String type();
 }

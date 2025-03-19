@@ -17,11 +17,12 @@
         <dependency>
             <groupId>org.g2.oms.inventory</groupId>
             <artifactId>g2-inventory-core</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
-            <groupId>org.g2</groupId>
-            <artifactId>g2-starter-dynamic-redis</artifactId>
+            <groupId>org.g2.starter</groupId>
+            <artifactId>g2-starter-kafka</artifactId>
         </dependency>
     </dependencies>
 

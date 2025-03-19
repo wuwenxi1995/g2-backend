@@ -1,7 +1,7 @@
 package org.g2.iam.api.controller;
 
 import org.g2.core.captcha.CaptchaResult;
-import org.g2.core.util.Results;
+import org.g2.starter.core.util.Results;
 import org.g2.iam.app.UserCaptchaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

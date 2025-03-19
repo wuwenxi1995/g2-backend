@@ -7,8 +7,8 @@ import org.g2.boot.message.entity.Msg;
 import org.g2.boot.message.entity.Receiver;
 import org.g2.boot.message.feign.MessageRemoteService;
 import org.g2.boot.message.service.async.MessageAsyncService;
-import org.g2.core.exception.CommonException;
-import org.g2.core.helper.FastJsonHelper;
+import org.g2.starter.core.exception.CommonException;
+import org.g2.starter.core.helper.FastJsonHelper;
 import org.g2.starter.redis.client.RedisCacheClient;
 import org.springframework.beans.factory.annotation.Autowired;
 

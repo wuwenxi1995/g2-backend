@@ -1,7 +1,7 @@
 package org.g2.starter.redisson.lock.autoconfigure;
 
+import org.g2.starter.redisson.config.RedissonAutoConfiguration;
 import org.g2.starter.redisson.lock.config.RedissonConfigureProperties;
-import org.g2.starter.redisson.lock.infra.responsibility.AbstractServerConfig;
 import org.g2.starter.redisson.lock.infra.service.impl.FairLockStrategy;
 import org.g2.starter.redisson.lock.infra.service.impl.MultiLockStrategy;
 import org.g2.starter.redisson.lock.infra.service.impl.ReadLockStrategy;
@@ -15,6 +15,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 
 /**
@@ -23,23 +24,8 @@ import org.springframework.context.annotation.Scope;
 @Configuration
 @EnableConfigurationProperties(value = {RedissonConfigureProperties.class})
 @ComponentScan(basePackages = "org.g2.starter.redisson.lock")
+@Import(RedissonAutoConfiguration.class)
 public class LockAutoConfiguration {
-
-    @Bean(initMethod = "init")
-    @ConditionalOnProperty(prefix = "g2.lock.redisson", value = "enable", havingValue = "true")
-    @ConditionalOnBean(AbstractServerConfig.class)
-    public RedissonBuildFactory redissonBuildFactory(RedissonConfigureProperties properties) {
-        return new RedissonBuildFactory(properties);
-    }
-
-    @Bean(
-            name = "lockRedissonClient",
-            destroyMethod = "shutdown"
-    )
-    @ConditionalOnBean(RedissonBuildFactory.class)
-    public RedissonClient redissonClient(RedissonBuildFactory redissonBuildFactory) {
-        return redissonBuildFactory.build();
-    }
 
     @Bean
     @Scope("prototype")

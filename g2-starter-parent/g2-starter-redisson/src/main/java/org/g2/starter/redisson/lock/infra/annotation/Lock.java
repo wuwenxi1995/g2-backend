@@ -21,13 +21,6 @@ public @interface Lock {
     /**
      * 锁名称
      */
-    @AliasFor(attribute = "name")
-    String value() default "";
-
-    /**
-     * 锁名称
-     */
-    @AliasFor(attribute = "value")
     String name() default "";
 
     /**
@@ -56,4 +49,9 @@ public @interface Lock {
      * timeUnit类型
      */
     TimeUnit timeUnit() default TimeUnit.SECONDS;
+
+    /**
+     * 没有name时使用的spel
+     */
+    String[] keys() default "";
 }

@@ -1,6 +1,6 @@
 package org.g2.starter.redis.mq.config.processor;
 
-import org.g2.core.util.StringUtil;
+import org.g2.starter.core.util.StringUtil;
 import org.g2.starter.redis.client.RedisCacheClient;
 import org.g2.starter.redis.infra.constants.MqConstants;
 import org.g2.starter.redis.mq.listener.annotation.Listener;

@@ -4,14 +4,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.g2.core.base.BaseConstants;
 import org.g2.starter.redisson.lock.config.RedissonConfigureProperties;
 import org.g2.starter.redisson.lock.domain.LockInfo;
 import org.g2.starter.redisson.lock.infra.annotation.Lock;
-import org.g2.starter.redisson.lock.infra.annotation.Mutex;
-import org.g2.starter.redisson.lock.infra.constants.LockConstants;
+import org.g2.starter.redisson.lock.infra.annotation.LockKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.expression.MethodBasedEvaluationContext;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -31,6 +34,7 @@ public class LockInfoProvider {
     private static final Logger log = LoggerFactory.getLogger(LockInfoProvider.class);
 
     private final ExpressionParser parser = new SpelExpressionParser();
+    private ParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
     private final RedissonConfigureProperties redissonConfigureProperties;
 
     public LockInfoProvider(RedissonConfigureProperties redissonConfigureProperties) {
@@ -62,22 +66,15 @@ public class LockInfoProvider {
                 }
             }
         } else {
-            // redis锁名称，默认：类名+方法名
-            lockName = getLockName((MethodSignature) joinPoint.getSignature());
+            // redis锁名称，默认：类名+方法名+keys
+            List<String> keyList = this.getKeyList(joinPoint, lock.keys());
+            lockName = getLockName((MethodSignature) joinPoint.getSignature(), keyList);
         }
         // 获取锁最长等待时间 可通过g2.lock.pattern.wait-time配置
         long waitTime = getLockTime(lock);
         // 获得锁后，自动释放锁的时间 可通过g2.lock.pattern.lease-time配置
         long leaseTime = getLeaseTime(lock);
         return new LockInfo(lockName, waitTime, leaseTime, lock.timeUnit());
-    }
-
-    public String buildPath(Mutex mutex) {
-        String path;
-        if (!(path = mutex.path()).startsWith(BaseConstants.Symbol.SLASH)) {
-            path = BaseConstants.Symbol.SLASH + path;
-        }
-        return LockConstants.ZK_LOCK_NAME_SPACE + path;
     }
 
     private Method getMethod(JoinPoint joinPoint) {
@@ -93,8 +90,9 @@ public class LockInfoProvider {
         return method;
     }
 
-    private String getLockName(MethodSignature signature) {
-        return String.format("%s.%s", signature.getDeclaringTypeName(), signature.getMethod().getName());
+    private String getLockName(MethodSignature signature, List<String> keyList) {
+        return String.format("%s.%s.%s", signature.getDeclaringTypeName(), signature.getMethod().getName(),
+                org.springframework.util.StringUtils.collectionToDelimitedString(keyList, "", "-", ""));
     }
 
     private long getLockTime(Lock lock) {
@@ -103,5 +101,53 @@ public class LockInfoProvider {
 
     private long getLeaseTime(Lock lock) {
         return lock.leaseTime() < 0 ? redissonConfigureProperties.getProperty().getLeaseTime() : lock.leaseTime();
+    }
+
+    private List<String> getKeyList(ProceedingJoinPoint joinPoint, String[] keys) {
+        Method method = getMethod(joinPoint);
+        List<String> keyList = new ArrayList<>();
+        if (keys.length != 0) {
+            List<String> spelDefinitionKey = getSpelDefinitionKey(keys, method, joinPoint.getArgs());
+            keyList.addAll(spelDefinitionKey);
+        }
+        List<String> parameterKeys = getParameterKey(method.getParameters(), joinPoint.getArgs());
+        keyList.addAll(parameterKeys);
+        return keyList;
+    }
+
+    private List<String> getSpelDefinitionKey(String[] definitionKeys, Method method, Object[] parameterValues) {
+        List<String> definitionKeyList = new ArrayList<>();
+        for (String definitionKey : definitionKeys) {
+            EvaluationContext context =
+                    new MethodBasedEvaluationContext(null, method, parameterValues, nameDiscoverer);
+            Object value = parser.parseExpression(definitionKey).getValue(context);
+            if (value != null) {
+                definitionKeyList.add(value.toString());
+            }
+        }
+        return definitionKeyList;
+    }
+
+    /**
+     * 获取参数KEY
+     */
+    private List<String> getParameterKey(Parameter[] parameters, Object[] parameterValues) {
+        List<String> parameterKey = new ArrayList<>();
+        for (int i = 0; i < parameters.length; i++) {
+            // 单个LockKey?
+            if (parameters[i].getAnnotation(LockKey.class) != null) {
+                LockKey keyAnnotation = parameters[i].getAnnotation(LockKey.class);
+                if (keyAnnotation.value().isEmpty()) {
+                    parameterKey.add(parameterValues[i].toString());
+                } else {
+                    StandardEvaluationContext context = new StandardEvaluationContext(parameterValues[i]);
+                    Object value = parser.parseExpression(keyAnnotation.value()).getValue(context);
+                    if (value != null) {
+                        parameterKey.add(value.toString());
+                    }
+                }
+            }
+        }
+        return parameterKey;
     }
 }

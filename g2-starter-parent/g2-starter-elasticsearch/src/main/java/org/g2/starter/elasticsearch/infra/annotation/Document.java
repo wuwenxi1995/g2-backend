@@ -39,4 +39,9 @@ public @interface Document {
      * 分页最大返回数
      */
     long maxResult() default 10000;
+
+    /**
+     * 动态映射
+     */
+    boolean dynamic() default true;
 }

@@ -1,5 +1,6 @@
 package org.g2.starter.mybatis.entity;
 
+import lombok.Data;
 import org.g2.starter.mybatis.security.SecurityToken;
 
 import java.util.Date;
@@ -7,6 +8,7 @@ import java.util.Date;
 /**
  * @author wenxi.wu@hand-china.com 2020-08-07
  */
+@Data
 public class AuditDomain implements SecurityToken {
 
     public static final String FIELD_CREATION_DATE = "creationDate";

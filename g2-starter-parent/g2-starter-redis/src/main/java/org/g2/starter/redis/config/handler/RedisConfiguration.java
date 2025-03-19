@@ -1,7 +1,7 @@
 package org.g2.starter.redis.config.handler;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.g2.core.chain.handler.ChainInvocationHandler;
+import org.g2.starter.core.chain.handler.ChainInvocationHandler;
 import org.g2.starter.redis.config.properties.RedisCacheProperties;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;

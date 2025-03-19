@@ -1,7 +1,7 @@
 package org.g2.starter.zk.lock.listener;
 
 import org.apache.curator.framework.CuratorFramework;
-import org.g2.core.helper.ApplicationContextHelper;
+import org.g2.starter.core.helper.ApplicationContextHelper;
 import org.springframework.boot.CommandLineRunner;
 
 /**

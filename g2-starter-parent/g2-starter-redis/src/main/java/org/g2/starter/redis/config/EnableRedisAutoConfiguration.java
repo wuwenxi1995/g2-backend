@@ -2,10 +2,10 @@ package org.g2.starter.redis.config;
 
 import java.util.Collection;
 
-import org.g2.core.chain.Chain;
-import org.g2.core.exception.CommonException;
-import org.g2.core.chain.invoker.base.BaseChainInvoker;
-import org.g2.core.helper.ApplicationContextHelper;
+import org.g2.starter.core.chain.Chain;
+import org.g2.starter.core.exception.CommonException;
+import org.g2.starter.core.chain.invoker.base.BaseChainInvoker;
+import org.g2.starter.core.helper.ApplicationContextHelper;
 import org.g2.starter.redis.client.RedisCacheClient;
 import org.g2.starter.redis.config.factory.EnableShardingConnectionFactory;
 import org.g2.starter.redis.config.handler.RedisConfiguration;

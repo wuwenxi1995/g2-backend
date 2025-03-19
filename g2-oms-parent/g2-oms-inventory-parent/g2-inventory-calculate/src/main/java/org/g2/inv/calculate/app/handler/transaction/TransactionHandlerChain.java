@@ -1,8 +1,8 @@
 package org.g2.inv.calculate.app.handler.transaction;
 
-import org.g2.core.chain.Chain;
-import org.g2.core.chain.invoker.base.BaseChainInvoker;
-import org.g2.core.util.StringUtil;
+import org.g2.starter.core.chain.Chain;
+import org.g2.starter.core.chain.invoker.base.BaseChainInvoker;
+import org.g2.starter.core.util.StringUtil;
 import org.g2.inv.calculate.infra.constant.InvCalculateConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class TransactionHandlerChain extends BaseChainInvoker {
 
     public TransactionHandlerChain(List<TransactionHandler> transactionHandlers) {
         this.transactionHandlers = transactionHandlers;
-        this.handlerMap = transactionHandlers.stream().collect(Collectors.toMap(TransactionHandler::transactionType, Function.identity(), (u, v) -> v, TreeMap::new));
+        this.handlerMap = transactionHandlers.stream().collect(Collectors.toMap(TransactionHandler::type, Function.identity(), (u, v) -> v, TreeMap::new));
         this.lock = new ReentrantLock(false);
     }
 

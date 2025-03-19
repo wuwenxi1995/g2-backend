@@ -1,7 +1,6 @@
 package org.g2.starter.elasticsearch.domain.entity;
 
 import org.g2.starter.elasticsearch.infra.annotation.Field;
-import org.g2.starter.elasticsearch.infra.annotation.Fields;
 import org.g2.starter.elasticsearch.infra.enums.FieldType;
 import org.springframework.data.annotation.Id;
 
@@ -10,19 +9,14 @@ import org.springframework.data.annotation.Id;
  */
 public class BaseEntity {
 
+    public static final String UID = "_id";
+
     @Id
-    @Fields({
-            @Field(type = FieldType.TEXT),
-            @Field(type = FieldType.KEYWORD, fields = true)
-    })
+    @Field(type = FieldType.TEXT)
     private String id;
 
-    @Fields({
-            @Field(type = FieldType.TEXT),
-            @Field(type = FieldType.KEYWORD, fields = true)
-    })
+    @Field(type = FieldType.KEYWORD)
     private String indexName;
-
 
     public String getIndexName() {
         return indexName;

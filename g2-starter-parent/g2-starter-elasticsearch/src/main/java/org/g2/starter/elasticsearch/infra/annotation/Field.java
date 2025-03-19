@@ -18,8 +18,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-// 多重注解
-@Repeatable(Fields.class)
 public @interface Field {
 
     /**
@@ -50,14 +48,4 @@ public @interface Field {
      * </p>
      */
     Analyzer searchAnalyzer() default Analyzer.DEFAULT;
-
-    /**
-     * 是否fields字段
-     */
-    boolean fields() default false;
-
-    /**
-     * fields名称
-     */
-    String fieldsName() default "";
 }

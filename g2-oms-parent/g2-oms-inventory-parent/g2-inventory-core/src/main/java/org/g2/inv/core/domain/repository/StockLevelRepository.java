@@ -4,7 +4,7 @@ import org.g2.inv.core.domain.entity.StockLevel;
 import org.g2.starter.mybatis.base.BaseRepository;
 
 /**
- * @author wuwenxi 2022-04-12
+ * @author wuwenxi 2022-04-22
  */
 public interface StockLevelRepository extends BaseRepository<StockLevel> {
 }

@@ -40,6 +40,7 @@
         <!-- starter version -->
         <g2.starter.redis.version>0.1.0-SNAPSHOT</g2.starter.redis.version>
         <g2.starter.dynamic.redis.version>0.1.0-SNAPSHOT</g2.starter.dynamic.redis.version>
+        <g2.starter.dynamic.jdbc.version>0.1.0-SNAPSHOT</g2.starter.dynamic.jdbc.version>
         <g2.starter.redisson.version>0.1.0-SNAPSHOT</g2.starter.redisson.version>
         <g2.starter.zookeeper.version>0.1.0-SNAPSHOT</g2.starter.zookeeper.version>
         <g2.starter.elasticsearch.version>0.1.0-SNAPSHOT</g2.starter.elasticsearch.version>
@@ -52,17 +53,16 @@
         <!-- boot version -->
         <g2.boot.pipeline.version>0.1.0-SNAPSHOT</g2.boot.pipeline.version>
         <g2.boot.scheduler.version>0.1.0-SNAPSHOT</g2.boot.scheduler.version>
-        <g2.boot.file.version>0.1.0-SNAPSHOT</g2.boot.file.version>
-        <g2.boot.message.version>0.1.0-SNAPSHOT</g2.boot.message.version>
-        <g2.boot.elasticsearch.version>0.1.0-SNAPSHOT</g2.boot.elasticsearch.version>
         <g2.boot.message.version>0.1.0-SNAPSHOT</g2.boot.message.version>
         <g2.boot.interface.version>0.1.0-SNAPSHOT</g2.boot.interface.version>
+        <g2.boot.exectutor.version>0.1.0-SNAPSHOT</g2.boot.exectutor.version>
         <g2.boot.core.version>0.1.0-SNAPSHOT</g2.boot.core.version>
 
         <!-- other -->
         <mysql.version>8.0.16</mysql.version>
         <spring.mybatis.version>2.1.2</spring.mybatis.version>
         <commons.langs.version>3.9</commons.langs.version>
+        <commons.codec.version>1.15</commons.codec.version>
         <commons.collections.version>4.4</commons.collections.version>
         <fastjson.version>1.2.68</fastjson.version>
         <lombok.version>1.18.10</lombok.version>
@@ -73,7 +73,7 @@
         <zookeeper.version>3.6.2</zookeeper.version>
         <quartz.version>2.3.2</quartz.version>
         <hutool.version>5.4.7</hutool.version>
-        <okhttp3.version>4.9.0</okhttp3.version>
+        <okhttp3.version>4.10.0</okhttp3.version>
         <junit.version>4.12</junit.version>
         <jedis.version>2.9.0</jedis.version>
     </properties>
@@ -145,96 +145,108 @@
                 <version>${spring.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
             <!-- g2 starter -->
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.starter</groupId>
                 <artifactId>g2-starter-parent</artifactId>
                 <version>${g2.starter.core.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.starter</groupId>
                 <artifactId>g2-starter-core</artifactId>
                 <version>${g2.starter.core.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.starter</groupId>
                 <artifactId>g2-starter-redis</artifactId>
                 <version>${g2.starter.redis.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.starter</groupId>
                 <artifactId>g2-starter-dynamic-redis</artifactId>
                 <version>${g2.starter.dynamic.redis.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.starter</groupId>
+                <artifactId>g2-starter-dynamic-jdbc</artifactId>
+                <version>${g2.starter.dynamic.jdbc.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2.starter</groupId>
                 <artifactId>g2-starter-elasticsearch</artifactId>
                 <version>${g2.starter.elasticsearch.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.starter</groupId>
                 <artifactId>g2-starter-redisson</artifactId>
                 <version>${g2.starter.redisson.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.starter</groupId>
                 <artifactId>g2-starter-zookeeper</artifactId>
                 <version>${g2.starter.zookeeper.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.starter</groupId>
                 <artifactId>g2-starter-kafka</artifactId>
                 <version>${g2.starter.kafka.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.starter</groupId>
                 <artifactId>g2-starter-mybatis-helper</artifactId>
                 <version>${g2.starter.mybatis.helper.version}</version>
             </dependency>
 
             <!-- g2 boot -->
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.boot</groupId>
                 <artifactId>g2-boot-parent</artifactId>
                 <version>${g2.boot.core.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.boot</groupId>
                 <artifactId>g2-boot-pipeline</artifactId>
                 <version>${g2.boot.pipeline.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.boot</groupId>
                 <artifactId>g2-boot-scheduler</artifactId>
                 <version>${g2.boot.scheduler.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
-                <artifactId>g2-boot-elasticsearch</artifactId>
-                <version>${g2.boot.elasticsearch.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.boot</groupId>
                 <artifactId>g2-boot-message</artifactId>
                 <version>${g2.boot.message.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.g2</groupId>
+                <groupId>org.g2.boot</groupId>
                 <artifactId>g2-boot-interface</artifactId>
                 <version>${g2.boot.interface.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.g2.boot</groupId>
+                <artifactId>g2-boot-executor</artifactId>
+                <version>${g2.boot.exectutor.version}</version>
             </dependency>
 
             <!-- other -->
@@ -290,6 +302,13 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons.langs.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons.codec.version}</version>
+            </dependency>
+
 
             <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
             <dependency>
